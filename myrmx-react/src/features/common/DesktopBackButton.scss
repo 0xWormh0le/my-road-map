@@ -1,0 +1,25 @@
+@import '../../styles/mixins';
+
+.common-desktop-back-button {
+  @extend .mrm-py-0_25;
+  @extend .mrm-px-0_5;
+
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  color: $color-text-light;
+  background: $color-background-light-gray;
+  border-radius: 50%;
+
+  svg {
+    font-size: $font-size-larger;
+    position: relative;
+    top: 5px;
+    left: 3px;
+  }
+  &:hover {
+    cursor: pointer;
+    background-color: darken($color-background-light-gray, 2%);
+  }
+}

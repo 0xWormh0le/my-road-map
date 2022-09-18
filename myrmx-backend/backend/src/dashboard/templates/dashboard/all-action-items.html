@@ -1,0 +1,68 @@
+{% extends "dashboard/base.html" %}
+{% load my %}
+
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "My Action Items" "" %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}{% endcomment %}
+
+{% block body %}
+
+<a class="back-btn mb-3" href="javascript:history.go(-1)"><i class="far fa-arrow-left"></i></a>
+
+
+<div id="all-action-items-container">
+
+    {% if student_action_items_due_today %}
+        <div class="card">
+            <div class="card-body">
+                <h4>Action Items Due Today</h4>
+                {% for item in student_action_items_due_today %}
+                    <a href="{% url 'competency' item.competency.id %}"><div class="card-row">
+                        {% if item.marked_done %}
+                            <p class="completed"><i class="fal fa-check"></i> Completed</p>
+                        {% else %}
+                            <p class="uncompleted">uncompleted</p>
+                        {% endif %}
+                        <p class="ai-date">{{ item.due_date }}</p>
+                        <p class="ai-description">{{ item.description }}</p>
+                        <p class="ai-stage-roadmap">in {{ item.competency.title }} for {{ item.competency.roadmap.title }}</p>
+                    </div></a>
+                {% empty %}
+                    <p>No action items due today</p>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card">
+      <div class="card-body">
+      <h4>Uncompleted Action Items</h4>
+          {% for item in student_action_items_to_do %}
+              <a href="{% url 'competency' item.competency.id %}"><div class="card-row">
+                  {% if item.due_date %}
+                      <p class="ai-date {% if item.is_past_due %}text-danger{% endif %}">{{ item.due_date }}</p>
+                  {% endif %}
+                  {% if item.description %}
+                      <p class="ai-description">{{ item.description }}</p>
+                  {% else %}
+                      <p class="ai-description">{{ item.parent.description }}</p>
+                  {% endif %}
+                  <p class="ai-stage-roadmap">in {{ item.competency.title }} for {{ item.competency.roadmap.title }}</p>
+              </div></a>
+          {% empty %}
+              <p>No other uncompleted action items</p>
+          {% endfor %}
+    </div>
+
+</div>
+
+
+<script>
+
+</script>
+
+{% endblock body %}

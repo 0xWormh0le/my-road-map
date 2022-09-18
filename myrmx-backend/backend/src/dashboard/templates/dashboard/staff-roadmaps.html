@@ -1,0 +1,236 @@
+{% extends "dashboard/base.html" %}
+{% load my %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Roadmap Library" "" %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="list-page">
+
+  {% if roadmaps %}
+    <div class="row">
+        <div class="col-12 col-sm-6">
+            <h3>Roadmaps <span class="small"> for {{ request.user.company }} {% if request.user.is_cohort_admin %}({{ request.user.cohort.all|join:', ' }}){% endif %}</span></h3>
+        </div>
+        <div class="col-12 col-sm-6 header-buttons-container d-flex align-items-center justify-content-sm-end">
+            <a class="btn btn-primary" href="{% url 'staff_roadmaps_add' %}"><i class="far fa-plus"></i> Create a new Roadmap</a>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th class="d-none d-lg-table-cell">Description</th>
+                <th class="d-lg-table-cell">User Count</th>
+                {% if request.user.company.group_specific_roadmaps %}
+                    <th class="d-none d-lg-table-cell">Assigned Groups</th>
+                {% endif %}
+                <th class="d-lg-table-cell">Published</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if request.user.is_cohort_admin %}
+                {% for roadmap in group_roadmaps %}
+                    <tr>
+                        <td><a class="roadmap-link" href="{% url 'staff_roadmap' roadmap.id %}">{{ roadmap.title }}</a></td>
+                        <td class="d-none d-lg-table-cell">{{ roadmap.description }}</td>
+                        <td class="d-lg-table-cell">{{ roadmap.get_user_count }}</td>
+                        {% if request.user.company.group_specific_roadmaps %}
+                            <td class="d-none d-lg-table-cell">{{ roadmap.cohorts.all|join:', ' }}</td>
+                        {% endif %}
+                        <td class="d-lg-table-cell">
+                            <div>
+                                {% if roadmap.is_published %}
+                                    <div class="btn btn-2"
+                                        onclick="publishRoadmap(this, false)"
+                                        data-url="{% url 'ajax_publish_roadmap' roadmap.id %}">
+                                        Unpublish
+                                    </div>
+                                {% else %}
+                                    <div class="btn btn-primary"
+                                        onclick="publishRoadmap(this, true)"
+                                        data-url="{% url 'ajax_publish_roadmap' roadmap.id %}">
+                                        Publish
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'staff_roadmap_edit' roadmap.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="clear" value="false">
+                                <input type="hidden" name="delete" value="false">
+                                <i class="fal fa-eraser action-icon link mr-2" role="button" onclick="clearRoadmap(this)" title="Clear Assessments"></i>
+                                <i class="fal fa-trash action-icon link" role="button" onclick="deleteRoadmap(this)" title="Delete Roadmap"></i>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% else %}
+                {% for roadmap in roadmaps %}
+                    <tr>
+                        <td><a class="roadmap-link" href="{% url 'staff_roadmap' roadmap.id %}">{{ roadmap.title }}</a></td>
+                        <td class="d-none d-lg-table-cell">{{ roadmap.description }}</td>
+                        <td class="d-lg-table-cell">{{ roadmap.get_user_count }}</td>
+                        {% if request.user.company.group_specific_roadmaps %}
+                            <td class="d-none d-lg-table-cell">{{ roadmap.cohorts.all|join:', ' }}</td>
+                        {% endif %}
+                        <td class="d-lg-table-cell">
+                            <div>
+                                {% if roadmap.is_published %}
+                                    <div class="btn btn-2"
+                                        onclick="publishRoadmap(this, false)"
+                                        data-url="{% url 'ajax_publish_roadmap' roadmap.id %}">
+                                        Unpublish
+                                    </div>
+                                {% else %}
+                                    <div class="btn btn-primary"
+                                        onclick="publishRoadmap(this, true)"
+                                        data-url="{% url 'ajax_publish_roadmap' roadmap.id %}">
+                                        Publish
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'staff_roadmap_edit' roadmap.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="clear" value="false">
+                                <input type="hidden" name="delete" value="false">
+                                <div class="icon-btn-dark">
+                                    <i class="fal fa-eraser action-icon" role="button" onclick="clearRoadmap(this)" title="Clear Assessments"></i>
+                                </div>
+                                <div class="icon-btn-dark">
+                                  <i class="fal fa-trash action-icon" role="button" onclick="deleteRoadmap(this)" title="Delete Roadmap"></i>
+                                </div>
+                            </form>
+                            <a class="icon-btn-dark" href="{% url 'copy_roadmap_staff' roadmap.id %}" title="Copy"><i class="fal fa-copy"></i> </a>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="no-roadmaps-admin">
+      <h3 class="mb-3">No Roadmaps yet.</h3>
+      <p style="text-align:center;">Roadmaps are how you define your desired outcomes. Are you ready?</p>
+      <i class="fal fa-map map no-content-icon"></i>
+      <a class="btn btn-primary" href="{% url 'staff_roadmaps_add' %}"><i class="far fa-plus"></i> Create the first Roadmap</a>
+    </div>
+
+    {% endif %}
+</div>
+</div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-body">
+    <h3>Need help building your Roadmap?</h3>
+    <h5 class="mt-2">Building a Roadmap is both a science and an art. Below is a list of resources to help you get started.</h5>
+    <ol>
+      <li><a target="_blank" href="https://docs.google.com/document/d/1St36me7u5GxgGencCRJQACqJJr4-PBm47i4Tm28FM3c/edit?usp=sharing">How to build a Roadmap guide (document)</a></li>
+
+    </ol>
+
+  </div>
+</div>
+
+
+    {% if roadmap_templates %}
+
+      <div class="card mt-5">
+        <div class="card-body">
+          <h3>Supplemental Roadmap Library</h3>
+          <h5 class="mt-2">Below is a library of Roadmaps built by MyRoadmap. They may or may not apply to your specific use case. You are free to use them if you wish.</h5>
+          <table class="table table-striped">
+              <thead>
+                  <tr>
+                      <th>Template Title</th>
+                      <th class="d-none d-lg-table-cell">Description</th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for roadmap in roadmap_templates %}
+                      <tr class="clickable-row" onclick="location = '{% url 'staff_roadmap' roadmap.id %}'">
+                          <td><a href="{% url 'staff_roadmap' roadmap.id %}">{{ roadmap.title }}</a></td>
+                          <td class="d-none d-lg-table-cell">{{ roadmap.description }}</td>
+                          <td class="text-right">
+                              <a class="btn btn-primary" href="{% url 'add_roadmap_template_staff' roadmap.id %}"><i class="far fa-plus"></i> Add </a>
+                          </td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+        </div>
+      </div>
+
+    {% endif %}
+</div>
+
+
+
+
+<script>
+    function deleteRoadmap(el) {
+        var $el = $(el);
+        event.stopPropagation();
+        Swal.fire({
+            title: "Delete this Roadmap?",
+            text: 'This action cannot be undone',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#F74400',
+        }).then((result) => {
+            if (result.value) {
+                $el.closest('form').children('input[name="delete"]').val('true');
+                $el.closest('form').submit();
+            }
+        });
+    }
+
+    function clearRoadmap(el) {
+        var $el = $(el);
+        event.stopPropagation();
+        Swal.fire({
+            title: "Clear this Roadmap's assessments?",
+            text: 'This action cannot be undone',
+            showCancelButton: true,
+            confirmButtonText: 'Clear',
+            confirmButtonColor: '#F74400',
+        }).then((result) => {
+            if (result.value) {
+                $el.closest('form').children('input[name="clear"]').val('true');
+                $el.closest('form').submit();
+            }
+        });
+    }
+
+    function publishRoadmap(el, publish) {
+        var container = $(el).parent()
+        container.html("<i class='fa fa-spinner fa-spin'></i>")
+        $.ajax({
+            url: $(el).data('url'),
+            data: {publish: publish},
+            type: 'POST',
+            success: function (result) {
+                location.reload();
+            },
+            error: (err)=>{console.log(err)}
+        });
+    }
+
+</script>
+
+{% endblock content %}

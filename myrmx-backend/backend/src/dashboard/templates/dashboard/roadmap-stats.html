@@ -1,0 +1,140 @@
+{% extends "dashboard/base.html" %}
+{% load my %}
+
+{% block title %}Roadmap stats{% endblock %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Dashboard" "dashboard" %}
+        {% breadcrumb roadmap.title "" %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block body %}
+
+  <div class="roadmap-stats-container">
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="card">
+          <!-- <h2 class="title">People Using This Roadmap</h2> -->
+          <h2 class="subtitle">{{ request.user.company.user_synonym }}s: <span>{{roadmap.users_count}}</span></h2>
+          <h2 class="subtitle">{{ request.user.company.coach_synonym }}s: <span>{{roadmap.coaches.count}}</span></h2>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <h2 class="title">Assessments</h2>
+          <div class="row">
+            <div class="col-sm-4">
+              <h2 class="subtitle"><i class="fas fa-square green"></i> Greens: <span>{{roadmap.greens}}</span></h2>
+              <h2 class="subtitle"><i class="fas fa-square yellow"></i> Yellows: <span>{{roadmap.yellows}}</span></h2>
+              <h2 class="subtitle"><i class="fas fa-square red"></i> Reds: <span>{{roadmap.reds}}</span></h2>
+            </div>
+            <div class="col-sm-8">
+              <div class="d-flex align-items-center px-0">
+                  <div class="chart-container d-flex align-items-center flex-fill" style="position: relative; height:100%; width:50%">
+                      <canvas class="doughnutChartDetail" width="10" height="6" data-data="{{ roadmap.chartdata }}"></canvas>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive-xl mt-5 mb-5">
+        <table class="table">
+          <thead>
+              <tr>
+                  <th class="sticky-head">{{ request.user.company.user_synonym }}</th>
+                  {% for comp in all_roadmap_competencies %}
+                      <th class="sticky-head" style="min-width: 100px;">{{ comp.title }}</th>
+                  {% endfor %}
+              </tr>
+          </thead>
+          <tbody>
+                {% for roadmap_student in roadmap_students %}
+                <tr>
+                  <td class="sticky">
+                    <a href="{% url 'user_roadmap_observe' roadmap_student.id roadmap.id %}">{{ roadmap_student }}</a>
+                  </td>
+                    {% for competency in roadmap_student.assessments %}
+                    <td>
+                          <a class="status-bg status-bg-color-{{ competency.status }}" href="{% url 'user_competency_observe' roadmap_student.id competency.id %}"></a>
+                      </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="my-3 roadmap-drilldown-section-header">Top Green Assessments</div>
+      {% for comp in top_mastered_list %}
+      <div class="card-row d-flex my-1">
+          <div class="percentage-square bg-green mr-4"></div>
+          <div class="d-flex align-items-center">{{comp.competency_name}}</div>
+      </div>
+      {% endfor %}
+
+      <div class="mb-3 mt-4 roadmap-drilldown-section-header">Top Red Assessments</div>
+      {% for comp in top_needs_help_list %}
+      <div class="card-row d-flex my-1">
+          <div class="percentage-square bg-red mr-4"></div>
+          <div class="d-flex align-items-center">{{comp.competency_name}}</div>
+      </div>
+      {% endfor %}
+
+
+</div>
+
+
+{% endblock %}
+
+
+{% block extrafooter %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+
+
+<script>
+
+   $(".doughnutChartDetail").each(function(i, el){
+        el = $(el)
+        var data = JSON.parse(el.data('data').replace(/'/g, '"'))
+        new Chart(el[0].getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ["Green", "Yellow", "Red", "Not Assessed"],
+                datasets: [{
+                    data: [data.green, data.yellow, data.red, data.grey],
+                    backgroundColor: [
+                        'rgba(30, 211, 125, 1)',
+                        'rgba(234, 220, 115, 1)',
+                        'rgba(247, 68, 0, 1)',
+                        'rgba(175,175,175,0.3)',
+                    ],
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                cutoutPercentage: 75,
+                legend: {
+                    display: false,
+                },
+                scales: {
+                },
+                layout: {
+                    padding: {
+                        right: 0,
+                    }
+                }
+            }
+        });
+    })
+</script>
+
+{% endblock %}

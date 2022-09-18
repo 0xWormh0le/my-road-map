@@ -1,0 +1,31 @@
+{% extends "postman/base_folder.html" %}
+{% load i18n %}
+{% block pagetitle %}Received Messages{% endblock %}
+
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Inbox" "" %}
+        {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+    {% endblock %}
+{% endblock %}{% endcomment %}
+
+{% block active-inbox %}btn-secondary{% endblock %}
+
+{% block pm_undelete_button %}{% endblock %}
+{% block pm_recipient_header %}{% endblock %}
+{% block pm_date %}{% trans "Received" %}{% endblock %}
+{% block pm_recipient_cell %}{% endblock %}
+
+{% block pm_footer_info %}
+{% trans "" %}
+{% if pm_messages %}
+{% else %}
+<div class="no-messages">
+  <h3 class="mb-3">No messages in inbox</h3>
+  <p style="text-align:center;">Messages are a great way to stay engaged</p>
+  <i class="no-content-icon fal fa-comments-alt"></i>
+  <a class="btn btn-primary" href="{% url 'postman:write' %}"><i class="fa fa-plus"></i> New message</a>
+</div>
+{% endif %}
+{% endblock %}

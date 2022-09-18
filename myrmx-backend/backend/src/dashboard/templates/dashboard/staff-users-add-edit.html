@@ -1,0 +1,41 @@
+{% extends "dashboard/base.html" %}
+
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Accounts" "staff_users" %}
+        {% if user %}
+            {% breadcrumb user.get_full_name "" %}
+        {% else %}
+            {% breadcrumb "Add Account" "" %}
+        {% endif %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}{% endcomment %}
+
+{% block body %}
+
+<a class="back-btn mb-3" href="{{request.META.HTTP_REFERER|escape}}"><i class="far fa-arrow-left"></i></a>
+
+<div class="card staff-add-edit-account">
+    <div class="card-body">
+      {% if user %}
+          <h3>{{user.get_full_name}} - Edit Account</h3>
+      {% else %}
+          <h3>Add Account</h3>
+      {% endif %}
+      <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% include 'dashboard/form-table-vertical.html' %}
+
+          {% if user %}
+              <button type="submit" class="btn btn-primary" onclick="this.disabled = true; this.form.submit();">Save Changes</button>
+              <a class="btn-2" href="{% url 'staff_users_send_welcome_email' user.id %}">Resend Welcome Email</a>
+          {% else %}
+              <button type="submit" class="btn btn-primary" onclick="this.disabled = true; this.form.submit();">Submit</button>
+          {% endif %}
+      </form>
+    </div>
+</div>
+
+{% endblock %}

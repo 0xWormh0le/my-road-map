@@ -1,0 +1,8 @@
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+dashboard/static/dashboard/css/base.css
+
+/static

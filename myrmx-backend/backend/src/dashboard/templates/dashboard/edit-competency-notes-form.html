@@ -1,0 +1,18 @@
+{% load my %}
+
+<form method="post" action="{% url 'ajax_edit_competency_note' %}" id="competency-notes-form">
+    {% csrf_token %}
+    <input name="id" type="hidden" value="{{ note_id }}">
+    <input name="competencyId" type="hidden" value="{{ competency_id }}">
+    {% for field in form %}
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+        {% for error in field.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+        {{ field|addcss:"form-control" }}
+    </div>
+    {% endfor %}
+    <button id="submit-note" type="button" class="btn btn-primary mr-1">Save</button>
+    <button id="cancel-note" type="button" class="btn btn-2">Cancel</button>
+
+</form>

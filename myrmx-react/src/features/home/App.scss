@@ -1,0 +1,27 @@
+@import '../../styles/mixins';
+
+.home-app {
+  .toast-container {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+
+    .toast {
+      position: relative;
+      left: -50%;
+      z-index: 1;
+    }
+  }
+
+  .stage-env-banner {
+    position: fixed;
+    z-index: 1024;
+    right: 0;
+    left: 0;
+    font-size: $font-size-smaller;
+    border-bottom: 1px solid #F5C6CA;
+    text-align: center;
+    color: #731C23;
+    background-color: #F8D7D9;
+  }
+}

@@ -1,0 +1,17 @@
+@import '../../styles/mixins';
+
+.manage-add-competency-intro-content-page {
+  .btn-save {
+    color: $primary;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .btn-cancel {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  .ck-editor__editable {
+    min-height: get-scaled-size($scale-factor-12);
+  }
+}

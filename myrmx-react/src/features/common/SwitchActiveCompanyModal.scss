@@ -1,0 +1,60 @@
+@import '../../styles/mixins';
+
+.common-switch-active-company-modal {
+  img, span {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid $color-assessment-none;
+  }
+  span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #aaaaaa;
+    color: white;
+    font-size: $font-size-larger;
+  }
+  h1 {
+    font-weight: bold;
+    font-size: $font-size-normal;
+    margin-bottom: 0;
+    line-height: 60px;
+    display: inline-block;
+  }
+
+  .modal-dialog {
+    min-height: 100%;
+    @include media-breakpoint-down(xs) {
+      margin: 0;
+    }
+  }
+  .modal-content {
+    @include media-breakpoint-down(xs) {
+      border: 0;
+      border-radius: 20px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  .company-item{
+    &:hover {
+      cursor: pointer;
+      background: #f7f7f7;
+    }
+  }
+  .company-item.active{
+    &:hover {
+      cursor: default;
+      background: transparent;
+    }
+    h1 {
+      &:hover {
+        cursor: text;
+      }
+    }
+  }
+  .company-item:not(:last-child) {
+    border-bottom: 1px solid lightgrey;
+  }
+}

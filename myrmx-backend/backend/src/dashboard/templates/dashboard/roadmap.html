@@ -1,0 +1,431 @@
+{% extends "dashboard/base.html" %}
+{% load my %}
+{% load staticfiles %}
+
+{% block title %}
+    {% if observing %}
+        {{ student }} | {{ roadmap.title }}
+    {% else %}
+       {{ roadmap.title }}
+    {% endif %}
+{% endblock %}
+
+{% block breadcrumbs_space %}
+
+    {% load django_bootstrap_breadcrumbs %}
+
+    {% if editing %}
+        <div class="edit-roadmap-card">
+          <label for="#roadmap-title-form">Roadmap Name:</label>
+          <input type="text" class="form-control d-flex" id="roadmap-title-form" name="new-title" required value="{{roadmap.title}}" placeholder="Roadmap title (required)" data-source="{% url 'ajax_edit_roadmap_title' %}">
+          <label for="#roadmap-description-form">Roadmap Description:</label>
+          <textarea rows="2" cols="10" class="form-control d-flex" id="roadmap-description-form" name="new-description" placeholder="Roadmap description (optional)" data-source="{% url 'ajax_edit_roadmap_description' %}">{{roadmap.description}}</textarea>
+              <div class="mb-2">
+                {% if request.user.company.group_specific_roadmaps and not request.user.is_cohort_admin %}
+                    <a class="btn btn-2 mb-2" href="{% url 'staff_edit_roadmap_cohorts' roadmap.id %}"><i class="fal fa-pencil"></i> Edit Roadmap Groups</a>
+                {% endif %}
+                {% if request.user.company.pin_roadmaps_for_users %}
+                    {% if roadmap.pinned %}
+                        <a class="btn btn-2 mb-2" href="{% url 'unpin_roadmap' roadmap.id %}"><i class="fal fa-thumbtack"></i> Unpin Roadmap</a>
+                    {% else %}
+                        <a class="btn btn-2 mb-2" href="{% url 'pin_roadmap' roadmap.id %}"><i class="fal fa-thumbtack"></i> Pin Roadmap</a>
+                    {% endif %}
+                {% endif %}
+                {% if request.user.company.hide_roadmaps_from_users %}
+                    {% if roadmap.hidden_from_users %}
+                        <a class="btn btn-2 mb-2" href="{% url 'unhide_roadmap_from_users' roadmap.id %}"><i class="fal fa-eye"></i> Unhide Roadmap from {{ request.user.company.user_synonym }}s</a>
+                    {% else %}
+                        <a class="btn btn-2 mb-2" href="{% url 'hide_roadmap_from_users' roadmap.id %}"><i class="fal fa-eye-slash"></i> Hide Roadmap from {{ request.user.company.user_synonym }}s</a>
+                    {% endif %}
+                {% endif %}
+                {% if request.user.company.assign_roadmaps_to_all_users %}
+                    {% if roadmap.assign_to_all_users %}
+                        <a class="btn btn-2 mb-2" href="{% url 'unassign_roadmap_to_all_users' roadmap.id %}"><i class="fal fa-times"></i> Remove Roadmap from all {{ request.user.company.user_synonym }}s</a>
+                    {% else %}
+                        <a class="btn btn-2 mb-2" href="{% url 'assign_roadmap_to_all_users' roadmap.id %}"><i class="fal fa-plus"></i> Assign Roadmap to all {{ request.user.company.user_synonym }}s</a>
+                    {% endif %}
+                {% endif %}
+              </div>
+          <!-- <label for=".roadmap-icon">Roadmap Icon: (beta)</label>
+          <img class="roadmap-icon" src="{{ roadmap.get_roadmap_icon_url }}">
+          <p style="margin-top: 10px; max-width: 200px;" class="btn-2" href="#" id="addNewRoadmapIcon" data-target="#addNewRoadmapIconModal" data-toggle="modal">
+               Change Roadmap Icon
+          </p>
+          <form method="POST" id="roadmap_name" action="{% url 'staff_roadmap_edit' roadmap.id %}">
+              {% csrf_token %}
+              <input type="hidden" id="delete-flag" name="delete" value="false">
+          </form> -->
+        </div>
+        <div class="modal fade" id="addNewRoadmapIconModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Change Roadmap Icon</h4>
+                        <button type="button" class="close closeAddProfilePicture" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="addNewRoadmapIconModalBody">
+                            <label class="btn btn-primary">
+                                Browse&hellip; <input type="file" id="file-src" onchange="handleFileSelect()" accept="image/*" style="display: none;">
+                            </label><br><br>
+                            <div id="imageLoading" class="hidden">
+                                <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <img id="target-img"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-2 closeAddRoadmapIcon" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn-2" id="cropperReset">Reset</button>
+                        <button type="button" class="btn btn-primary" id="addNewRoadmapIconSave" data-target-url="{% url 'ajax_roadmap_icon' %}">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="d-flex align-items-start">
+            {% if observing %}
+                <a href="{% url 'profile_detail' student.id %}">
+                  <div class="profile-photo-roadmap" style="{% if student.photo %} background-image: url('{{ student.get_photo_url }}') {% endif %}" aria-label="photo of {{ student.get_full_name }}"> {% if not student.photo %}<span class=profile-photo-roadmap-initials>{{ student.first_name|slice:"1"|title }}{{ student.last_name|slice:"1"|title }}</span>{% endif %}</div>
+                </a>
+            {% endif %}
+            {% block breadcrumbs %}
+                {% if student and not observing %}
+                    {% breadcrumb "My Roadmaps" "roadmaps" %}
+                {% endif %}
+                {% if observing %}
+                    {% breadcrumb student "profile_detail" student.id %}
+                {% elif request.user.is_admin and not student %}
+                    {% breadcrumb "Roadmaps" "staff_roadmaps" %}
+                {% endif %}
+                {% breadcrumb roadmap.title "staff_roadmap" roadmap.id %}
+                {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+            {% endblock %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block right-header %}
+    {% if not is_template and roadmap %}
+            <div class="progress-info mt-1">
+                <div class="progress-stats mb-1">
+                    {% if stages_info.total_action_items > 0 %}
+                        <div class="action-items float-right d-inline-block">
+                            <span class="progress-label"><i class="fal fa-check-circle"></i> {{ stages_info.total_action_items_complete }}/{{ stages_info.total_action_items }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="overall_progress d-inline-block">
+                        <span class="progress-label">{{ stages_info.total_progress|floatformat:"0" }}% Complete</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    {% comment %} <img class="progess-bar-mtn" src="{% static 'dashboard/img/mtn.svg' %}"> {% endcomment %}
+                    <div class="progress">
+                        <div style="width: {{ stages_info.total_progress }}%" role="progressbar" class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+    {% endif %}
+
+    {% if is_template and not editing %}
+        <a class="btn edit-button" href="{% url 'staff_roadmap_edit' roadmap.id %}"><i class="fal fa-pencil"></i> Edit Roadmap</a>
+    {% endif %}
+
+    {% if editing %}
+        <a href="{% url 'staff_roadmap' roadmap.id %}?s=1" onclick="checkTitle()" class="btn btn-primary save-button"><i class="fas fa-check"></i> Save Changes</a>
+    {% endif %}
+
+{% endblock %}
+
+{% block body %}
+
+    <!-- <div class="roadmap-title-test">
+      <a class="back" href="{% url 'roadmaps' %}"><i class="far fa-arrow-left"></i></a>
+      <p class="text-center title">{{roadmap.title}}</p>
+    </div> -->
+
+
+    {% include "dashboard/stage-tabs-mobile.html" %}
+    {% include "dashboard/stage-tabs-full.html" %}
+    <div class="roadmap-body">
+        <div class="content">
+            <div id="stage-detail" class="tab-pan"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrafooter %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.1/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.1/cropper.min.css">
+    <script>
+        function goToSelectedStage() {
+            var hash = window.location.hash.substr(1);
+            // if user wants to see a specific stage
+            if (hash) {
+                // if stage doesn't exist, click default - #stage1
+                if ($('#click-' + hash).length === 0) {
+                    $('#' + $('#stages-tabs-full').first().find('a').attr('id')).trigger('click');
+                }
+                else {
+                    $('#click-' + hash).trigger('click');
+                }
+            } else {
+                $('#' + $('#stages-tabs-full').first().find('a').attr('id')).trigger('click');
+            }
+        }
+
+        function loadCompetencies(stage, student, where) {
+            var editing  = '{{ editing }}' == 'True'? true : false;
+            var is_template = '{{ is_template }}' == 'True'? true : false;
+            $.ajax({
+                url: where,
+                type: 'GET',
+                data:{
+                    stage: stage,
+                    student: student,
+                    editing: editing,
+                    is_template: is_template,
+                },
+                success:function(data) {
+                    $('#stage-detail').html(data);
+                }
+            });
+        }
+
+        function reloadCompetencies() {
+            var element = $('#stages-tabs').find('div.active a');
+            var where = element.data('source');
+            var student = element.data('student');
+            var stage = element.data('stage');
+            loadCompetencies(stage, student, where);
+        }
+
+        function checkTitle(){
+            if (!$('#roadmap-title-form').val()){
+                event.preventDefault();
+                event.stopPropagation();
+                Swal.fire({
+                    title: "You need a title.",
+                    text: 'Give this Roadmap a title before saving.',
+                    type: "warning",
+                    confirmButtonText: 'Ok',
+                })
+            }
+        }
+
+        function checkDescription(){
+            if (!$('#roadmap-description-form').val()){
+                event.preventDefault();
+                event.stopPropagation();
+                Swal.fire({
+                    title: "You need a description.",
+                    text: 'Give this Roadmap a description before saving.',
+                    type: "warning",
+                    confirmButtonText: 'Ok',
+                })
+            }
+        }
+
+        function deleteRoadmap(el){
+            event.preventDefault();
+            event.stopPropagation();
+            Swal.fire({
+                title: "Delete this Roadmap?",
+                text: 'This action cannot be undone',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    $('#delete-flag').val('true');
+                    $('#roadmap_name').submit();
+                }
+            }).catch(Swal.noop);
+        }
+
+        function createNewStage(url) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    roadmap: {{ roadmap.id }},
+                },
+                success:function(data) {
+                    location.reload();
+                    window.location.hash = "#stage" + data.id
+                }
+            });
+        }
+
+        var cropper;
+        function handleFileSelect() {
+            var loadingIndicator = $('#imageLoading');
+            var file = document.getElementById('file-src').files[0];
+            if (file) {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                $('#target-img').hide();
+                loadingIndicator.removeClass('hidden');
+                loadingIndicator.show();
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var data = event.target.result; // the 'data url' of the image
+                    var image = document.getElementById('target-img');
+                    $('#target-img').attr('src', data);
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        rotatable: true,
+                        minContainerHeight: 400,
+                        viewMode: 2
+                    });
+                    cropper.setDragMode('move');
+                    loadingIndicator.hide();
+                    $('#target-img').show();
+                };
+                // this loads the file as a data url calling the function above once done
+                reader.readAsDataURL(file);
+            }
+        }
+
+        $(document).ready(function() {
+            // stage tabs
+            $('a[data-toggle=tab-toggle]').click(function() {
+                $(document.activeElement).blur();
+                var $this = $(this);
+                if (!$this.hasClass('active')) {
+                    var hash = $this.attr('href');
+                    var where = $this.data('source');
+                    var student = $this.data('student');
+                    var stage = $this.data('stage');
+                    var number = $this.data('number');
+                    loadCompetencies(stage, student, where);
+                    // window.location.hash = hash;
+                    // removing/readding the slide class here fixes an infinite loop bug
+                    // where stages keep toggling after clicking quickly on the stage tabs
+                    $('#stages-carousel').removeClass('slide').carousel(number).addClass('slide');
+                    $this.addClass('active');
+                    $this.siblings().removeClass('active');
+                }
+            });
+
+            $('#stages-carousel').on('slide.bs.carousel', function (e) {
+                window.location.hash = e.relatedTarget.getAttribute('href');
+            });
+
+            $(window).on('hashchange', function() {
+                goToSelectedStage();
+            });
+
+            goToSelectedStage();
+
+            $('.sort-tabs').disableSelection();
+            $('.sort-tabs').sortable({
+                placeholder: "placeholder tab",
+                items: ".can-sort",
+                axis: "x",
+                stop: function(){
+                    var orderMapping = {}
+                    $(this).children('.can-sort').each((i, val)=>{
+                        orderMapping[val.id.replace('click-stage','')] = i;
+                    })
+                    $.ajax({
+                        url: '/ajax-sort-stages/',
+                        type: 'POST',
+                        data: {
+                            orderMapping: JSON.stringify(orderMapping),
+                            roadmap: {{ roadmap.id }}
+                        },
+                        success: function(data) {}
+                    });
+                }
+            });
+
+            $('#stage-detail').on('click', '.clickable-row', function(e) {
+                window.location = $.trim($(this).data('href'));
+            });
+
+            $('#click-add-stage').click(function(e){
+                var url = $(this).data('source');
+                createNewStage(url);
+            })
+
+            $('#roadmap-title-form').blur(function() {
+                var where = $(this).data('source');
+                var newTitle = $(this).val();
+                $.ajax({
+                    url: where,
+                    type: 'POST',
+                    data: {
+                        id: {{ roadmap.id }},
+                        title: newTitle,
+                    },
+                    success:function(data) {}
+                });
+            });
+
+            $('#roadmap-description-form').blur(function() {
+                var where = $(this).data('source');
+                var newDescription = $(this).val();
+                $.ajax({
+                    url: where,
+                    type: 'POST',
+                    data: {
+                        id: {{ roadmap.id }},
+                        description: newDescription,
+                    },
+                    success:function(data) {}
+                });
+            });
+
+            $('#addNewRoadmapIconModal').appendTo('body');
+
+            $('#addNewRoadmapIconSave').click(function() {
+                var where = $(this).data('target-url');
+                cropper.getCroppedCanvas({width: 400, height: 400}).toBlob(function (blob) {
+                    var formData = new FormData();
+                    formData.append('croppedImage', blob);
+                    $.ajax({
+                        url: where,
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            $('#upload-pic').attr('src', data.url);
+                            notifyUser('success', 'Your Roadmap icon has been updated.');
+                            $('#addNewRoadmapIconModal').modal('hide');
+                        },
+                        error: function () {
+                            console.log('Upload Roadmap Icon error');
+                        }
+                    });
+                });
+            });
+
+            $('#cropperReset').click(function() {
+                if(cropper){
+                    cropper.reset();
+                }
+            });
+
+            $('#addNewRoadmapIconModal').on('hidden.bs.modal', function () {
+                if(cropper){
+                    $("#target-img").hide();
+                    cropper.destroy();
+                }
+            })
+
+
+
+
+
+
+
+
+        });
+    </script>
+{% endblock %}

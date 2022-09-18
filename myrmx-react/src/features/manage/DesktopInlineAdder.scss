@@ -1,0 +1,7 @@
+@import '../../styles/mixins';
+
+.manage-desktop-inline-adder {
+  button:last-child {
+    @extend .mrm-ml-0_5;
+  }
+}

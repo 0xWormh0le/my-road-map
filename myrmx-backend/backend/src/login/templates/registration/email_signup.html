@@ -1,0 +1,46 @@
+{% extends 'signup_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_header %}{% endblock page_header %}
+
+{% block form-title %}{{ form_title }}{% endblock form-title %}
+
+{% block password-requirements %}
+    <ul style="font-size: 14px; color: #9A9A9A;">
+        <li>Your password must contain at least 8 characters.</li>
+        <!-- <li>Your password can't be too similar to your other personal information.</li>
+        <li>Your password can't be a commonly used password.</li>
+        <li>Your password can't be entirely numeric.</li> -->
+    </ul>
+{% endblock password-requirements %}
+
+{% block submit-text %}Sign up{% endblock submit-text %}
+
+{% block links %}
+
+<p class="terms">By creating an account you agree to our
+  <a target="_blank"
+    href="
+    {% if private_company.terms_and_conditions %}
+      {{ private_company.terms_and_conditions }}
+    {% else %}
+      https://www.myroadmap.io/#/terms-of-service
+    {% endif %}
+    "
+    >Terms & Conditions
+  </a> and
+  <a target="_blank"
+    href="
+    {% if private_company.privacy_policy %}
+      {{ private_company.privacy_policy }}
+    {% else %}
+      https://www.myroadmap.io/#/privacy-statement
+    {% endif %}
+    "
+    >Privacy Policy
+  </a>
+</p>
+
+<a class="forgot" href="{% url 'login' %}">Already have an account? Log in</a>
+
+{% endblock links %}

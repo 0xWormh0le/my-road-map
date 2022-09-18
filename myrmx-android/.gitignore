@@ -1,0 +1,37 @@
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+pc-api-7777993416790117128-156-7a19d84fcc82.json
+*.jks
+*.aab
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/
+
+# Bundle artifact
+*.jsbundle
+
+# fastlane specific
+/fastlane/report.xml
+
+# deliver temporary files
+/fastlane/Preview.html
+
+# snapshot generated screenshots
+/fastlane/screenshots
+
+# scan temporary files
+/fastlane/test_output
+
+# Fastlane builds
+builds/*

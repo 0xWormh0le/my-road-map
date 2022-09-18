@@ -1,0 +1,39 @@
+{
+  "applinks": {
+      "apps": [],
+      "details": [
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.parent-guidance.ios",
+              "paths": [ "*" ]
+          },
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.ios",
+              "paths": [ "*" ]
+          },
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.ardent-university.ios",
+              "paths": [ "*" ]
+          },
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.ardent-university-public.ios",
+              "paths": [ "*" ]
+          },
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.addo-university.ios",
+              "paths": [ "*" ]
+          },
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.brighter-mornings.ios",
+              "paths": [ "*" ]
+          },
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.app.ascension-guru",
+              "paths": [ "*" ]
+          },
+          {
+              "appID": "26L8HM8NW5.io.myroadmap.bloom.ios",
+              "paths": [ "*" ]
+          }
+      ]
+  }
+}

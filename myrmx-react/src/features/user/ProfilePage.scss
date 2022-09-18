@@ -1,0 +1,129 @@
+@import '../../styles/mixins';
+
+.user-profile-page {
+  min-height: 100vh;
+
+  button.btn-link {
+    text-decoration: none;
+    outline: none;
+    background: transparent;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .common-header {
+    button {
+      color: $color-text-light;
+      font-weight: bold;
+      &[type=submit] {
+        color: $color-item-blue;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .more-btn-desktop {
+    position: absolute;
+    right: get-scaled-size($scale-factor-0_75);
+    top: get-scaled-size($scale-factor-0_75);
+  }
+}
+
+.photo-edit-body {
+  .scale-slider {
+    @extend .mrm-m-1;
+  }
+
+  .rc-slider-rail {
+    height: 6px;
+  }
+
+  .rc-slider-track {
+    background: $color-item-blue;
+    height: 6px;
+  }
+
+  .rc-slider-handle {
+    @extend .mrm-box-shadow;
+    width: 30px;
+    height: 30px;
+    margin-top: -13px;
+    border-radius: 10px;
+    border: solid 2px $color-item-blue;
+  }
+
+  .edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    @extend .mrm-mb-1;
+  }
+}
+
+.photo-modal-title {
+  display: flex;
+  justify-content: center;
+}
+
+.photo-change-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  a {
+    @extend .mrm-p-0_75;
+    color: $color-text-normal;
+    font-weight: 400;
+    height: 50px;
+  }
+  a.remove {
+    color: $color-text-danger;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+.#{$theme-dark} {
+  .user-profile-page {
+    hr {
+      border-color: #555;
+    }
+  }
+}
+
+// TODO: Extract into a common feature component
+.profile-card-item {
+  @extend .mrm-mb-1_5;
+
+  p {
+    margin-bottom: -4px;
+    color: $color-text-light;
+    font-size: $font-size-small;
+
+    &:first-child {
+      color: $color-text-normal;
+      font-weight: 400;
+      font-size: $font-size-normal;
+    }
+
+    &.student-link {
+      color: $color-item-blue;
+      text-decoration: underline;
+    }
+  }
+
+  svg.field {
+    color: $color-text-normal;
+    background: $color-assessment-none;
+    border-radius: 50%;
+    width: 2.375rem;
+    height: 2.375rem;
+    padding: .55rem;
+    display: block;
+    margin: auto;
+  }
+}

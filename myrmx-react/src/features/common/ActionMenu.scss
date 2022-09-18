@@ -1,0 +1,58 @@
+@import '../../styles/mixins';
+
+.common-action-menu {
+  .modal-dialog {
+    .modal-content {
+      background-color: transparent;
+      border: none;
+
+      .btn-menu-item {
+        color: $color-text-normal;
+      }
+
+      a:hover {
+        opacity: 1;
+      }
+
+      .show-rename-form-desktop {
+        + .border-thin {
+          display: none;
+        }
+      }
+
+      @include media-breakpoint-up(lg) {
+        .show-rename-form-desktop {
+          + .border-thin {
+            display: block;
+
+            + a {
+              + .border-thin {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.modal-desktop-open-center {
+  .modal-dialog {
+    width: 400px;
+  }
+  .top-body {
+    border-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .cancel {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 1px solid #ddd;
+  }
+}
+
+.modal-backdrop.show {
+  opacity: 0.25;
+}

@@ -1,0 +1,285 @@
+@import '../../styles/mixins';
+
+.roadmap-competency-page {
+  position: relative;
+
+  .embed {
+    display: flex;
+    flex-direction: column;
+    figure {
+      flex-grow: 1;
+
+      & > div {
+        flex-grow: 1;
+      }
+    }
+  }
+
+  .btn-option {
+    background-color: transparent;
+    box-shadow: none;
+    min-height: 27px;
+    padding: 0px;
+    color: $color-text-normal;
+  }
+
+  .common-header {
+    h1 {
+      font-size: get-scaled-size($scale-factor-1);
+    }
+    .third-column {
+      width: 48px;
+      svg {
+        position: relative;
+        right: 5px;
+      }
+    }
+  }
+
+
+  h2 {
+    display: inline-block;
+    @extend .mrm-mr-0_25;
+    @extend .mrm-my-1;
+  }
+  span {
+    font-weight: 400;
+    font-size: $font-size-small;
+    color: $color-text-light;
+  }
+
+  .competency-comment {
+    @extend .mrm-mb-1;
+
+    .dot {
+      position: relative;
+      top: 21px;
+    }
+
+    .initials {
+      @extend .mrm-mt-0_5;
+
+      span {
+        color: white;
+      }
+    }
+
+    .user-name {
+      @extend .mrm-ml-0_25;
+
+      font-size: $font-size-small;
+      font-weight: bold;
+      color: $color-text-normal;
+
+      & ~ span {
+        @extend .mrm-ml-0_5;
+
+        font-size: $font-size-smaller;
+      }
+    }
+
+    .card {
+      @extend .mrm-p-0_75;
+      @extend .mrm-mt-0_25;
+      font-size: $font-size-small;
+      color: $color-text-normal;
+      @include media-breakpoint-up(lg) {
+        background: $color-background-light-gray;
+      }
+    }
+    .mine {
+      @include media-breakpoint-up(lg) {
+        background: $color-item-lightpurple;
+        box-shadow: none;
+      }
+    }
+  }
+
+  .comment-list {
+    @extend .mrm-mb-2;
+    position: static;
+
+    .comment-form {
+      position: fixed;
+      bottom: 3.4rem;
+      z-index: 1040;
+      left: 0;
+      right: 0;
+      @extend .mrm-p-1;
+      @extend .theme-bg;
+      border-top: 1px solid #cccccc;
+
+      .form-control {
+        &:focus {
+          border: 1px solid #eeeeee;
+        }
+      }
+      
+      .form-group {
+        margin-bottom: 0;
+      }
+
+      &.focused-input {
+        position: absolute;
+        bottom: 0;
+      }
+    }
+
+    .competency-comment:last-of-type {
+      padding-bottom: 3rem;
+    }
+
+    .delete-comment {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .delete-comment-message-icon {
+        margin-top: get-scaled-size($scale-factor-1_5);
+      }
+
+    }
+  }
+
+  .attachment-button {
+    height: auto;
+    @extend .mrm-mt-0_5;
+  }
+
+  @media print {
+    .tab-selector {
+      display: none;
+    }
+
+    .action-item-page-attachment-list ~ button.btn {
+      display: none;
+    }
+
+    .common-header-container {
+      .static-placeholder {
+        visibility: visible;
+      }
+      .fixed-actual-header {
+        display: none;
+      }
+    }
+
+    .common-header {
+      .col-auto:first-child, .col-auto:last-child {
+        display: none;
+      }
+    }
+  }
+
+  .desktop-header-container {
+    @extend .mrm-box-shadow;
+    @extend .mrm-pt-1;
+    border-radius: 0;
+
+    .back-button-container {
+      float: left;
+      height: get-scaled-size($scale-factor_0_25);
+    }
+
+    h2 {
+      @extend .mrm-my-0_5;
+      display: block;
+
+      small {
+        @extend .mrm-ml-0_25;
+        color: $color-text-light;
+      }
+    }
+    .tab-selector {
+      background: transparent;
+      min-height: unset;
+      margin-bottom: 0;
+
+      &::after {
+        border-bottom: none;
+      }
+
+      & > .col {
+        flex-grow: 1;
+        max-width: 50%;
+        transform: translate(50%, 0);
+      }
+
+      .nav-link {
+        @extend .mrm-pb-1;
+        font-size: $font-size-normal;
+
+        &.active {
+          color: $color-item-blue;
+        }
+      }
+
+      .slider {
+        background-color: $color-item-blue;
+      }
+    }
+  }
+}
+
+.desktop-page-container {
+  .add-another-action-item {
+    @extend .mrm-p-1;
+    display: block;
+    color: $color-text-light;
+  }
+  .add-attachment, .add-action-item {
+    display: block;
+    color: $color-text-light;
+  }
+}
+.add-note {
+  @extend .mrm-py-1;
+  display: block;
+  color: $color-text-light;
+}
+
+.roadmap-competency-page-competency-more-tab {
+  overflow-x: hidden;
+
+  img {
+    max-width: calc(100vw - 2rem);
+    height: auto !important;
+  }
+
+  .print-header {
+    text-align: center;
+    font-weight: bold;
+    display: none;
+  }
+
+  @media print {
+    .print-header {
+      display: block;
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .roadmap-competency-page {
+    .action-item-container, .questions-section, .btn-action-item, .action-item-page-attachment-list ~ button, .btn-white, .assessment {
+      @include mrm-white-on-white-vivid-box-shadow;
+    }
+  }
+  .container.primary-content {
+    background:#fff;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    @include mrm-main-box-shadow;
+  }
+  .description-container {
+    font-size: 1rem;
+  }
+}
+
+.#{$theme-dark} {
+  .roadmap-competency-page {
+    .comment-form {
+      border-top: 1px solid #555;
+    }
+  }
+}

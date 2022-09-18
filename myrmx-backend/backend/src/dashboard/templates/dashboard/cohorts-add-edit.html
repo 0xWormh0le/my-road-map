@@ -1,0 +1,48 @@
+{% extends "dashboard/base.html" %}
+{% load my %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Groups" "staff_cohorts" %}
+        {% if cohort %}
+            {% breadcrumb cohort.name "" %}
+        {% else %}
+            {% breadcrumb "Add" "" %}
+        {% endif %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3>{% if cohort %}Edit{% else %}Add{% endif %} Group</h3>
+
+<div class="cohort-form-container">
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <div class="input-group form-group {% if field.errors %}has-error{% endif %}">
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+                {% if field.name == 'signup_url' %}
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="">{{ base_url }}</span>
+                </div>
+                {% endif %}
+                {{ field|addcss:"form-control" }}
+                <small class="form-text text-muted">
+                    {{ field.help_text }}
+                </small>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">{% if cohort %}Update{% else %}Add{% endif %}</button>
+        <a href="{% url 'staff_cohorts' %}" class="btn btn-2">Cancel</a>
+    </form>
+</div>
+
+
+
+{% endblock content %}

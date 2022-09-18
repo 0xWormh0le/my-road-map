@@ -1,0 +1,224 @@
+{% load my %}
+
+{% if follow_up_items %}
+    <table id="follow-up-items-list" class="to-do table table-striped {% if not user_specific_items %}mb-5{% endif %}" style="{% if user_specific_items %}background: #fff;{% endif %}">
+        <thead>
+            <tr>
+                {% if not user_specific_items %}
+                    <th class="ml-2">Group</th>
+                {% endif %}
+                {% if not user_specific_items %}
+                    <th>{{ request.user.company.user_synonym }}</th>
+                {% endif %}
+                <th>Due</th>
+                <th>Successfully Contacted</th>
+                <th>Attempted to Contact</th>
+                <th>No Attempt to Contact</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in follow_up_items %}
+                <tr id="ai-{{item.id}}" class="outer to-do">
+                    {% if not user_specific_items %}
+                        <td>{{ item.student.cohort.all|join:', ' }}</td>
+                    {% endif %}
+                    {% if not user_specific_items %}
+                        <td class="ai-description">
+                            <a href="{% url 'profile_detail' item.student.id %}">{{ item.student }}</a>
+                        </td>
+                    {% endif %}
+                    <td>
+                      {% if item.due_date %}
+                          <div class="fui-due-date {% if item.is_urgent %}text-danger{% endif %}">
+                              <span class="column-label mr-1 d-none d-sm-inline d-lg-none">Due</span>
+                              <span id="date" data-value="{{ item.due_date }}">{{ item.due_date }}</span>
+                          </div>
+                      {% endif %}
+                    </td>
+                    <td>
+                        <a href="#" class="fui-successfully-contacted" data-href="{% url 'follow_up_item' item.pk %}">
+                            <i class="fal fa-square"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="#" class="fui-attempted-to-contact" data-href="{% url 'follow_up_item' item.pk %}">
+                            <i class="fal fa-square"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="#" class="fui-no-attempt-to-contacted" data-href="{% url 'follow_up_item' item.pk %}">
+                            <i class="fal fa-square"></i>
+                        </a>
+                    </td>
+                    <td>
+                      <div class="fui-actions">
+                          <i title="Delete item" class="fal fa-trash fui-delete pointer ml-1" data-href="{% url 'follow_up_item' item.pk %}"></i>
+                          <i title="Edit item" class="fal fa-pencil fui-edit pointer ml-1" data-href="{% url 'follow_up_item' item.pk %}"></i>
+                      </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% if completed_follow_up_items %}
+    <table id="follow-up-items-list" class="completed table table-striped {% if not user_specific_items %}mb-5{% endif %}" style="{% if user_specific_items %}background: #fff;{% endif %}">
+        <thead>
+            <tr>
+                {% if not user_specific_items %}
+                    <th class="ml-2">Group</th>
+                {% endif %}
+                {% if not user_specific_items %}
+                    <th>{{ request.user.company.user_synonym }}</th>
+                {% endif %}
+                <th>Due</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in completed_follow_up_items %}
+                <tr id="ai-{{item.id}}" class="outer completed">
+                    {% if not user_specific_items %}
+                        <td>{{ item.student.cohort.all|join:', ' }}</td>
+                    {% endif %}
+                    {% if not user_specific_items %}
+                        <td class="ai-description">
+                            <a href="{% url 'profile_detail' item.student.id %}">{{ item.student }}</a>
+                        </td>
+                    {% endif %}
+                    <td>
+                      {% if item.due_date %}
+                          <div class="fui-due-date {% if item.is_urgent %}text-danger{% endif %}">
+                              <span class="column-label mr-1 d-none d-sm-inline d-lg-none">Due</span>
+                              <span id="date" data-value="{{ item.due_date }}">{{ item.due_date }}</span>
+                          </div>
+                      {% endif %}
+                    </td>
+                    <td>
+                        <a href="#" class="fui-unmark-done" data-href="{% url 'follow_up_item' item.pk %}">
+                            <i class="fa fa-check-square mr-2"></i>
+                        </a>
+                        <span class="marked-done-date">
+                          {{ item.date_marked_done }}
+                          {% if item.contacted %} (successfully contacted){% endif %}
+                          {% if item.attempted_to_contact %} (attempt to contact){% endif %}
+                          {% if item.no_attempt_to_contact %} (no attempt){% endif %}
+                        </span>
+                    </td>
+                    <td>
+                      <div class="fui-actions">
+                          <i title="Delete item" class="fal fa-trash fui-delete pointer ml-1" data-href="{% url 'follow_up_item' item.pk %}"></i>
+                          <i title="Edit item" class="fal fa-pencil fui-edit pointer ml-1" data-href="{% url 'follow_up_item' item.pk %}"></i>
+                      </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% if not completed_follow_up_items %}
+<div class="card completed mb-4">
+  <div class="card-body">
+    <p class=mb-0>No completed follow up items. Time to get to work!</p>
+  </div>
+</div>
+{% endif %}
+
+{% if not follow_up_items %}
+<div class="card to-do mb-4">
+  <div class="card-body">
+    <p class="mb-0">Nice! You've completed all your follow up items. Click on someones profile to add follow up items. </p>
+  </div>
+</div>
+{% endif %}
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+<script>
+  (function($, document) {
+
+      var pluses = /\+/g;
+      function raw(s) {
+          return s;
+      }
+      function decoded(s) {
+          return decodeURIComponent(s.replace(pluses, ' '));
+      }
+
+      $.cookie = function(key, value, options) {
+
+          // key and at least value given, set cookie...
+          if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value == null)) {
+              options = $.extend({}, $.cookie.defaults, options);
+
+              if (value == null) {
+                  options.expires = -1;
+              }
+
+              if (typeof options.expires === 'number') {
+                  var days = options.expires, t = options.expires = new Date();
+                  t.setDate(t.getDate() + days);
+              }
+
+              value = String(value);
+
+              return (document.cookie = [
+                  encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(value),
+                  options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
+                  options.path    ? '; path=' + options.path : '',
+                  options.domain  ? '; domain=' + options.domain : '',
+                  options.secure  ? '; secure' : ''
+              ].join(''));
+          }
+
+          // key and possibly options given, get cookie...
+          options = value || $.cookie.defaults || {};
+          var decode = options.raw ? raw : decoded;
+          var cookies = document.cookie.split('; ');
+          for (var i = 0, parts; (parts = cookies[i] && cookies[i].split('=')); i++) {
+              if (decode(parts.shift()) === key) {
+                  return decode(parts.join('='));
+              }
+          }
+          return null;
+      };
+
+      $.cookie.defaults = {};
+
+  })(jQuery, document);
+
+    if ($.cookie("showCompleted") == 'true') {
+      $('.completed').show();
+      $('.to-do').hide();
+      $('#hide-completed-items').show();
+      $('#show-completed-items').hide();
+    } else {
+      $('.completed').hide();
+      $('.to-do').show();
+      $('#hide-completed-items').hide();
+      $('#show-completed-items').show();
+    }
+    $('#show-completed-items').click(function() {
+      $.cookie('showCompleted', 'true');
+      $('.completed').show();
+      $('.to-do').hide();
+      $('#hide-completed-items').show();
+      $('#show-completed-items').hide();
+    });
+    $('#hide-completed-items').click(function() {
+      $.cookie('showCompleted', null);
+      $('.completed').hide();
+      $('.to-do').show();
+      $('#hide-completed-items').hide();
+      $('#show-completed-items').show();
+    });
+</script>

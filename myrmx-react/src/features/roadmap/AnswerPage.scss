@@ -1,0 +1,14 @@
+@import '../../styles/mixins';
+
+.roadmap-answer-page {
+  .btn-save {
+    color: $primary;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .btn-cancel {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}

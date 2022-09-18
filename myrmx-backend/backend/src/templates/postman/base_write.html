@@ -1,0 +1,32 @@
+{% extends "postman/base.html" %}
+{% load i18n static %}
+{% block pagetitle %}
+    {% block pm_write_title %}{% endblock %}
+{% endblock %}
+{% block extrahead %}{{ block.super }}
+    {% if autocompleter_app.is_active %}{# using the available admin jQuery is enough #}
+        {# should not be <necess></necess>ary since AS v1.3 with AJAX_SELECT_BOOTSTRAP set #}
+        {#<script type="text/javascript" src="{% static 'admin/js/jquery.min.js' %}"></script>#}
+    {% endif %}
+    {{ form.media }}{# for ajax_selects (v1.3.6 at least) #}
+{% endblock %}
+
+{% block body %}
+    {{ block.super }}
+    <div id="postman">
+        <form action="" method="post">{% csrf_token %}
+                {% block pm_write_recipient %}{% endblock %}
+                {% include "dashboard/form-table-vertical.html" %}
+            <button type="submit" class="btn btn-primary float-right">{% trans "Send" %}</button>
+        </form>
+    </div>
+    <br>
+{% endblock %}
+
+{% block js %}
+    $(document).ready(function(){
+        $("#id_recipients option[value='{{ request.user }}']").remove();
+        $("#id_recipients").prepend("<option value='' disabled>Select recipient...</option>");
+        $('#id_recipients option:eq(0)').prop('selected', true);
+    });
+{% endblock %}

@@ -1,0 +1,187 @@
+@import '../../styles/mixins';
+
+.roadmap-default-page {
+  min-height: 100vh;
+
+  .common-header {
+    h1 {
+      font-size: $font-size-normal;
+    }
+    .third-column {
+      width: 48px;
+      svg {
+        position: relative;
+        right: 5px;
+      }
+    }
+  }
+  .default-stage-thumbnail {
+    background-color: $color-assessment-none;
+    border-radius: 8px;
+    height: get-scaled-size($scale-factor-2);
+    width: get-scaled-size($scale-factor-2);
+    @extend .mrm-p-0_5;
+    margin: auto;
+
+    &.left-edge {
+      @extend .mrm-ml-0_25;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    &.right-edge {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    svg {
+      color: white;
+      height: get-scaled-size($scale-factor-1);
+      width: get-scaled-size($scale-factor-1);
+      display: block;
+    }
+  }
+
+  .competency-card {
+    min-height: 55px;
+  }
+  
+  h2 {
+    @extend .mrm-mb-0_75;
+  }
+  .roadmap-title {
+    font-size: $font-size-larger;
+  }
+
+  .hidden-student {
+    color: $color-unread-red;
+    font-size: $font-size-smallest;
+    font-weight: bold;
+    @extend .mrm-ml-0_5;
+    @extend .py-0;
+    @extend .mrm-px-0_5;
+    border-radius: 5px;
+    background-color: #ffc7c7;
+  }
+
+  &>.container {
+    @extend .mrm-pt-1_5;
+    @extend .mrm-mb-3;
+  }
+  .card {
+    @extend .mrm-mb-0_75;
+    &.recent {
+      background-color: $color-item-lightpurple;
+      box-shadow: 0px 0px 2px rgba(151, 167, 235, 0.4);
+    }
+  }
+  .card-title {
+    font-size: $font-size-normal;
+  }
+
+  .card-text {
+    color: $color-text-disabled;
+    font-size: $font-size-smallest;
+    font-weight: bold;
+
+    .svg-inline--fa {
+      @extend .mrm-mr-0_25;
+    }
+
+    .badge {
+      color: $color-text-light;
+      font-size: $font-size-smallest;
+    }
+  }
+
+  .comments {
+    svg {
+      position: relative;
+      top: 1px;
+    }
+  }
+
+  .action-items {
+    @extend .mrm-mr-0_75;
+  }
+
+  .stage {
+    @extend .mrm-mb-2_5;
+
+    .coach-notes {
+      color: $color-assessment-red;
+    }
+  }
+
+  .default-stage-thumbnail.red {
+    background-color: $color-assessment-red;
+  }
+
+  .default-stage-thumbnail.yellow {
+    background-color: $color-assessment-yellow;
+  }
+
+  .default-stage-thumbnail.green {
+    background-color: $color-assessment-green;
+  }
+
+  .dot {
+    position: absolute;
+    top: 12px;
+    left: -12px;
+  }
+
+  .desktop-page-secondary-header-wrapper {
+    .back-button-container {
+      float: left;
+      height: get-scaled-size($scale-factor_0_25);
+
+      .common-desktop-back-button {
+        box-shadow: none;
+      }
+    }
+
+    .progress {
+      height: get-scaled-size($scale-factor-0_25);
+      width: 50%;
+      transform: translate(50%, 0);
+      .progress-bar {
+        background-color: #5F9CEF;
+        border-radius: 4px;
+      }
+    }
+    .progress-text{
+      color: $color-text-light;
+      font-weight: 600;
+      font-size: $font-size-small;
+    }
+  }
+}
+
+&.#{$theme-blue-ocean} {
+  .roadmap-default-page {
+    background-color: #6379BA;
+
+    h2, h1, .svg-inline--fa {
+      color: white;
+    }
+
+    .common-header {
+      background-color: #5E73AF;
+    }
+
+    .card.recent {
+      background-color: $color-item-lightpurple;
+    }
+
+    .navbar {
+      background-color: #5E73AF;
+
+      .navbar-nav {
+        .active {
+          color: white;
+        }
+      }
+    }
+  }
+}

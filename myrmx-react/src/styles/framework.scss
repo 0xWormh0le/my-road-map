@@ -1,0 +1,192 @@
+/*  Spacing ****************************
+**
+**
+**  All spacing sre based on $scale-factor-0_25 ~ $scale-factor-48
+**
+**  Padding and margin classes are defined like
+**  .mrm-p-0_25, .mrm-p_4, .mrm-px_1_5, .mrm-py_2
+**  .mrm-m-0_25, .mrm-m_4, .mrm-mx_1_5, .mrm-my_2
+**
+**  We can get custom spacing using get-scaled-size function defined in this scss file
+**
+**
+**  Colors and theming *****************
+**
+**
+**  All colors are defined in colors.scss.
+**
+**  In theme.scss, text color classes are defined based on each color variables like
+**  .text-normal, .text-dark, .text-light, .text-lighter, .text-disabled
+**
+**  If you want to change text colors according to the theme, we can use theme text classes like
+**  .theme-text-normal, .theme-text-dark, .theme-text-light, .theme-text-lighter, .theme-text-disabled
+**  and their colors are automatically reverted in dark theme
+**
+**  .theme-bg classes can be used to revert background color according to the applied theme
+**  We need to gradually get rid of legacy theme, which starts with comment "Legacy start" in theme.scss
+**
+*/
+
+
+$base-font-size: 1rem;
+
+$scale-factor-0_25: 0.25;
+$scale-factor-0_5: 0.5;
+$scale-factor-0_75: 0.75;
+$scale-factor-1: 1;
+$scale-factor-1_5: 1.5;
+$scale-factor-2: 2;
+$scale-factor-2_5: 2.5;
+$scale-factor-3: 3;
+$scale-factor-4: 4;
+$scale-factor-6: 6;
+$scale-factor-8: 8;
+$scale-factor-12: 12;
+$scale-factor-16: 16;
+$scale-factor-24: 24;
+$scale-factor-32: 32;
+$scale-factor-40: 40;
+$scale-factor-48: 48;
+
+$scale-factors: (
+  0_25: $scale-factor-0_25,
+  0_5: $scale-factor-0_5,
+  0_75: $scale-factor-0_75,
+  1: $scale-factor-1,
+  1_5: $scale-factor-1_5,
+  2: $scale-factor-2,
+  2_5: $scale-factor-2_5,
+  3: $scale-factor-3,
+  4: $scale-factor-4,
+  6: $scale-factor-6,
+  8: $scale-factor-8,
+  12: $scale-factor-12,
+  16: $scale-factor-16,
+  24: $scale-factor-24,
+  32: $scale-factor-32,
+  40: $scale-factor-40,
+  48: $scale-factor-48,
+);
+
+@function get-scaled-size($scale-factor) {
+  @return $base-font-size * $scale-factor;
+}
+
+$properties: (
+  m: margin,
+  p: padding,
+);
+
+$sides: (
+  t: top,
+  r: right,
+  b: bottom,
+  l: left,
+);
+
+@each $prop-key, $prop-value in $properties {
+  @each $scale-key, $scale in $scale-factors {
+    .mrm-#{$prop-key}-#{$scale-key} {
+      #{$prop-value}: get-scaled-size($scale);
+    }
+    
+    .mrm-#{$prop_key}x-#{$scale-key} {
+      #{$prop-value}-left: get-scaled-size($scale);
+      #{$prop-value}-right: get-scaled-size($scale);
+    }
+
+    .mrm-#{$prop_key}y-#{$scale-key} {
+      #{$prop-value}-top: get-scaled-size($scale);
+      #{$prop-value}-bottom: get-scaled-size($scale);
+    }
+
+    @each $side-key, $side-value in $sides {
+      .mrm-#{$prop-key}#{$side-key}-#{$scale-key} {
+        #{$prop-value}-#{$side-value}: get-scaled-size($scale);
+      }
+    }
+  }
+}
+
+.normal-width-container {
+  margin-left: auto;
+  margin-right: auto;
+  @include media-breakpoint-down(xl) { 
+    max-width: 1095px;
+  }
+  @include media-breakpoint-down(lg) { 
+    max-width: 920px;
+  }
+}
+
+.mrm-box-shadow {
+  box-shadow: 0 2px 5px 0 #0002;
+}
+
+.mrm-main-box-shadow {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+@mixin mrm-main-box-shadow {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.mrm-white-on-white-box-shadow {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.09) !important;
+  border-radius: 10px;
+}
+
+@mixin mrm-white-on-white-box-shadow {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.09) !important;
+  border-radius: 10px;
+}
+
+.mrm-white-on-white-vivid-box-shadow {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.09);
+  border-radius: 10px;
+}
+
+@mixin mrm-white-on-white-vivid-box-shadow {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.09);
+  border-radius: 10px;
+}
+
+.mrm-border-bottom {
+  box-shadow: 0 1px 0 #0001;
+}
+
+$font-size-largest: get-scaled-size(1.5);
+$font-size-larger: get-scaled-size(1.25);
+$font-size-large: get-scaled-size(1.125);
+$font-size-normal: get-scaled-size(1);
+$font-size-small: get-scaled-size(0.875);
+$font-size-smaller: get-scaled-size(0.8);
+$font-size-smallest: get-scaled-size(0.7);
+
+.font-size-small {
+  font-size: $font-size-small;
+}
+
+.font-size-large {
+  font-size: $font-size-large;
+}
+
+.font-size-largest {
+  font-size: $font-size-largest;
+}
+
+.font-size-smaller {
+  font-size: $font-size-smaller;
+}
+
+.font-size-smallest {
+  font-size: $font-size-smallest;
+}
+
+.bold {
+  font-weight: 800;
+}
+
+.semibold {
+  font-weight: 600;
+}

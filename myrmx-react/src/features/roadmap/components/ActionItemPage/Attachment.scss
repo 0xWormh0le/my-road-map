@@ -1,0 +1,85 @@
+@import '../../../../styles/mixins';
+
+.roadmap-components-action-item-page-attachment {
+  button {
+    height: inherit;
+    max-width: 13em;
+  }
+  
+  .cancel {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    &:hover {
+      opacity: .5;
+    }
+  }
+  
+  .upload-progress {
+    width: 8em;
+  }
+
+  .failed {
+    color: #af0000;
+  }
+
+  .completed {
+    color: darkgreen;
+  }
+}
+
+.action-item-page-attachment-list {
+  .attachment {
+    @extend .mrm-py-0_75;
+    @extend .mrm-pr-0_75;
+    @extend .mrm-pl-0_75;
+    @extend .mrm-mb-1;
+    @extend .mrm-white-on-white-box-shadow;
+    background-color: white;
+    border-radius: 10px;
+    align-items: center;
+    display: flex;
+    height: 55px;
+
+    .attachment-type-icon {
+      color: $color-text-light;
+    }
+
+    .file-name {
+      color: $color-text-normal;
+      flex-grow: 1;
+      text-overflow: ellipsis;
+      flex-basis: 1em;
+      white-space: nowrap;
+      font-size: $font-size-small;
+      overflow: hidden;
+      text-decoration: underline;
+      @extend .mrm-mr-0_75;
+
+      &:hover {
+        opacity: .7;
+      }
+    }
+
+    .file-type {
+      @extend .mrm-mr-0_75;
+      color: $color-text-light;
+      font-size: $font-size-small;
+      display: inline-block;
+    }
+
+    .delete {
+      @extend .mrm-p-0_25;
+      cursor: pointer;
+
+      &:hover {
+        opacity: .5;
+      }
+
+      svg {
+        color: $color-text-light;
+      }
+    }
+  }
+}

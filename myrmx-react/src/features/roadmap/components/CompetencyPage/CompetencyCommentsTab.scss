@@ -1,0 +1,82 @@
+@import '../../../../styles/mixins';
+
+.roadmap-components-competency-page-competency-comments-tab {
+  .print-header {
+    text-align: center;
+    font-weight: bold;
+    display: none;
+  }
+
+  @media print {
+    .print-header {
+      display: block;
+    }
+
+    .comment-form {
+      display: none !important;
+    }
+  }
+  .comments-anchor {
+    @extend .mrm-mb-4;
+    @include media-breakpoint-up(lg) { 
+      margin-bottom: 96px;
+    }
+
+  }
+  @include media-breakpoint-up(xl) { 
+    .comment-list {
+      padding-left: 11rem;
+      padding-right: 11rem;
+    }
+  }
+  @include media-breakpoint-only(lg) { 
+    .comment-list {
+      padding-left: 7rem;
+      padding-right: 7rem;
+    }
+  }
+
+
+  @include media-breakpoint-up(lg) { 
+    .comment-list {
+      min-height: calc(100vh - 109px);
+      margin-bottom: 0;
+    }
+  }
+  .desktop-page-container {
+    .comment-form {
+      @extend .mrm-pb-1_5;
+      @extend .mrm-pb-0_5;
+      position: static;
+      left: initial;
+      right: inherit;
+      background: #ffffff;
+      border-top: none;
+      padding-left: 0;  
+      padding-top: 8px !important;    
+    }
+    .form-control {
+      border-color: $color-item-gray;
+      &:active, &:focus {
+        border-color: #2f80ed !important;
+      }
+    }
+  }
+  .bottom {
+    position: relative;
+    width: 100%;
+    @include media-breakpoint-up(xl) { 
+      max-width: 47rem;
+    }
+    @include media-breakpoint-only(lg) { 
+      max-width: 44rem;
+    }
+  }
+  .bottom .sticky {
+    position: fixed;
+    width: inherit;
+    max-width: inherit;
+    bottom: 0px;
+  }
+
+}

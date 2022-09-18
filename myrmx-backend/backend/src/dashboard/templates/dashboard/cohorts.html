@@ -1,0 +1,109 @@
+{% extends "dashboard/base.html" %}
+{% load my %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Groups" "" %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="list-page">
+
+  {% if cohorts %}
+    <div class="row mb-2">
+        <div class="col-12 col-sm-6">
+            <h3>Groups <span class="small"> in {{ request.user.company }} {% if request.user.is_cohort_admin %}({{ request.user.cohort.all|join:', ' }}){% endif %}</span></h3>
+        </div>
+        {% if can_edit %}
+            <div class="col-12 col-sm-6 header-buttons-container">
+                <a class="btn btn-primary add-cohort-button float-right" href="{% url 'staff_cohorts_add' %}"><i class="far fa-plus"></i> Add a new group</a>
+            </div>
+        {% endif %}
+    </div>
+    <table class="table table-striped table-responsive-lg cohorts-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Signup URL</th>
+                <th>
+                  {% if request.user.company.coach_synonym %}
+                      {{ request.user.company.coach_synonym }}
+                  {% else %}
+                      Coaches
+                  {% endif %}
+
+                </th>
+                <th>Users</th>
+                <th>Admins</th>
+                {% if can_edit %}
+                    <th></th>
+                    <th></th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for cohort in cohorts %}
+                <tr>
+                    <td><a href="{% url 'staff_cohort' cohort.id %}">{{ cohort.name }}</a></td>
+                    <td>{{ cohort.description }}</td>
+                    <td>{% if cohort.signup_url %}<a target="_blank" href="{{ base_url }}{{ cohort.signup_url }}">{{ base_url }}{{ cohort.signup_url }}</a>{% endif %}</td>
+                    <td>{{ cohort.get_coach_count }}</td>
+                    <td>{{ cohort.get_student_count }}</td>
+                    <td>{{ cohort.get_admin_count }}</td>
+                    {% if can_edit %}
+                        <td>
+                            <a href="{% url 'staff_cohort_edit' cohort.id %}" title="Edit group"><i class="fal fa-pencil link"></i></a>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'staff_cohort_edit' cohort.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete" value="true">
+                                <i class="fal fa-trash action-icon link" role="button" title="Delete group" onclick="deleteGroup(this)"></i>
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+
+    <div class="no-roadmaps-admin">
+      <h3 class="mb-3">No groups yet.</h3>
+      <p style="text-align:center;">Groups are useful to help keep your accounts organized.</p>
+      <i class="no-content-icon fal fa-user-friends"></i>
+      {% if can_edit %}
+        <a class="btn btn-primary add-cohort-button" href="{% url 'staff_cohorts_add' %}"><i class="far fa-plus"></i> Create the first group</a>
+      {% endif %}
+    </div>
+
+    {% endif %}
+</div>
+
+
+<script>
+    function deleteGroup(el) {
+        event.stopPropagation();
+        Swal.fire({
+            title: "Delete this Group?",
+            text: 'This action cannot be undone',
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#F74400',
+        }).then((result) => {
+            if (result.value) {
+                el.closest('form').submit()
+            }
+        });
+    }
+</script>
+
+
+{% endblock content %}

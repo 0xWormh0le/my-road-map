@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'myroadmap'
+            keyPassword 'myroadmap'
+            storeFile file('/Users/macbookpro/keystore/keystore1.jks')
+            storePassword 'revroad'
+        }
+    }
+    compileSdkVersion 28
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "io.myroadmap.myroadmap_android"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 2003
+        versionName "2.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    flavorDimensions "client"
+    productFlavors {
+
+        mainFlavor {
+            dimension "client"
+            applicationId "io.myroadmap.myroadmap_android"
+        }
+
+
+        bloomFlavor {
+            dimension "client"
+            applicationId "io.myroadmap.bloom.android"
+        }
+
+
+        addo_recoveryFlavor {
+            dimension "client"
+            applicationId "io.myroadmap.addo_university.android"
+        }
+
+        parent_guidanceFlavor {
+            dimension "client"
+            applicationId "io.myroadmap.parent_guidance.android"
+        }
+
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
+
+    // Add the Firebase SDK for Google Analytics
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+
+    // Add the SDK for Firebase Cloud Messaging
+    implementation 'com.google.firebase:firebase-messaging:20.1.0'
+
+    implementation 'com.android.volley:volley:1.1.1'
+
+    // Added these 2 libraries to fix warning:
+    // https://stackoverflow.com/questions/42374151/all-com-android-support-libraries-must-use-the-exact-same-version-specification
+    implementation 'androidx.media:media:1.0.0-beta01'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
+
+    implementation 'com.google.android.gms:play-services-measurement-base:16.0.5'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    testImplementation 'junit:junit:4.12'
+
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    implementation 'androidx.work:work-runtime:2.1.0'
+}
+
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-v4:27.1.1'
+    }
+}

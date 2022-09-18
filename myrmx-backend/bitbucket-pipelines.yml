@@ -1,0 +1,49 @@
+# This is an example Starter pipeline configuration
+# Use a skeleton to build, test and deploy using manual and parallel steps
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: atlassian/default-image:2
+
+pipelines:
+  branches: # Pipelines that run automatically on a commit to a branch can also be triggered manually
+    release/*:
+      - step:
+          script:
+            - git archive --format=zip HEAD:backend/src/ > deploy.zip
+          artifacts:
+            - deploy.zip
+      - step:
+          script:
+            - pipe: atlassian/aws-elasticbeanstalk-deploy:0.6.7
+              variables:
+                AWS_ACCESS_KEY_ID: "AKIAUSMLOYZE3MF42ON6" # Optional if already defined in the context.
+                AWS_SECRET_ACCESS_KEY: "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" # Optional if already defined in the context.
+                AWS_DEFAULT_REGION: "us-west-2" # Optional if already defined in the context.
+                APPLICATION_NAME: "myroadmap"
+                ENVIRONMENT_NAME: "myroadmap-stage"
+                ZIP_FILE: "deploy.zip"
+                S3_BUCKET: "elasticbeanstalk-us-west-2-314361955913" # Optional.
+                # VERSION_LABEL: '<string>' # Optional.
+                # DESCRIPTION: '<string>' # Optional.
+                # WAIT: '<boolean>' # Optional.
+                # WAIT_INTERVAL: '<integer>' # Optional.
+                # WARMUP_INTERVAL: '<integer>' # Optional.
+                # COMMAND: '<string>' # Optional.
+                # DEBUG: '<boolean>' # Optional.
+    develop:
+      - step:
+          script:
+            - git archive --format=zip HEAD:backend/src/ > deploy.zip
+          artifacts:
+            - deploy.zip
+      - step:
+          script:
+            - pipe: atlassian/aws-elasticbeanstalk-deploy:0.6.7
+              variables:
+                AWS_ACCESS_KEY_ID: "AKIAUSMLOYZE3MF42ON6"
+                AWS_SECRET_ACCESS_KEY: "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"
+                AWS_DEFAULT_REGION: "us-west-2"
+                APPLICATION_NAME: "myroadmap"
+                ENVIRONMENT_NAME: "myroadmap-dev"
+                ZIP_FILE: "deploy.zip"
+                S3_BUCKET: "elasticbeanstalk-us-west-2-314361955913"

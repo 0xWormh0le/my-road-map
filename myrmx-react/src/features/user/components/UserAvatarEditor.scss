@@ -1,0 +1,26 @@
+@import '../../../styles/mixins';
+
+.user-components-user-avatar-editor {
+  .upload-photo {
+    @extend .mrm-my-0_5;
+    text-align: center;
+  
+    button {
+      font-size: $font-size-small;
+      color: $color-item-blue;
+    }
+  }
+}
+
+.photo-edit-body {
+  .scale-slider {
+    @extend .mrm-m-1;
+  }
+
+  .edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    @extend .mrm-mb-1;
+  }
+}

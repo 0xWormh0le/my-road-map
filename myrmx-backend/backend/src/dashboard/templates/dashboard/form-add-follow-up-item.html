@@ -1,0 +1,37 @@
+<form method="post" id="add-follow-up-item-form" autocomplete="off">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h4 class="modal-title">Add New Follow Up Item</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+        {% include "dashboard/form-table-vertical.html" %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary fui-save" id="add-new-follow-up-item-save"
+            data-url="{% url 'ajax_follow_up_item_add' %}">Save</button>
+    </div>
+</form>
+
+<script>
+$("#add-new-follow-up-item-save").click(function(e){
+    e.preventDefault();
+    $.ajax({
+        url: $(this).data('url'),
+        type: 'POST',
+        data: $('#add-follow-up-item-form').serialize(),
+        success: function (data) {
+            loadFollowUpItems();
+            $('.modal').modal('hide');
+        },
+        error: function (data) {
+            $('.modal-content-fui').html(data.responseText);
+            $('#id_due_date').datepicker({
+                autoHide: true,
+                zIndex: 2018
+            });
+        }
+    });
+});
+</script>

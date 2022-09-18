@@ -1,0 +1,12 @@
+<form action="">
+    <div class="dropdown sort-dropdown">
+        <a class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+            Sort By: <span class="current-selection-label">{{ current_sort_name }}</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% for k,v in options.items %}
+                <a class="dropdown-item {% if current_sort_name == v %}selected{% endif %}" href="?{{ name }}={{ k }}">{{ v }}{% if current_sort_name == v %}<i class="fas fa-check"></i>{% endif %}</a>
+            {% endfor %}
+        </div>
+    </div>
+</form>

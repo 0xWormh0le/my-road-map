@@ -1,0 +1,118 @@
+{% extends "postman/base.html" %}
+{% load i18n %}{% load postman_tags %}{% load my %}
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Messages" "postman:inbox" %}
+        {% with pm_messages.0 as message %}
+            {% if message.obfuscated_sender|or_me:user == "<me>" %}
+                {% breadcrumb message.obfuscated_recipient|add:" " "" %}
+            {% else %}
+                {% breadcrumb message.obfuscated_sender|add:" " "" %}
+            {% endif %}
+        {% endwith %}
+        {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+    {% endblock %}
+{% endblock %}
+
+{% block body %}
+    {{ block.super }}
+<div class="card postman-card">
+  <div class="card-body">
+    <div id="postman">
+        {% for message in pm_messages %}
+            {% if forloop.first %}
+                <form action="" method="post">{% csrf_token %}
+                    <input type="hidden" {% if pm_messages|length > 1 and message.thread_id %}name="tpks" value="{{ message.thread_id }}"{% else %}name="pks" value="{{ message.pk }}"{% endif %} />
+                    <!-- <span id="pm_buttons">
+                    {% if message.sender == user and message.sender_deleted_at or message.recipient == user and message.recipient_deleted_at %}
+                        <a class="btn btn-sm btn-info" href="{% url "postman:trash" %}"><i class="far fa-chevron-left"></i> {% trans "Trash" %}</a>
+                    {% elif message.sender == user and message.sender_archived or message.recipient == user and message.recipient_archived %}
+                        <a class="btn btn-sm btn-info" href="{% url "postman:archives" %}"><i class="far fa-chevron-left"></i> {% trans "Archive" %}</a>
+                    {% else %}
+                        <a class="btn btn-sm btn-info" onclick="goBack(event);"><i class="far fa-chevron-left"></i> {% trans "Messages" %}</a>
+                    {% endif %}
+
+                    {% if message.sender == user and message.sender_deleted_at or message.recipient == user and message.recipient_deleted_at %}
+                    {% else %}
+                        {% if not archived %}
+                            <button class="btn btn-sm btn-fill btn-info" type="submit" onclick="this.form.action='{% url 'postman:archive' %}'"><i class="far fa-briefcase"></i> {% trans "Archive Item" %}</button>
+                        {% endif %}
+                        <button class="btn btn-sm btn-fill btn-info" type="submit" onclick="this.form.action='{% url 'postman:delete' %}'"><i class="far fa-trash"></i> {% trans "Delete Conversation" %}</button>
+                    {% endif %}
+                    </span> -->
+                </form>
+                {% with pm_messages.0 as msg %}
+                    <h4 style="color: #222;font-weight: 400;font-size: 22px;" class="title">
+                        {{ message.subject }}
+                        {% if msg.sender == user and msg.sender_deleted_at or msg.recipient == user and msg.recipient_deleted_at %}
+                            <small><span style="vertical-align: text-top" class="label label-default">Deleted</span></small>
+                        {% elif msg.sender == user and msg.sender_archived or msg.recipient == user and msg.recipient_archived %}
+                            <small><span style="vertical-align: text-top" class="label label-default">Archived</span></small>
+                        {% endif %}
+                    </h4>
+                {% endwith %}
+                <div class="col-md-12">
+            {% endif %}
+        <style>
+            .title, a.btn.btn-info, h4 {
+                color: white;
+            }
+            .pm_date {
+                color:#555;
+                margin-left: 3px;
+            }
+            #pm_reply textarea {
+              height: 200px;
+            }
+            @media only screen and (max-width: 576px) {
+              .postman-card {
+                margin-left: -15px;
+                margin-right: -15px;
+              }
+            }
+            .msg-blue{
+              background-color: #4A69E8;
+              border: 1px solid #4A69E8;
+              border-radius: 17px;
+              color: #fff;
+              width: 81%;
+              border-bottom-right-radius: 0px;
+              float: right;
+            }
+        </style>
+        <div class="col-xs-10 pm_message{% if message.obfuscated_sender|or_me:user == "<me>" %} float-right{% endif %}{% if message.recipient == user and not message.read_at %} pm_unread{% endif %}">
+            <span class="pm_date {% if message.obfuscated_sender|or_me:user == "<me>" %}non-sender-date{% endif %}"><small>{{ message.sent_at|date:"M d, Y -  h:i A "}} from {{ message.obfuscated_sender|or_me:user|remove_brackets_from_me }}</small></span>
+            <div class="card non-sender panel-default{% if message.obfuscated_sender|or_me:user == "<me>" %} msg-blue{% endif %}">
+                <div class="card-body" style="padding: 15px;">
+                    <div class="pm_body">{{ message.body|linebreaksbr }}</div>
+                </div>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+        {% if forloop.last %}
+            {% if reply_to_pk %}
+                <!-- <h4 class="mt-3">Reply</h4> -->
+                <form class="mt-3" action="{% url 'postman:reply' reply_to_pk %}" method="post">
+                    {% csrf_token %}
+                    <div id="pm_reply">{{ form.body|addcss:"form-control" }}</div>
+                    <br>
+                    <button class="btn btn-primary float-right" type="submit">{% trans 'Send' %}</button>
+                </form>
+            {% endif %}
+            </div><!--col-->
+        {% endif %}
+        {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    function goBack(e) {
+        e.preventDefault();
+        window.history.back();
+    }
+{% endblock %}

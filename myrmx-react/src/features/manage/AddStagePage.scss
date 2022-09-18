@@ -1,0 +1,14 @@
+@import '../../styles/mixins';
+
+.manage-add-stage-page {
+  .btn-save {
+    color: $primary;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .btn-cancel {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}

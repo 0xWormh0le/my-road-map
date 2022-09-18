@@ -1,0 +1,11 @@
+@import '../../styles/mixins';
+
+.manage-rename-competency {
+  padding-top: .4rem;
+  padding-bottom: .4rem;
+  .competency-name-input {
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+  }
+}

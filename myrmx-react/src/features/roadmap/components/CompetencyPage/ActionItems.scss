@@ -1,0 +1,136 @@
+@import '../../../../styles/mixins';
+
+.action-item-dialog {
+  .modal-content {
+    background: $color-background-light;
+  }
+  .cancel {
+    position: absolute;
+    cursor: pointer;
+    font-weight: 600;
+    color: $color-text-light;
+    left: 0;
+    
+    &:hover {
+      opacity: .7;
+    }
+  }
+  
+  button {
+    height: inherit;
+  }
+  
+  .btn-due-date {
+    height: 40px;
+    font-weight: normal;
+    &.is-invalid {
+      box-shadow: 0 0 0px 1px $danger;
+    }
+    
+    svg {
+      color: $primary;
+    }
+  }
+
+  .react-datepicker__navigation {
+    height: 10px;
+  }
+}
+
+.action-item-row {
+  display: block;
+  border-bottom: 2px solid $color-background-light;
+
+  &:hover {
+    opacity: 1;
+  }
+  
+  @include media-breakpoint-up(lg) { 
+    border-bottom: 2px solid #f1f1f1;
+  }
+}
+
+.action-item-row:last-child {
+  border-bottom: none;
+}
+
+.action-item {
+  text-decoration: inherit;
+  color: $color-text-normal;
+  @extend .mrm-py-0_75;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ai-description {
+    font-size: $font-size-normal;
+    font-weight: 400;
+    line-height: 22px;
+
+    .due-over {
+      color: $color-assessment-red;
+      display: block;
+      margin-top: -4px;
+    }
+    .due-completed {
+      color: #dddddd;
+    }
+    .due-default {
+      color: #aaaaaa;
+      display: block;
+      margin-top: -4px;
+    }
+  }
+  .ai-status {
+    background-color: #eee;
+    border-radius: 8px;
+    max-width: 2em;
+    display: flex;
+    height: 2em;
+    @extend .mrm-ml-0_75;
+  }
+  .blank {
+    a {
+      height: 2em;
+      width: 2em;
+    }
+  }
+  .delete, .edit {
+    cursor: pointer;
+  }
+
+  .icon-box svg:hover {
+    opacity: .7;
+  }
+
+  .green {
+    background-color: $color-assessment-green;
+  }
+  .text-right {
+    position: relative;
+    right: 8px;
+    color: $color-dark-text-lighter;
+  }
+}
+
+
+.roadmap-components-competency-page-action-items {
+  .action-item-container {
+    @extend .mrm-mb-1;
+    @extend .mrm-main-box-shadow;
+    background-color: white;
+    border-radius: 10px;
+
+    .action-item-link {
+      text-decoration: none;
+    }
+  }
+
+  @media print {
+    button.btn {
+      display: none;
+    }
+  }
+}

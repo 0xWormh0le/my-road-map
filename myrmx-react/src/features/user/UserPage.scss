@@ -1,0 +1,59 @@
+@import '../../styles/mixins';
+
+.user-user-page {
+  min-height: 50vh;
+  .container {
+    @extend .mrm-pt-1;
+  }
+
+  a {
+    display: inherit;
+    text-decoration: none;
+    font-weight: 400;
+  }
+
+  .user-name {
+    margin-left: -5px;
+  }
+  hr {
+    border-color: $color-dark-text-dark;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .user-page-header {
+    p:first-child {
+      font-weight: bold;
+      margin-bottom: -5px;
+      font-size: $font-size-normal;
+    }
+    p:last-child {
+      a {
+        @extend .mrm-mt-0_25;
+        text-decoration: none;
+        font-weight: 400;
+        font-size: $font-size-small;
+      }
+    }
+    hr {
+      width: 90%;
+    }
+  }
+  .user-page-item {
+    cursor: pointer;
+
+    svg {
+      font-size: $font-size-large;
+    }
+  }
+  .header-down-menu {
+    @extend .mrm-pt-0_25;
+  }
+}
+
+.#{$theme-dark} {
+  .user-user-page {
+    hr {
+      border-color: #555;
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{% extends "dashboard/base.html" %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Edit Roadmap" "staff_roadmaps" %}
+            {% breadcrumb roadmap.title  "" %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block content %}
+
+<a class="btn btn-2 float-right" href="{% url 'staff_roadmap_edit' roadmap.id %}">Back to Roadmap Edit</a>
+
+<h3>Current Groups assigned</h3>
+
+<table style="margin-bottom: 50px;" class="table table-striped">
+  <thead>
+      <tr>
+          <th></th>
+          <th></th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for cohort in current_cohorts %}
+      <tr>
+        <td>{{ cohort.name }}</td>
+        <td><a class="btn btn-2 float-right" href="{% url 'unassign_roadmap_to_group' cohort.id roadmap.id %}"> Unassign</a></td>
+      </tr>
+      {% empty %}
+      <div class="help-text-2">No Groups assigned (by default, if no groups are explicity assiged, they are accessible by any account in your orgainzation)</div>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Available Groups to assign</h3>
+
+<table style="margin-bottom: 50px;" class="table table-striped">
+  <thead>
+      <tr>
+          <th></th>
+          <th></th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for cohort in available_cohorts %}
+      <tr>
+        <td>{{ cohort.name }}</td>
+        <td><a class="btn btn-primary float-right" href="{% url 'assign_roadmap_to_group' cohort.id roadmap.id %}"><i class="fal fa-plus"></i> Assign</a></td>
+      </tr>
+      {% empty %}
+      <div class="help-text-2">No Groups available</div>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+
+
+<a class="btn btn-2 float-right" href="{% url 'staff_roadmap_edit' roadmap.id %}">Back to Roadmap Edit</a>
+
+
+
+{% endblock content %}
+
+
+{% block extrafooter %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        function archiveUserRoadmap(url, event) {
+            event.stopPropagation();
+            Swal.fire({
+                title: "Archive this Roadmap?",
+                text: 'Progress will be saved.',
+                showCancelButton: true,
+                confirmButtonText: 'Archive',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                  location.href = url;
+                }
+            }).catch(Swal.noop);
+        }
+    </script>
+{% endblock %}

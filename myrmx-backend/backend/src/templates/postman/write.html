@@ -1,0 +1,11 @@
+{% extends "postman/base_write.html" %}
+{% load i18n %}
+{% block pagetitle %}Write{% endblock %}
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Compose" "" %}
+        {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+    {% endblock %}
+{% endblock %}{% endcomment %}
+{% block active-write %}active d-none{% endblock %}

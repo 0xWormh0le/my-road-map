@@ -1,0 +1,36 @@
+@import '../../styles/mixins';
+
+.manage-add-stage-coach-notes-page {
+  .btn-save {
+    color: $primary;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .btn-cancel {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  @include media-breakpoint-up(lg) {
+    .form-control {
+      border-color: #cccccc;
+      &:active, &:focus {
+        border-color: #6E9FE0;
+      }
+    }
+    .btn-save {
+      float: right;
+      background: $color-item-blue;
+      color: #fff;
+    }
+    .normal-width-container {
+      @include mrm-main-box-shadow;
+      padding-bottom: 1rem;
+      padding-left: 4rem;
+      padding-right: 4rem;
+      background: white;
+      border-bottom-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+  }
+}

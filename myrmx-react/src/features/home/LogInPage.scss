@@ -1,0 +1,35 @@
+@import '../../styles/mixins';
+
+.home-log-in-page {
+  min-height: 100vh;
+
+  .common-header {
+    background-color: #ECF4FA;
+  }
+
+  p {
+    text-align: center;
+  }
+
+  .form-group {
+    .svg-inline--fa {
+      position: absolute;
+      @extend .mrm-ml-0_5;
+      @extend .mrm-mt-0_5;
+      color: $primary;
+    }
+  }
+
+  .legal-info {
+    color: $color-text-light;
+    font-size: $font-size-small;
+  }
+
+  .form-control {
+    @extend .mrm-pl-2_5;
+  }
+
+  .desktop-form-container {
+    @extend .mrm-mt-6;
+  }
+}

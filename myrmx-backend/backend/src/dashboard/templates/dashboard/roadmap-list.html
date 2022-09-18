@@ -1,0 +1,72 @@
+{% extends "dashboard/base.html" %}
+
+{% block body %}
+
+{% if roadmaps %}
+    <p class="mt-3 roadmaps-section-header">Available Roadmaps</p>
+    <div class="row">
+        {% for roadmap in roadmaps %}
+            {% if roadmap.is_published %}
+                {% if not roadmap.hidden_from_users %}
+                    <div class="col-lg-4 col-sm-6">
+                    <div class="roadmap-library">
+                        <div class="roadmap-cover-img">
+                        {% if roadmap.icon  %}
+                            <div class="roadmap-icon-img">
+                                <img src="{{ roadmap.get_roadmap_icon_url }}">
+                            </div>
+                        {% else %}
+                            <div class="roadmap-icon-placeholder">
+                                <i class="fal fa-map icon-placeholder"></i>
+                            </div>
+                        {% endif %}
+                        </div>
+                        <div class="roadmap-card">
+                            <div class="clearfix">
+                                <div class="title">{{ roadmap.title }}</div>
+                                {% if roadmap.description %}
+                                    <div class="description">{{ roadmap.description }}</div>
+                                {% else %}
+                                    <hr class="description">
+                                {% endif %}
+                                <td class="text-right">
+                                    <a class="btn-2" href="#" data-target="#roadmapQuickView-{{roadmap.id}}" data-toggle="modal">
+                                        View Roadmap
+                                    </a>
+                                    <div class="modal fade" id="roadmapQuickView-{{roadmap.id}}" role="dialog" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    {{roadmap.title}}
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% for stageQuery in stage_data %}
+                                                        {% for stage in stageQuery %}
+                                                            {% if stage.roadmap_id == roadmap.id %}
+                                                                {{stage.title}} - {{stage.description}} <br>
+                                                                {% for competencyQuery in competency_data %}
+                                                                    {% for competency in competencyQuery %}
+                                                                        {% if competency.stage == stage.id %}
+                                                                            {{competency.title}} - {{competency.description}} <br>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock body %}

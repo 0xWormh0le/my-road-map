@@ -1,0 +1,26 @@
+{% extends "dashboard/base.html" %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Companies" "staff_companies" %}
+        {% if company %}
+            {% breadcrumb company.name "" %}
+        {% else %}
+            {% breadcrumb "Add" "" %}
+        {% endif %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3>{% if company %}Edit{% else %}Add{% endif %} Company</h3>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include 'dashboard/form-table-vertical.html' %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock content %}

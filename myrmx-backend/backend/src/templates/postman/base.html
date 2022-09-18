@@ -1,0 +1,33 @@
+{% extends "dashboard/base.html" %}
+{% load i18n static %}{% load postman_tags %}
+{% block title %}Messaging{% endblock %}
+{% block pagetitle %}Messaging{% endblock %}
+
+{% block body %}
+<a class="back-btn mb-3" href="javascript:history.go(-1)"><i class="far fa-arrow-left"></i></a>
+    {% block postman_menu %}
+        {% postman_unread as unread_count %}
+        <div id="postman-menu-links">
+            <a class="btn {% block active-inbox %}btn-outline-secondary{% endblock %}" href="{% url 'postman:inbox' %}">
+                <i class="fal fa-inbox"></i> {% trans "Inbox" %}{% if unread_count %} <span class="badge">{{ unread_count }}</span>{% endif %}
+            </a>
+            <a class="btn {% block active-sent %}btn-outline-secondary{% endblock %}" href="{% url 'postman:sent' %}">
+                <i class="fal fa-paper-plane"></i> {% trans "Sent" %}
+            </a>
+            <!-- <a class="btn {% block active-archive %}btn-outline-light{% endblock %}" href="{% url 'postman:archives' %}">
+                <i class="far fa-briefcase"></i> {% trans "Archive" %}
+            </a> -->
+            <a class="btn {% block active-trash %}btn-outline-secondary{% endblock %}" href="{% url 'postman:trash' %}">
+                <i class="far fa-trash"></i> {% trans "Trash" %}
+            </a>
+            <a class="btn btn-primary {% block active-write %}{% endblock %}" href="{% url 'postman:write' %}">
+                <i class="far fa-plus"></i> {% trans "New Message" %}
+            </a>
+        </div>
+        <style>
+        #postman-menu-links {
+            margin-bottom: 15px;
+        }
+        </style>
+    {% endblock %}
+{% endblock %}

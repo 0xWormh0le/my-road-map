@@ -1,0 +1,83 @@
+{% extends "dashboard/base.html" %}
+{% load staticfiles %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.css">
+{% endblock %}
+
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block breadcrumbs_space %}
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% breadcrumb "Superuser Dashboard" "" %}
+{% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+{% endblock %}
+
+{% block body %}
+
+<div class="mb-5">
+    {% if request.user.is_superuser %}
+        <!-- <select name="companies" id="companies">
+            {% for company in companies %}
+                <option value="{{company.id}}">{{company.name}}</option>
+            {% endfor %}
+        </select> -->
+        <a id="csv_export" href="{% url 'company_export' %}" class="btn-2">Company List Export</a>
+        <a id="csv_export" href="{% url 'basic_csv_export' %}" class="btn-2">Basic CSV Export</a>
+        <div class="table-responsive content-card">
+            <table class="mb-3 table table-striped content-card" style="font-size:13px; border:0;" data-toggle="table" data-search="true">
+                <thead>
+                    <tr class="column-headers">
+                        <th class="sticky-header" data-sortable="true">Org Name</th>
+                        <th class="sticky-header" data-sortable="true">Users</th>
+                        <th class="sticky-header" data-sortable="true">Coaches</th>
+                        <th class="sticky-header" data-sortable="true">Roadmaps</th>
+                        <th class="sticky-header" data-sortable="true">Users with<br>Roadmaps</th>
+                        <th class="sticky-header" data-sortable="true">Users with<br>Coaches</th>
+                        <!-- <th class="sticky-header" data-sortable="true" data-toggle="tooltip" title="In the last 30 days" style="cursor:pointer;">Users with<br>Approved<br>Assessments</th> -->
+                        <th class="sticky-header" data-sortable="true" data-toggle="tooltip" title="Login in the last 30 days" style="cursor:pointer;">Active<br>users</th>
+                        <th class="sticky-header" data-sortable="true" data-toggle="tooltip" title="Login in the last 30 days" style="cursor:pointer;">Active<br>coaches</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in companies %}
+                    <tr>
+                        <td class="text-nowrap table-no-border">{{ company.name }}</td>
+                        <td class="text-nowrap table-no-border">{{ company.total_users }}</td>
+                        <td class="text-nowrap table-no-border">{{ company.total_coaches }}</td>
+                        <td class="text-nowrap table-no-border">{{ company.total_roadmaps }}</td>
+                        <td class="text-nowrap table-no-border" data-toggle="tooltip" title="{{ company.users_with_roadmaps }}/{{ company.total_users }}">{{ company.users_with_roadmaps_percent }}%</td>
+                        <td class="text-nowrap table-no-border" data-toggle="tooltip" title="{{ company.users_with_coaches }}/{{ company.total_users }}">{{ company.users_with_coaches_percent }}%</td>
+                        <!-- <td class="text-nowrap table-no-border" data-toggle="tooltip" title="{{ company.monthly_users_approved }}/{{ company.total_users }}">{{ company.monthly_users_approved_percent }} -->
+                        <td class="text-nowrap table-no-border" data-toggle="tooltip" title="{{ company.active_users_count }}/{{ company.total_users }}">{{ company.active_users_percent }}%</td>
+                        <td class="text-nowrap table-no-border" data-toggle="tooltip" title="{{ company.active_coaches_count }}/{{ company.total_coaches }}">{{ company.active_coaches_percent }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block jquery %}
+
+$("#companies").change(function(e) {
+    const regex = /([0-9]+)$/g;
+    var url = $("#csv_export").attr("href");
+    url = url.replace(regex, e.target.value);
+    $("#csv_export").attr("href", url);
+});
+
+{% endblock %}
+
+{% block extrafooter %}
+<script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+{% endblock %}

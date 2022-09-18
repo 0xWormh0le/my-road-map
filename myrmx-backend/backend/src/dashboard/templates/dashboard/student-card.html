@@ -1,0 +1,175 @@
+{% load my %}
+
+<div class="card student-card">
+    <div class="card-body">
+        <div class="card-student-header mb-3">
+          <a href="{% url 'profile_detail' student.id %}?d=1">
+              <div class="profile-image"  style="{% if student.photo %} background-image: url('{{ student.get_photo_url }}') {% endif %}" aria-label="photo of {{ student.get_full_name }}"><span>{% if not student.photo %}{{ student.first_name|slice:"1"|title }}{{ student.last_name|slice:"1"|title }}{% endif %}</span></div>
+          </a>
+
+            <div class="student-name">
+              {{ student.get_full_name|title }}
+              {% if not student.is_approved %}
+                  <span>(inactive)</span>
+              {% endif %}
+              <span>{{ student.cohort.all|join:', ' }}</span>
+            </div>
+
+            {% if request.user.company.coach_can_asssign_roadmaps and student.roadmaps.count > 0 %}
+                <a class="btn btn-2" href="{% url 'staff_edit_user_roadmaps' student.id %}">Edit Assigned Roadmaps</a>
+            {% endif %}
+            <td>
+                <form method="POST" action="{% url 'coach_user_edit' student.id %}?d=1">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete" value="true">
+                </form>
+            </td>
+        </div>
+
+        <div class="student-roadmap-conatiner">
+
+        {% for roadmap in student.pinned_roadmaps_list %}
+            <a class="roadmap-box {% if not forloop.last %}d-block not-last{% endif %}" href="{% url 'user_roadmap_observe' student.pk roadmap.id %}">
+                <div class="roadmap-progress card-row hover-shadow">
+                    <!-- {% if roadmap.red_assessment_count %}
+                        <div class="red-assessment-badge">{{ roadmap.red_assessment_count }}</div>
+                    {% endif %} -->
+                    <div>
+                        {% if roadmap.pinned %}
+                            <i class="fal fa-thumbtack"></i>
+                        {% endif %}
+                        {% if roadmap.unread %}
+                            <div class="notification-dot"></div>
+                        {% endif %}
+                        {{ roadmap }}
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-complete" style="width: {{ roadmap.total_progress }}%"></div>
+                    </div>
+                    <p>{{roadmap.date_assigned}}</p>
+                    {% if roadmap.date_list %}
+                        <div class="stat">
+                            Assigned On
+                            <div class="stat-value">
+                              {% for date in roadmap.date_list %}
+                                  {{ date.date_assigned }}
+                              {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if not roadmap.date_list %}
+                        <div class="stat">
+                            Started On
+                            <div class="stat-value">
+                              {{ roadmap.started }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="stat">
+                        Progress
+                        {% if roadmap.total_progress == 100 %}
+                            <div class="stat-value complete">Complete</div>
+                        {% else %}
+                            <div class="stat-value">{{ roadmap.total_progress|floatformat:"0" }}%</div>
+                        {% endif %}
+                    </div>
+                    <div class="stat">
+                        Awaiting Approval
+                        <div class="stat-value green">
+                            <i class="far fa-clock"></i> {{ roadmap.pending_items_count }}
+                        </div>
+                    </div>
+                    <div class="stat">
+                        Red Assessments
+                        <div class="stat-value red">
+                            <i class="far fa-exclamation-circle"></i> {{ roadmap.red_assessment_count }}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+
+        {% for roadmap in student.roadmaps_list %}
+            <a class="roadmap-box {% if not forloop.last %}d-block not-last{% endif %}" href="{% url 'user_roadmap_observe' student.pk roadmap.id %}">
+                <div class="roadmap-progress card-row hover-shadow">
+                    <!-- {% if roadmap.red_assessment_count %}
+                        <div class="red-assessment-badge">{{ roadmap.red_assessment_count }}</div>
+                    {% endif %} -->
+                    <div>
+                        {% if roadmap.unread %}
+                            <div class="notification-dot"></div>
+                        {% endif %}
+                        {{ roadmap }}
+                        {% if roadmap.pinned %}
+                            <i class="fal fa-thumbtack"></i>
+                        {% endif %}
+
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-complete" style="width: {{ roadmap.total_progress }}%"></div>
+                    </div>
+                    {% if roadmap.date_list %}
+                        <div class="stat">
+                            Assigned On
+                            <div class="stat-value">
+                              {% for date in roadmap.date_list %}
+                                  {{ date.date_assigned }}
+                              {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if not roadmap.date_list %}
+                        <div class="stat">
+                            Started On
+                            <div class="stat-value">
+                              {{ roadmap.started }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="stat">
+                        Progress
+                        {% if roadmap.total_progress == 100 %}
+                            <div class="stat-value complete">Complete</div>
+                        {% else %}
+                            <div class="stat-value">{{ roadmap.total_progress|floatformat:"0" }}%</div>
+                        {% endif %}
+                    </div>
+                    <div class="stat">
+                        Awaiting Approval
+                        <div class="stat-value green">
+                            <i class="far fa-clock"></i> {{ roadmap.pending_items_count }}
+                        </div>
+                    </div>
+                    <div class="stat">
+                        Red Assessments
+                        <div class="stat-value red">
+                            <i class="far fa-exclamation-circle"></i> {{ roadmap.red_assessment_count }}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            {% if user.company.coach_can_asssign_roadmaps and not user.company.users_can_assign_specific_coaches_for_specific_roadmaps %}
+              <div class="help-text mb-2">No assigned Roadmaps.</div>
+              <a href="{% url 'staff_edit_user_roadmaps' student.id %}"><div class="btn btn-primary">Assign Roadmap</div></a>
+            {% else %}
+                <div class="help-text">You don't have access to any of {{student.first_name|title}}’s Roadmaps.</div>
+            {% endif %}
+
+        {% endfor %}
+
+        </div>
+    </div>
+    <div class="card-footer">
+        Last Login
+        {% if student.is_online %}
+        <div class="activity active">
+            Online now
+        </div>
+        {% else %}
+        <div class="activity {{ student.activity.class }}">
+            {{ student.activity.time }}
+        </div>
+        {% endif %}
+    </div>
+</div>

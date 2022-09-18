@@ -1,0 +1,108 @@
+{% extends "dashboard/base.html" %}
+{% load staticfiles %}
+
+{% block nav_links %}{% endblock nav_links %}
+
+{% block body %}
+<div class="card base-signup-card mt-2 mt-sm-5 p-3 p-sm-4">
+    {% block content %}
+        {% if cohort %}
+            <!-- <div class="company-logo-container">
+                {% if cohort.company.logo and cohort.company.logo.url %}
+                    <img class="signup-company-logo mr-2" src="{{ cohort.company.logo.url }}" alt="{{ cohort.company.name }} logo">
+                {% endif %}
+                <span>{{ cohort.company.name }}</span>
+            </div> -->
+        {% endif %}
+        {% block copy %}{% endblock copy %}
+        {% if form %}
+            <div class="form-title">
+                {% block form-title %}Sign up{% endblock form-title %}
+            </div>
+            <div class="card form-container p-3 p-sm-4">
+                {% block form %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                    <form {% if check_captcha %}id="captcha-protected-form"{% endif %} role="form" method="post" autocomplete="off">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                            {% include 'registration/form_field.html' %}
+                        {% endfor %}
+                        {% if check_captcha %}
+                        <!-- <div id="recaptcha"
+                            class="g-recaptcha"
+                            data-sitekey="6Lc8WVwUAAAAADzql5EBiJI_jzfZ81zXQXhHWHFt"
+                            data-callback="onCompleted"
+                            data-size="invisible">
+                        </div> -->
+                        {% endif %}
+                        {% block password-requirements %}{% endblock password-requirements %}
+                        <button name="submitbutton" type="submit" class="btn btn-primary btn-block">
+                            {% block submit-text %}Submit{% endblock submit-text %}
+                        </button>
+                    </form>
+
+                    <!-- <div class="form-title text-center mt-3">or continue with</div>
+                    <div class="login-button d-flex">
+                        <button class="btn p-2 flex-grow-1 mr-1 facebook-button" onclick="signUp(this)" class="fb-login-element"><i class="fab fa-facebook-square"></i>FACEBOOK</button>
+                        <button class="btn p-2 flex-grow-1 ml-1 google-button" id="google-login-element"><i class="fab fa-google"></i>GOOGLE</button>
+                    </div> -->
+                {% endblock form %}
+            </div>
+        {% endif %}
+        <div class="links pt-3">
+            {% block links %}
+                links here
+            {% endblock links %}
+        </div>
+    {% endblock content %}
+</div>
+{% endblock %}
+{% block extrajs %}
+<script src="{% static 'dashboard/js/notify.js' %}"></script>
+<script src="{% static 'dashboard/js/auth.js' %}"></script>
+<script>
+    var GOOGLE_CLIENT_ID = '{{ settings.GOOGLE_CLIENT_ID }}';
+    var GOOGLE_API_KEY = '{{ settings.GOOGLE_API_KEY }}';
+    var fbAppId = '{{ settings.FB_APP_ID }}';
+    $('#captcha-protected-form').submit(function(event) {
+        if (!grecaptcha.getResponse()) {
+            event.preventDefault(); //prevent form submit
+            grecaptcha.execute();
+        }
+    });
+    onCompleted = function() {
+        $('#captcha-protected-form').submit();
+    }
+    $(function() {
+        $('.base-signup-card form button').prop('disabled', false);
+    });
+</script>
+
+{% if request.session.ios_app %}
+<!-- <script>
+    $('#google-login-element').click(function () {
+        $(this).prop('disabled', true);
+        window.webkit.messageHandlers.googleSignIn.postMessage('');
+    });
+</script> -->
+{% elif request.session.android_app %}
+<!-- <script>
+    $('#google-login-element').click(function () {
+        $(this).prop('disabled', true);
+        Android.googleSignIn('');
+    });
+</script> -->
+{% else %}
+<!-- <script async defer
+    src="https://apis.google.com/js/api.js"
+    onload="this.onload=function(){};handleGoogleClientLoad()"
+    onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script> -->
+{% endif %}
+
+{% endblock extrajs %}

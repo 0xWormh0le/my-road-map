@@ -1,0 +1,148 @@
+{% load my %}
+{% load static %}
+
+<div class="row card-row clickable-row" data-href="
+        {% if observing %}
+            {% url 'user_competency_observe' student.id competency.id %}
+        {% elif editing %}
+            {% url 'competency_edit' competency.id %}?i=1
+        {% elif is_template %}
+            {% url 'staff_competency' competency.id %}
+        {% else %}
+            {% url 'competency' competency.id %}
+        {% endif %}
+        ">
+    <div class="col-1 status">
+        <div class="status-bg status-bg-color-{{ competency.status }}">
+            {% if request.user.company.coaches_approve_green_assessments %}
+                {% if competency.status == 3 and competency.assessment.approved %}<i class="fas fa-check"></i>{% endif %}
+                {% if competency.status == 3 and competency.assessment.rejected %}<i class="fas fa-exclamation-triangle"></i>{% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-11 col-lg-4 comp-title-column py-2">
+        <div class="comp-title-text pb-1 pb-md-0">
+            {% if competency.unread_activity %}
+                <div class="notification-dot mr-2"></div>
+            {% endif %}
+            {% if competency.user_defined %}
+                {{request.user.company.coach_synonym|title}} defined -
+            {% endif %}
+            {% if competency.hidden_for_all_users  %}
+                <span class="text-danger">Hidden for all {{ request.user.company.user_synonym }}s</span> <span class="ml-1 mr-1"> - </span>
+            {% endif %}
+            {{ competency.title }}
+
+        </div>
+        <div style="flex-wrap: wrap" class="mobile-details-container w-100 d-flex d-lg-none">
+            {% if competency.has_video or competency.content or competency.has_questions or competency.comment_count or competency.action_items_total > 0 or competency.assessment and competency.status == 3 %}
+                <div class="info mt-1">
+                    {% if competency.assessment and competency.status == 3 %}
+                        {% if request.user.company.coaches_approve_green_assessments %}
+                            {% if competency.assessment.approved %}
+                                <div class="green-assessment-status mr-3"><i class="fal fa-check mr-1"></i>Approved</div>
+                            {% elif competency.assessment.rejected %}
+                                <div class="green-assessment-status mr-3"><i class="fal fa-exclamation-triangle mr-1"></i>Rejected</div>
+                            {% else %}
+                                <div class="green-assessment-status mr-3"><i class="fal fa-clock mr-1"></i>Pending Approval</div>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% if competency.has_video %}
+                        <i class="fal fa-video mr-3" title="Includes video content"></i>
+                    {% endif %}
+                    {% if competency.content %}
+                        <i class="fal fa-book-open mr-3" title="Includes content"></i>
+                    {% endif %}
+                    {% if competency.has_questions %}
+                        <span class="mr-3">
+                          <i class="fal fa-question" title="Includes questions"></i>
+                          <span style="font-size: 14px; letter-spacing: -1px;">{{ competency.questions_answered_count }} / {{ competency.question_count_total }}</span>
+                        </span>
+                    {% endif %}
+                    {% if competency.comment_count %}
+                    <span class="mr-3">
+                        <i class="fal fa-comments" title="Comment activity"></i>
+                        <span style="font-size: 14px; letter-spacing: -1px;">{{ competency.comment_count }}</span>
+                    </span>
+                    {% endif %}
+                    {% if competency.action_items_total > 0 %}
+                        <i class="fal fa-check-circle mr-1" title="Completed action items"></i>
+                        <span style="font-size: 14px; letter-spacing: -1px;">{{ competency.action_items_done }} / {{ competency.action_items_total }}</span>
+                    {% endif %}
+                </div>
+                {% if not competency.assessment %}
+                    <span class="mr-3 ml-auto float-right">
+                        <i style="color:#9E9E9E;" class="fal fa-arrow-right" title="Continue"></i>
+                    </span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-none d-lg-flex col-md-2 approval-status">
+        {% if competency.assessment and competency.status == 3 %}
+            {% if request.user.company.coaches_approve_green_assessments %}
+                {% if competency.assessment.approved %}
+                    <div class="green-assessment-status-lg mr-3"><i class="fal fa-check mr-1"></i>Approved</div>
+                {% elif competency.assessment.rejected %}
+                    <div class="green-assessment-status-lg mr-3"><i class="fal fa-exclamation-triangle mr-1"></i>Rejected</div>
+                {% else %}
+                    <div class="green-assessment-status-lg mr-3"><i class="fal fa-clock mr-1"></i>Pending</div>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="d-none d-lg-flex col-2 reviewer">
+        {% if request.user.company.coaches_approve_green_assessments %}
+            {% if competency.assessment.reviewer %}
+                {% if competency.assessment.reviewer.photo %}
+                    <img class="profile-image" src="{{ competency.assessment.reviewer.get_photo_url }}">
+                    <span class="name">{{ competency.assessment.reviewer.get_full_name }}</span>
+                {% endif %}
+                {% if not competency.assessment.reviewer.photo %}
+                    <div class="profile-photo-card">
+                        <span class=profile-photo-card-initials>{{ competency.assessment.reviewer.first_name|slice:"1"|title }}{{ competency.assessment.reviewer.last_name|slice:"1"|title }}</span>
+                    </div>
+                    <span class="name">{{ competency.assessment.reviewer.get_full_name }}</span>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div style="flex-wrap: wrap" class="d-none d-lg-flex col-3 info py-2">
+        {% if competency.has_video %}
+            <i class="fal fa-video mr-3 mb-2" title="Includes video content"></i>
+        {% endif %}
+        {% if competency.content %}
+            <i class="fal fa-book-open mr-3 mb-2" title="Includes supplemental info"></i>
+        {% endif %}
+        {% if competency.has_attachments and competency.total_attachment_count > 0 %}
+            <span style="display: inline-flex;" class="mr-3 mb-2">
+                <i class="fal fa-paperclip" title="Includes attachments"></i>
+                <span class="comment-count">{{ competency.total_attachment_count }}</span>
+            </span>
+        {% endif %}
+        {% if competency.has_questions %}
+            <span style="display: inline-flex;" class="mr-3 mb-2">
+              <i class="fal fa-question" title="Includes questions"></i>
+              <span class="question-count">{{ competency.questions_answered_count }} / {{ competency.question_count_total }}</span>
+            </span>
+        {% endif %}
+        {% if competency.comment_count %}
+            <span style="display: inline-flex;" class="mr-3 mb-2">
+                <i class="fal fa-comments" title="Comment activity"></i>
+                <span class="comment-count">{{ competency.comment_count }}</span>
+            </span>
+        {% endif %}
+        {% if competency.action_items_total > 0 %}
+            <span style="display: inline-flex;" class="mr-3 mb-2">
+                <i class="fal fa-check-circle mr-1" title="Completed action items"></i>
+                <span class="ai-count">{{ competency.action_items_done }} / {{ competency.action_items_total }}</span>
+            </span>
+        {% endif %}
+        {% if not competency.assessment %}
+            <span style="display: inline-flex;" class="mr-3 mb-2 ml-auto">
+                <i class="fal fa-arrow-right" title="Continue"></i>
+            </span>
+        {% endif %}
+    </div>
+</div>

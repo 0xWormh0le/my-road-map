@@ -1,0 +1,12 @@
+{% extends 'registration/email_base_html.html' %}
+
+{% block extended_css %}
+{% endblock extended_css %}
+
+{% block body %}
+
+    <h1 style="color: #1d2327; margin: 0px; font-size: 30px; font-weight: 100; padding: 20px; padding-left: 0px;">Welcome to {{ user.company }}.{% if not user.company.name == "MyRoadmap" %} <span style="font-size: 24px;">(powered by MyRoadmap)</span>{% endif %}</h1>
+    <p style="color: #1D2327; margin: 0; padding-bottom: 30px;">Thank you for creating an account.</p>
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; padding-left: 30px; padding-right: 30px; text-align: center; text-decoration: none; font-weight: 500;" href="{{ primary_link }}">Verify account and get started</a>
+
+{% endblock %}

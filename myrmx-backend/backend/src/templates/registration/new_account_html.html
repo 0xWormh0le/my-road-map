@@ -1,0 +1,19 @@
+{% extends 'registration/email_base_html.html' %}
+
+{% block extended_css %}
+
+{% endblock extended_css %}
+
+{% block body %}
+
+<table style="max-width: 500px;">
+
+    <h1 style="color: #1d2327; margin: 0px; font-size: 30px; font-weight: 100; padding: 20px; padding-left: 0px;">{{ request.user.get_full_name }} has invited you to join {{ request.user.company.name }}. {% if not request.user.company.name == "MyRoadmap" %} (powered by MyRoadmap){% endif %}</h1>
+    <p>{{ request.user.company.email_welcome_message|urlize|linebreaks }}</p>
+    <br>
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; padding-left: 30px; padding-right: 30px; text-align: center; text-decoration: none; font-weight: 500;" href="{{ primary_link }}">Get Started</a>
+    <p style="margin-top: 30px;">Trouble with the link? Copy this url into your browser {{ primary_link }}</p>
+
+</table>
+
+{% endblock %}

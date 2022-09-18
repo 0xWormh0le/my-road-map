@@ -1,0 +1,125 @@
+{% extends "dashboard/base.html" %}
+
+{% load staticfiles %}
+{% load my %}
+
+
+
+
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-sm-12 objective-modal-content">
+      <div class="card competency-detail">
+          <div class="card-body">
+            <div class="main-header-container">
+              <h2 class="title" id="competency-id" data-id="{{ competency.id }}">
+                  <i class="fal fa-microphone left"></i> Audio Record
+                  <div class="d-inline-block stage-wrapper">
+                      <span class="stage-in">for</span> <span class="stage-name">{% if item %} {{ item.title }} {% else %} {{ competency.title }} {% endif %}</span>
+                  </div>
+              </h2>
+              <div class="action-icons d-flex exit">
+                  <a href="
+                  {% if observing %}
+                      {% url 'user_competency_observe' student.id competency.id %}
+                  {% elif is_template %}
+                      {% url 'staff_competency' competency.id %}
+                  {% else %}
+                      {% url 'competency' competency.id %}
+                  {% endif %}
+                  ">
+                      <i class="fal fa-times" data-fa-transform="grow-6"></i>
+                  </a>
+              </div>
+            </div>
+            <div class="card-padding">
+              <!-- <div class="header d-flex align-items-center mb-4 mt-2">
+                  <i class="fal fa-video left"></i>
+                  <h2 class="title smaller-title mr-auto">Screen Record</h2>
+              </div> -->
+
+              <main role="main" class="container m-2">
+                  <div class="row">
+                      <div class="col">
+                          <button id="btn-record" type="button" class="btn btn-primary"><i class="fal fa-play"></i> Record</button>
+                          <span class="ml-3"></span>
+                          <button id="btn-stop" type="button" class="btn btn-primary" disabled><i class="fal fa-stop"></i> Stop</button>
+                          <div style="margin: .25rem">
+                              <span id="debug-txt"></span>
+                          </div>
+
+                      </div>
+                  </div>
+
+                  <div class="row">
+                  </div>
+
+                  <div class="row">
+                      <div class="col">
+                          <div id="recording-meter"></div>
+                      </div>
+                  </div>
+
+                  <div class="row">
+                      <div class="col">
+                          <h3>Recordings</h3>
+                          <div id="recordings-cont">
+                          </div>
+                      </div>
+                  </div>
+
+              </main>
+
+
+            </div>
+
+          </div>
+      </div>
+    </div>
+</div>
+
+<a class="objective-modal" href="
+                  {% if observing %}
+                      {% url 'user_competency_observe' student.id competency.id %}
+                  {% elif is_template %}
+                      {% url 'staff_competency' competency.id %}
+                  {% else %}
+                      {% url 'competency' competency.id %}
+                  {% endif %}"
+></a>
+
+
+{% endblock %}
+
+{% block extrafooter %}
+
+<script src="{% static 'dashboard/js/WebAudioPeakMeter.js' %}"></script>
+<script src="{% static 'dashboard/js/encoder-wav-worker.js' %}"></script>
+<script src="{% static 'dashboard/js/RecorderService.js' %}"></script>
+<script src="{% static 'dashboard/js/audio-recorder.js' %}"></script>
+<script>
+    window.onload = function (e) {
+      let app = new App();
+      app.init()
+    }
+</script>
+
+    <style>
+        button.btn {
+            margin: 0.25rem;
+            width: 15rem;
+        }
+        audio {
+            width: 100%;
+        }
+        #recording-meter {
+            height: 10rem;
+            margin: 1rem 0;
+            width: 4rem;
+        }
+    </style>
+
+{% endblock %}

@@ -1,0 +1,133 @@
+{% load my %}
+{% load static %}
+
+<div class="row card-row clickable-row" data-href="
+        {% if observing %}
+            {% url 'user_competency_observe' student.id competency.id %}
+        {% elif editing %}
+            {% url 'competency_edit' competency.id %}?i=1
+        {% elif is_template %}
+            {% url 'staff_competency' competency.id %}
+        {% else %}
+            {% url 'competency' competency.id %}
+        {% endif %}
+        ">
+    <div class="col-1 status">
+        <div class="status-bg status-bg-color-{{ competency.status }}">
+            {% if competency.status == 3 and competency.assessment.approved %}<i class="fas fa-check"></i>{% endif %}
+        </div>
+    </div>
+    <div class="col-11 col-md-4 comp-title-column py-3 py-md-0">
+        <div class="comp-title-text pb-1 pb-md-0">
+            {% if competency.unread_activity %}
+                <div class="notification-dot mr-2"></div>
+            {% endif %}
+            <span class="text-danger">Hidden for {{ request.user.company.user_synonym }}</span> <span class="ml-1 mr-1"> - </span> <span> {{ competency.title }} </span>
+        </div>
+        <div class="mobile-details-container w-100 d-flex d-md-none">
+            <div class="approval-status-box">
+                {% if competency.assessment and competency.status == 3 %}
+                    {% if competency.assessment.approved %}
+                        <div class="btn btn-light disabled">
+                            <i class="fas fa-check mr-1"></i>APPROVED
+                        </div>
+                    {% elif competency.assessment.rejected %}
+                        <div class="btn btn-secondary disabled">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>NEEDS WORK
+                        </div>
+                    {% else %}
+                        {% if is_template %}
+                            <div class="btn btn-outline-secondary disabled">
+                                PENDING
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="activity-icons">
+                <div class="info mr-2">
+                    {% if competency.has_video %}
+                        <i class="fal fa-video mr-2" title="Includes video content"></i>
+                    {% elif competency.content %}
+                        <i class="fal fa-book-open mr-2" title="Includes content"></i>
+                    {% endif %}
+                    {% if competency.comment_count %}
+                        <i class="fal fa-comments mr-2" title="Comment activity"></i>
+                    {% endif %}
+                </div>
+                <div class="action-items">
+                    {% if competency.action_items_total > 0 %}
+                        <i class="fal fa-clipboard-check mr-2" title="Completed action items"></i>{{ competency.action_items_done }} / {{ competency.action_items_total }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-none d-md-flex col-md-2 approval-status">
+        {% if competency.assessment and competency.status == 3 %}
+            {% if competency.assessment.approved %}
+                <div class="btn btn-light disabled btn-block">
+                    <i class="fas fa-check mr-1"></i>APPROVED
+                </div>
+            {% elif competency.assessment.rejected %}
+                <div class="btn btn-secondary disabled btn-block">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>NEEDS WORK
+                </div>
+            {% else %}
+                {% if is_template %}
+                    <div class="btn btn-outline-secondary disabled btn-block">
+                        PENDING
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    {% if not is_template %}
+    <div class="d-none d-md-flex col-2 reviewer">
+        {% if competency.assessment.reviewer %}
+            <img class="profile-image" src="{{ competency.assessment.reviewer.get_photo_url }}" alt="">
+            <span class="name">{{ competency.assessment.reviewer.get_full_name }}</span>
+        {% endif %}
+    </div>
+    <div class="d-none d-md-flex col-1 info">
+        {% if competency.has_video %}
+            <i class="fal fa-video mr-2" title="Includes video content"></i>
+        {% elif competency.content %}
+            <i class="fal fa-book-open mr-2" title="Includes content"></i>
+        {% endif %}
+        {% if competency.comment_count %}
+            <i class="fal fa-comments mr-2" title="Comment activity"></i>
+        {% endif %}
+    </div>
+    <div class="d-none d-md-flex col-2 action-items">
+        {% if competency.action_items_total > 0 %}
+            <i class="fal fa-clipboard-check mr-2" title="Completed action items"></i>{{ competency.action_items_done }} / {{ competency.action_items_total }}
+        {% elif not student and competency.global_action_items_total > 0 %}
+            {{ competency.global_action_items_total}}
+        {% endif %}
+    </div>
+    {% else %}
+        <div class="d-none d-md-flex col-2 info">
+        {% if competency.has_video %}
+            <i class="fal fa-video mr-2" title="Includes video content"></i>
+        {% elif competency.content %}
+            <i class="fal fa-book-open mr-2" title="Includes content"></i>
+        {% endif %}
+        {% if competency.comment_count %}
+            <i class="fal fa-comments mr-2" title="Comment activity"></i>
+        {% endif %}
+    </div>
+    <div class="d-none d-md-flex col-2 align-center action-items">
+        {% if competency.action_items_total > 0 %}
+            <i class="fal fa-clipboard-check mr-2" title="Completed action items"></i>{{ competency.action_items_done }} / {{ competency.action_items_total }}
+        {% elif not student and competency.global_action_items_total > 0 %}
+            {{ competency.global_action_items_total}}
+        {% endif %}
+    </div>
+    {% endif %}
+    {% if editing %}
+        <div class="col-1">
+            <i class="fas fa-trash"></i>
+        </div>
+    {% endif %}
+</div>

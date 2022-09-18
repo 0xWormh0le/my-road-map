@@ -1,0 +1,164 @@
+{% load django_bootstrap_breadcrumbs %}
+{% load staticfiles %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <meta property="fb:app_id" content="{{ settings.FB_APP_ID }}">
+
+    <title>{% if title %}{% block title %}{% endblock %} | {% endif %}MyRoadmap</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/base.css' %}">
+    <!--link rel="shortcut icon" href="{% static 'dashboard/img/favicon.ico' %}"-->
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="MyRoadmap"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-310x310.png" />
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet" type="text/css">
+
+    <script defer src="{% static 'dashboard/js/fontawesome-all.min.js' %}"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120229102-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-120229102-2');
+    </script>
+
+
+    {% block extrahead %}{% endblock %}
+
+    <style>
+        {% block style %}{% endblock %}
+    </style>
+</head>
+
+<body style="background: #fff;">
+    {% if show_staging_banner %}
+        <div class="stage-env-banner">WARNING! You're using staging or development environment.</div>
+    {% endif %}
+    <div class="container py-3">
+        <div class="welcome-wizard">
+            <div id="page-1" class="wizard" style="display:block">
+                <span>1</span>
+                <h1>Select Roadmap</h1>
+                <p>Find a Roadmap that addresses your specific needs. A Roadmap is a predefined path to guide you.</p>
+                <img src="{% static 'dashboard/img/pg-wizard/1.svg' %}" alt="img">
+                <a class="btn btn-primary" onclick="nextPage(2, this)">Continue</a>
+            </div>
+            <div id="page-2" class="wizard">
+                <span>2</span>
+                <h1>Self-Evaluate</h1>
+                <p>Evaluate your understanding and skills as a parent (simple red, yellow and green assessment) to help your child with easy to understand clinically based competencies.</p>
+                <img src="{% static 'dashboard/img/pg-wizard/2.svg' %}" alt="img">
+                <a class="btn btn-primary" onclick="nextPage(3, this)">Continue</a>
+            </div>
+            <div id="page-3" class="wizard">
+                <span>3</span>
+                <h1>Educate</h1>
+                <p>Educate yourself about the issue with articles, videos, activities, action items, and other online content.</p>
+                <img src="{% static 'dashboard/img/pg-wizard/3.svg' %}" alt="img">
+                <a class="btn btn-primary" onclick="nextPage(4, this)">Continue</a>
+            </div>
+            <div id="page-4" class="wizard">
+                <span>4</span>
+                <h1>Communicate</h1>
+                <p>Connect with your partner, spouse, trusted friend or even obtain access to professional assistance as you work through the issue with your child.</p>
+                <img src="{% static 'dashboard/img/pg-wizard/4.svg' %}" alt="img">
+                <a class="btn btn-primary" onclick="nextPage(5, this)">Continue</a>
+            </div>
+            <div id="page-5" class="wizard">
+                <span>5</span>
+                <h1>Repeat</h1>
+                <p>Repeat steps 2-4 (Self-Evaluate, Educate, Communicate) continuously as you connect with your child to address the issue in a productive and meaningful way.</p>
+                <img style="width:316px;" src="{% static 'dashboard/img/pg-wizard/5.svg' %}" alt="img">
+                <a class="btn btn-primary" onclick="nextPage(-1, this)">Continue</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" href="{% static 'dashboard/css/datepicker.min.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/animatecss/3.5.2/animate.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+
+{% block extrajs %}
+<script>
+    var urls = {
+        get_notifications_ajax: '{% url "notifications:get_notifications_ajax" %}',
+        ajax_register_device: '{% url "ajax_register_device" %}',
+    };
+</script>
+<script src="{% static 'dashboard/js/datepicker.min.js' %}"></script>
+<script src="{% static 'dashboard/js/general.js' %}"></script>
+<script src="{% static 'dashboard/js/navigatorPush.service.js' %}"></script>
+<script src="{% static 'dashboard/js/notify.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+<script src="https://code.jquery.com/color/jquery.color-2.1.2.min.js"></script>
+<script src="{% static 'ckeditor/ckeditor/adapters/jquery.js' %}"></script>
+{% endblock extrajs %}
+
+{% block extrafooter %}{% endblock %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip({trigger: "hover"})
+    });
+
+    function nextPage(page, element) {
+        if (page != -1) {
+            $(element).parent().css('display', 'none');
+            $(element).parent().next().css('display', 'block');
+        } else {
+            location.href = "/welcome/?no_wizard=1"
+        }
+    }
+
+    $(document).ready(function() {
+        {% include 'dashboard/messages.html' %}
+    });
+
+</script>
+
+</html>

@@ -1,0 +1,95 @@
+@import '../../../styles/mixins';
+
+// I copied these styles to messages/DefaultPage.scss. Dont want to erase until I know they are used elsewhere.
+
+// .messages-components-conversations-list {
+//   .no-messages {
+//     @extend .mrm-mt-3;
+
+//     p {
+//       @extend .mrm-mt-0_25;
+//     }
+//     .svg-inline--fa  {
+//       color: $primary;
+//     }
+//   }
+
+//   .chat-list-row {
+//     @extend .mrm-py-0_75;
+//     position: relative;
+
+//     .chat-list-item {
+//       flex-direction: column;
+//       max-width: 90%;
+//     }
+
+//     .dot {
+//       position: absolute;
+//       top: 27px;
+//       left: -11px;
+//     }
+
+//     .conversation-avatar {
+//       position: relative;
+
+//       .message-roadmap-icon {
+//         width: 34px;
+//         height: 34px;
+//         border: #F5F8F9 solid 2px;
+//         border-radius: 50%;
+//         background-color: $color-item-gray;
+//         text-align: center;
+//         position: absolute;
+//         left: 51%;
+//         top: 44%;
+//         svg {
+//           margin-top: 5px;
+//         }
+//       }
+//     }
+
+//     .chat-info {
+//       display: flex;
+//       align-items: center;
+//       justify-content: space-between;
+//       h5 {
+//         font-weight: bold;
+//         font-size: $font-size-normal;
+//         line-height: 1.25rem;
+//         margin-bottom: 0;
+//       }
+
+//       span {
+//         font-size: $font-size-small;
+//         line-height: $font-size-small;
+//       }
+//     }
+
+//     .last-msg {
+//       font-size: $font-size-small;
+//       line-height: $font-size-normal;
+//       white-space: pre-wrap;
+//       word-wrap: break-word;
+//       margin-bottom: 0;
+//     }
+
+//     strong {
+//       color: $color-text-normal;
+//     }
+
+//     &:nth-of-type(1) {
+//       @extend .mrm-mt-0_75;
+//     }
+//   }
+// }
+
+.#{$theme-dark} {
+  .messages-components-conversations-list .chat-list-row {
+    strong {
+      color: white;
+    }
+    .conversation-avatar .message-roadmap-icon {
+      border: 2px solid #2C3942;
+    }
+  }
+}

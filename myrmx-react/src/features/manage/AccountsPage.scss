@@ -1,0 +1,22 @@
+@import '../../styles/mixins';
+
+.manage-accounts-page {
+  .btn {
+    font-size: $font-size-smaller;
+  }
+  .search {
+    background: $color-input-dark-blue;
+    -webkit-appearance: none;
+  }
+  .btn-edit {
+    color: $color-text-light;
+    background-color: $color-background-light-gray;
+    min-height: auto;
+    font-weight: bold;
+    font-size: $font-size-smaller;
+  }
+  .common-search-bar {
+    flex-grow: 1;
+    margin-right: 1rem;
+  }
+}

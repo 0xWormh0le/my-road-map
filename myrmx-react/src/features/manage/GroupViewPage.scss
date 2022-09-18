@@ -1,0 +1,48 @@
+@import '../../styles/mixins';
+
+.manage-group-view-page {
+  .common-header .col-1 {    
+    padding-left: 0;
+  }
+  .group-name, strong {
+    font-size: $font-size-large;
+  }
+  .avatar {
+    width: 5em;
+    height: 5em;
+    color: $primary;
+    border-radius: 50%;
+    display: flex;
+    background-color: white;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    border: 2px solid $color-assessment-none;
+  }
+
+  .table {
+    font-size: $font-size-small;
+  }
+
+  .btn-edit-group {
+    position: absolute;
+    right: .5em;
+    top: .5em;
+  }
+  .card-in-card {
+    @extend .mrm-white-on-white-box-shadow;
+
+    background-color: #fff;
+    font-weight: bold;
+    min-height: 55px;
+    line-height: 20px;
+    align-items: center;
+    .name {
+      color: $color-text-normal;
+    }
+  }
+  .common-desktop-back-button {
+    @extend .mrm-main-box-shadow;
+    background: #ffffff;
+  }
+}

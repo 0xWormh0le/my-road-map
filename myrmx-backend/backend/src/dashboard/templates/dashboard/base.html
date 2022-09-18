@@ -1,0 +1,252 @@
+{% load django_bootstrap_breadcrumbs %}
+{% load staticfiles %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <meta property="fb:app_id" content="{{ settings.FB_APP_ID }}">
+
+    <title>
+      {% if title %}
+          {% block title %}{% endblock %} |
+      {% endif %}
+      {% if request.META.HTTP_HOST == "app.parentguidance.org" %}
+          ParentGuidance.org
+      {% else %}
+          MyRoadmap
+      {% endif %}
+    </title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/base.css' %}">
+    {% if not request_user_company_has_dark_ui %}
+        <link rel="stylesheet" href="{% static 'dashboard/css/light-ui.css' %}">
+    {% endif %}
+    <!--link rel="shortcut icon" href="{% static 'dashboard/img/favicon.ico' %}"-->
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/apple-touch-icon-152x152.png" />
+
+    {% if request.META.HTTP_HOST == "app.parentguidance.org" %}
+        <link rel="shortcut icon" href="https://user-assets-unbounce-com.s3.amazonaws.com/ee236b85-e89e-4d45-8d96-707fcb83ebac/9cdbc275-285a-4e18-9c82-f86b4f03eaaa/favicon-32x32.small.png" type="image/x-icon" />
+    {% else %}
+        <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-196x196.png" sizes="196x196" />
+        <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/favicon-128.png" sizes="128x128" />
+    {% endif %}
+
+    <meta name="application-name" content="MyRoadmap"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="https://s3-us-west-2.amazonaws.com/myroadmap.io/images/interface/mstile-310x310.png" />
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet" type="text/css">
+
+    <script defer src="{% static 'dashboard/js/fontawesome-all.min.js' %}"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120229102-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-120229102-2');
+    </script>
+
+    {% block extrahead %}{% endblock %}
+
+    <style>
+        {% block style %}{% endblock %}
+    </style>
+</head>
+
+<body>
+    {% if show_staging_banner %}
+        <div class="stage-env-banner">WARNING! You're using staging or development environment.</div>
+    {% endif %}
+    <div class="main-nav-wrapper">
+        <div class="main-nav-container container navbar navbar-dark navbar-expand-lg py-0">
+            {% block header_nav_button %}{% endblock %}
+            {% block header_nav_logo %}
+                {% if request.user.company.private_labeled and request.user.company.logo and not invite %}
+                    <a class="private-label-container" href="{% url 'index' %}">
+                        <img class="private-logo" src="{{ request.user.company.logo.url }}" alt="company logo">
+                    </a>
+                {% elif private_company and private_company.logo.url %}
+
+                        {% if private_company.id == 87 %}
+                        <a class="private-label-container" href="https://www.parentguidance.org">
+                          <img class="private-logo" src="{{ private_company.logo.url }}" alt="company logo">
+                        </a>
+                        {% else %}
+                        <a class="private-label-container" href="{% url 'index' %}">
+                            <img class="private-logo" src="{{ private_company.logo.url }}" alt="company logo">
+                        </a>
+                        {% endif %}
+
+                {% elif cohort and cohort.company.logo and cohort.company.logo.url %}
+                    <img class="signup-company-logo" src="{{ cohort.company.logo.url }}" alt="{{ cohort.company.name }} logo">
+                {% else %}
+                    <a href="{% url 'index' %}">
+                        <img class="brand-logo" src="{% static 'dashboard/img/myroadmap-white-green.svg' %}">
+                    </a>
+                {% endif %}
+            {% endblock %}
+            {% block nav_links %}
+                {% include "dashboard/main-nav.html" %}
+            {% endblock nav_links %}
+        </div>
+    </div>
+
+    {% if request.path == "/my-roadmaps/" and not request.user.company_id == 15 and not request.user.company_id == 87 %}
+        {% if request.user.company.users_can_assign_coach %}
+          {% if request.user.is_student and not request.user.coach.count %}
+          <div class="no-coach ">
+              You don't have a
+              {% if user.company.coach_synonym %}
+                {{user.company.coach_synonym}}.
+              {% else %}
+                coach.
+              {% endif %}
+              {% if request.user.company_id == 1 %}
+                  <a class="" href="#" data-target="#inviteCoachModal" data-toggle="modal">
+                      Invite one now
+                  </a>
+              {% else %}
+                  <a class="" href="{% url 'edit_coach' user.id %}">Select one now</a>
+              {% endif %}
+          </div>
+          {% endif %}
+        {% endif %}
+
+        {% if request.user.is_student and not request.user.company.users_can_assign_coach and not request.user.coach.count%}
+        <div class="no-coach ">
+            You don't have a
+            {% if user.company.coach_synonym %}
+                {{user.company.coach_synonym}}.
+            {% else %}
+                coach.
+            {% endif %}
+            Contact your Admin to get access to one.
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="container py-3">
+        {% block page_header %}
+            <div class="row pb-3 pb-md-5 page-header" style="padding-bottom: .5rem!important;">
+                <div class="col-12 left-header-column">
+                    {% block left-header %}
+                        {% if request.user.company.logo and not request.user.company.private_labeled %}<img class="bar-logo" src="{{ request.user.company.logo.url }}" alt="company logo">{% endif %}
+                        {% block breadcrumbs_space %}{% endblock %}
+                    {% endblock left-header %}
+                </div>
+                <div class="col-12 right-header-column">
+                    {% block right-header %}
+                    {% endblock right-header %}
+                </div>
+            </div>
+        {% endblock page_header %}
+        {% block body %}
+            <div class="card">
+                <div class="card-body">
+                    {% block content %}{% endblock content %}
+                </div>
+            </div>
+        {% endblock body %}
+    </div>
+</body>
+
+<footer class="footer">
+    {% block footer %}
+        {% if request.user.company.private_labeled or private_company %}
+            <img src="{% static 'dashboard/img/myroadmap-white-powered-by.svg' %}" alt="powered by MyRoadmap">
+        {% else %}
+            <img src="{% static 'dashboard/img/myroadmap-white.svg' %}" alt="MyRoadmap">
+        {% endif %}
+        <div>&copy; {% now "Y" %}</div>
+    {% endblock footer %}
+</footer>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{% static 'dashboard/css/datepicker.min.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/animatecss/3.5.2/animate.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+
+{% block extrajs %}
+<script>
+    var urls = {
+        get_notifications_ajax: '{% url "notifications:get_notifications_ajax" %}',
+        ajax_register_device: '{% url "ajax_register_device" %}',
+        ajax_save_assessment_data: '{% url "ajax_save_assessment_data" %}',
+        ajax_save_comment: '{% url "ajax_save_comment" %}',
+        ajax_delete_comment: '{% url "ajax_delete_comment" %}',
+        ajax_choose_active_company: '{% url "ajax_choose_active_company" %}',
+    };
+</script>
+<script src="{% static 'dashboard/js/datepicker.min.js' %}"></script>
+<script src="{% static 'dashboard/js/general.js' %}"></script>
+<script src="{% static 'dashboard/js/navigatorPush.service.js' %}"></script>
+<script src="{% static 'dashboard/js/notify.js' %}"></script>
+<script src="{% static 'dashboard/js/recordRTC.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+<script src="https://code.jquery.com/color/jquery.color-2.1.2.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js'></script>
+{% endblock extrajs %}
+
+{% block extrafooter %}{% endblock %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip({trigger: "hover"})
+    });
+
+    $("#side-nav a").click(function () {
+        $("#side-nav, #close-wrapper").removeClass("visible");
+    });
+
+    $(document).ready(function(){
+        {% block jquery %}
+        {% endblock %}
+    });
+
+    {% block js %}{% endblock %}
+
+    $(document).ready(function() {
+        {% include 'dashboard/messages.html' %}
+    });
+
+</script>
+
+</html>

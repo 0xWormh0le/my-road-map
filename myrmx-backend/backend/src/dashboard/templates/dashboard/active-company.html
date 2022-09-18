@@ -1,0 +1,58 @@
+{% extends "dashboard/base.html" %}
+{% load my %}
+
+{% block content %}
+
+{% for company in companies %}
+    <div class="btn btn-primary {% if company.name == active_company.name %}active{% endif %}" onclick="chooseCompany({{company.id}})">{{company.name}}</div>
+{% endfor %}
+
+{% endblock content %}
+
+{% block jquery %}
+
+{% if ask_to_add %}
+
+    Swal.fire({
+        title: 'Existing Account?',
+        text: 'You are trying to log into {{private_company.name}} using an email address associated with another account powered by MyRoadmap. Would you like to add {{private_company.name}} to your MyRoadmap powered accounts?',
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: 'Yes, associate my accounts',
+        cancelButtonText: 'No, just log me into my current account without adding {{private_company.name}}',
+        confirmButtonColor: '#F74400',
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                url: urls.ajax_choose_active_company,
+                type: 'POST',
+                data: {company: {{private_company.id}}},
+                success: function (result) {
+                    console.log(result);
+                    location.reload();
+                }
+            });
+        } else {
+            location.href = '/';
+        }
+    }).catch(Swal.noop);
+
+{% endif %}
+
+{% endblock %}
+
+{% block js %}
+
+function chooseCompany(companyId) {
+    $.ajax({
+        url: urls.ajax_choose_active_company,
+        type: 'POST',
+        data: {company: companyId},
+        success: function (result) {
+            console.log(result);
+            location.href = '/';
+        }
+    });
+}
+
+{% endblock js %}

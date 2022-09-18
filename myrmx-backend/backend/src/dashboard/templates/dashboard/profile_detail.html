@@ -1,0 +1,427 @@
+{% extends "dashboard/base.html" %}
+{% load staticfiles %}
+{% load my %}
+{% block title %}Profile detail{% endblock %}
+
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% if from_users %}
+            {% breadcrumb "Accounts" "staff_users" %}
+        {% else %}
+            {% breadcrumb "Dashboard" "index" %}
+        {% endif %}
+        {% if can_access %}
+            {% breadcrumb user "" %}
+        {% else %}
+            {% breadcrumb "No access" "index" %}
+        {% endif %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}{% endcomment %}
+
+{% block body %}
+
+  {% if from_users %}
+      <a class="back-btn mb-3" href="{% url 'staff_users' %}"><i class="far fa-arrow-left"></i></a>
+  {% else %}
+      <a class="back-btn mb-3" href="{% url 'index' %}"><i class="far fa-arrow-left"></i></a>
+  {% endif %}
+
+    <div class="card">
+        {% if can_access %}
+        <div class="card-body profile">
+            <div class = "d-flex">
+                <!-- <img src="{{ user.get_photo_url }}" class="rounded-circle profile-image" alt="{{ user.get_username }} profile picture"> -->
+                <div class="profile-image"  style="{% if user.photo %} background-image: url('{{ user.get_photo_url }}') {% endif %}" aria-label="photo of {{ user.get_full_name }}"><span>{% if not user.photo %}{{ user.first_name|slice:"1"|title }}{{ user.last_name|slice:"1"|title }}{% endif %}</span></div>
+                <div class="ml-3">
+                    <span class="name">{{ user }} </span>
+                    {% if request.user.is_admin %}
+                        <a class="btn btn-2" onclick="event.stopPropagation();" href="{% url 'staff_user_edit' user.id %}">Edit Account Info</a>
+                    {% endif %}
+                    {% user_assigned_company user "groups" as assigned_groups %}
+                    <p class="account-type" style="margin-bottom: 0px">Account Type: {{ assigned_groups|join:', '|change_coach_name:user.company.coach_synonym|change_user_name:user.company.user_synonym }}</p>
+                    <p class="group">Group:
+                    {% user_assigned_company user "cohort" as assigned_cohorts %}
+                    {% if assigned_cohorts %}
+                        {{ assigned_cohorts|join:', '|change_coach_name:user.company.coach_synonym|change_user_name:user.company.user_synonym }}
+                    {% else %}
+                    None
+                    {% endif %}
+                    </p>
+                    <!-- <small>
+                        {% for cohort in user.cohort.all %}
+                            <span class = "small">in {{ cohort }} </span>
+                            {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </small> -->
+                </div>
+            </div>
+            <div>
+            {% if can_access %}
+                <div style="margin-top: 15px; margin-bottom: 10px;" class="extra-holder"><i class="fal fa-map mt-1"></i>
+                    <div class = "section-header"> Assigned Roadmaps</div>
+                </div>
+                {% for roadmap in roadmaps %}
+                <a href="{% url 'user_roadmap_observe' user.pk roadmap.id %}" class="progress-label">
+                    <div class="roadmap-box card-row hover-shadow row no-gutters">
+                        <div class="col-12 col-md-7">
+                            <div>{% if roadmap.pinned %}<i class="fal fa-thumbtack"></i>{% endif %} {{ roadmap.title }}</div>
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <div class="row" >
+                                <div class="col-auto mr-auto mb-2"><div class = "small d-md-inline-block">{% if not roadmap.started %}Not {% endif %}Started</div>
+                                    <div class="progress-details d-md-inline-block">{{ roadmap.started }} </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="small d-md-inline-block">Action Items</div>
+                                    <div class="progress-details d-md-inline-block">{{ roadmap.stages_info.total_action_items_complete }} / {{ roadmap.stages_info.total_action_items }}</div>
+                                </div>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress progress-bar-custom">
+                                    <div style="width: {{ roadmap.stages_info.total_progress }}%" role="progressbar" class="progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                  <div class="no-roadmaps-assigned"> No assigned Roadmaps.</div>
+                {% endfor %}
+                {% if request.user.company.coach_can_asssign_roadmaps %}
+                    <a class="btn btn-primary" href="{% url 'staff_edit_user_roadmaps' user.pk %}">Edit Assigned Roadmaps</a>
+                {% endif %}
+
+                {% if request.user.company.archive_roadmaps %}
+                    <div style="margin-top: 15px; margin-bottom: 10px;" class="extra-holder"><i class="fal fa-map"></i>
+                        <div class = "section-header"> Archived Roadmaps</div>
+                    </div>
+                    {% for roadmap in user.archived_roadmaps_list %}
+                        <a href="{% url 'user_roadmap_observe' user.pk roadmap.id %}" class="progress-label">
+                            <div class="roadmap-box card-row hover-shadow row no-gutters">
+                                <div class="col-12 col-md-7">
+                                    <div>{{ roadmap.title }}</div>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <div class="row" >
+                                        <div class="col-auto mr-auto mb-2"><div class = "small d-md-inline-block">{% if not roadmap.started %}Not {% endif %}Started</div>
+                                            <div class="progress-details d-md-inline-block">{{ roadmap.started|date:"SHORT_DATE_FORMAT" }} </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="small d-md-inline-block">Action Items</div>
+                                            <div class="progress-details d-md-inline-block">{{ roadmap.stages_info.total_action_items_complete }} / {{ roadmap.stages_info.total_action_items }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress progress-bar-custom">
+                                            <div style="width: {{ roadmap.stages_info.total_progress }}%" role="progressbar" class="progress-bar"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <div class="no-roadmaps-assigned"> No archived Roadmaps.</div>
+                    {% endfor %}
+                {% endif %}
+                {% if request.user.company.follow_up_schedule %}
+                    <div style="margin-top: 15px; margin-bottom: 10px;" class="extra-holder">
+                        <i style="margin-top: 7px" class="fal fa-calendar-alt"></i>
+                        <div class = "section-header"> Follow Up Schedule <div id="show-completed-items" class="btn btn-2 ml-3">Show completed items</div><div id="hide-completed-items" class="btn btn-2 ml-3">Show uncompleted items</div></div>
+                    </div>
+
+                    <div id="all-follow-up-items" data-source="{% url 'ajax_follow_up_items' %}{% if edit %}?e=1{% endif %}" data-student="{{ user.id }}">
+                        <div id="load-follow-up-items"></div>
+                    </div>
+
+                    <div id="add-follow-up-item" class="btn btn-primary"
+                            data-student="{{ user.id }}"
+                            data-target="#add-new-follow-up-item-modal"
+                            data-toggle="modal"
+                            data-url="{% url 'ajax_follow_up_item_add' %}">
+                         Add Follow Up Item
+                    </div>
+                {% endif %}
+
+            {% endif %}
+            {% if can_access or is_my_coach %}
+                <div class="extra-holder mt-4 mb-2">
+                    <i class="fal fa-clipboard-list left mt-1"></i>
+                    <div class="section-header">Account Info</div>
+                </div>
+                <div>
+                    <table class="table">
+                        <col width="150px">
+                        <tr> <td class="custom-table-header">Email</td> <td>{{ user.email }}</td> </tr>
+                        <tr> <td class="custom-table-header">Phone</td> <td>{{ user.phone_number|urlize }}</td> </tr>
+                        <tr> <td class="custom-table-header">Bio</td> <td>{{ user.bio|urlize }}</td> </tr>
+                        <tr> <td class="custom-table-header">Date Joined</td> <td>{{ user.date_joined|date }}</td> </tr>
+
+                        {% user_assigned_company user "is_approved" as assigned_is_approved %}
+                        <tr> <td class="custom-table-header">Account Active</td> <td> {% if assigned_is_approved %} <i style="color: #1DD37D;" class="fas fa-check"></i> {% else %} <i style="color: #F74401;" class="fas fa-times"></i> {% endif %}</td> </tr>
+
+                        {% user_assigned_company user "is_coach" as assigned_is_coach %}
+                        {% user_assigned_company user "coaches" as assigned_coaches %}
+                        {% if not assigned_is_coach %}
+                            <tr>
+                              <td class = "custom-table-header">
+                                  {% if request.user.company.coach_synonym %}
+                                      {{request.user.company.coach_synonym}}(s)
+                                  {% else %}
+                                      Coach(s)
+                                  {% endif %}
+                              </td>
+                              <td>
+                                  {% for coach in assigned_coaches %}
+                                      <a href="{% url 'staff_user' coach.id %}">{{ coach }}</a>{% if not forloop.last %},{% endif %}
+                                  {% empty %}
+                                      None
+                                  {% endfor %}
+                              </td>
+                            </tr>
+                        {% endif %}
+                        {% if assigned_is_coach %}
+                            {% if can_access %}
+                                <tr> <td class = "custom-table-header">{{ request.user.company.user_synonym }}(s)</td> <td>
+                                  {% for student in students %}
+                                    {% if not forloop.first %},{% endif %}
+                                    <a href="{% url 'staff_user' student.id %}">{{ student }}</a>
+                                  {% endfor %}
+                                </td> </tr>
+                            {% endif %}
+                        {% endif %}
+                    </table>
+                </div>
+            {% endif %}
+            </div>
+            {% comment %} {% if assigned_is_coach %}
+                <table class="table">
+                    <tr> <td><b>Name:</b></td> <td>{{ user }}</td> </tr>
+                    <tr> <td><b>Email:</b></td> <td>{{ user.email }}</td> </tr>
+                    <tr> <td><b>Phone:</b></td> <td>{{ user.phone_number }}</td> </tr>
+                    <tr> <td><b>Bio/expertise:</b></td> <td>{{ user.bio }}</td> </tr>
+                </table>
+            {% endif %}
+            {% user_assigned_company user.id request.user.company.id "is_student" as assigned_is_student %}
+            {% if assigned_is_student %}
+                {% if request.user.is_coach or request.user.is_mentor %}
+                    <p class="text-justify">
+                    <table class="table">
+                        <!-- <tr> <td><b>User's notes for coach:</b></td> <td>{{ user.notes_for_coach }}</td> </tr> -->
+                        <tr> <td><b>Notes About User (Hidden):</b></td> <td>{{ user.coach_notes_regarding_student }}</td> </tr>
+                    </table>
+                    </p>
+
+                    <!-- <h3>Assigned mentors</h3>
+                    <div class="row">
+                        <ul>
+                            {% for mentor in user.mentors.all %}
+                                <li><a href="{% url "profile_detail" mentor.id %}">{{ mentor }}</a></li>
+                            {% empty %}
+                                <li>User doesn't have any mentors assigned yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div> -->
+
+                    <h3>Assigned coach</h3>
+                    <div class="row">
+                        <ul>
+                            {% for coach in assigned_coaches %}
+                                <li><a href="{% url "profile_detail" coach.id %}">{{ coach }}</a></li>
+                            {% empty %}
+                                <li>User doesn't have any coaches assigned yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% elif assigned_is_coach or user.is_mentor %}
+                <div style="clear: both;"></div>
+                <!-- <p class="text-justify">
+                    <strong>Bio</strong>
+                <hr style='margin-top:-0.5em; margin-bottom:0.5em;'>
+                {{ user.bio }}
+                </p> -->
+
+                {% if request.user.is_coach or request.user.is_mentor %}
+                    <h3>Assigned students</h3>
+                    <div class="row">
+                        <ul>
+                            {%  for student in students %}
+                                <li><a href="{% url "profile_detail" student.id %}">{{ student }}</a></li>
+                            {% empty %}
+                                <li>No assigned students yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}{% endcomment %}
+
+            {% if can_access and not request.user.company_id == 87 %}
+                {% if assigned_is_approved %}
+                    <form method="POST" action="{% url 'deactivate_account' user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="deactivate" value="true">
+                        <span class="btn-2" role="button" data-toggle="tooltip" title="Deactivate account" onclick="deactivateAccount(this)">Deactivate Account</span>
+                    </form>
+                {% else %}
+                    <form method="POST" action="{% url 'activate_account' user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="deactivate" value="true">
+                        <span class="btn btn-primary" role="button" data-toggle="tooltip" title="Activate account" onclick="activateAccount(this)">Activate Account</span>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="card-body profile">
+          <h3>No access</h3>
+        </div>
+        {% endif %}
+    </div>
+
+
+
+    <div class="modal fade add-new-follow-up-item-modal-class" id="add-new-follow-up-item-modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content modal-content-fui">
+                {# AJAX form for new follow up item #}
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block extrafooter %}
+
+    <script>
+
+        $(document).ready(function() {
+        });
+        function deactivateAccount(el) {
+            event.stopPropagation();
+            Swal.fire({
+                title: "Deactivate {{ user }}?",
+                text: 'This account will no longer have access to Roadmaps.',
+                showCancelButton: true,
+                confirmButtonText: 'Deactivate',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    el.closest('form').submit()
+                }
+            }).catch(Swal.noop);
+        }
+        function activateAccount(el) {
+            event.stopPropagation();
+            Swal.fire({
+                title: "Activate {{ user }}?",
+                text: 'This account will now have access to Roadmaps.',
+                showCancelButton: true,
+                confirmButtonText: 'Activate',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    el.closest('form').submit()
+                }
+            }).catch(Swal.noop);
+        }
+
+    </script>
+
+    <script>
+      (function($, document) {
+
+          var pluses = /\+/g;
+          function raw(s) {
+              return s;
+          }
+          function decoded(s) {
+              return decodeURIComponent(s.replace(pluses, ' '));
+          }
+
+          $.cookie = function(key, value, options) {
+
+              // key and at least value given, set cookie...
+              if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value == null)) {
+                  options = $.extend({}, $.cookie.defaults, options);
+
+                  if (value == null) {
+                      options.expires = -1;
+                  }
+
+                  if (typeof options.expires === 'number') {
+                      var days = options.expires, t = options.expires = new Date();
+                      t.setDate(t.getDate() + days);
+                  }
+
+                  value = String(value);
+
+                  return (document.cookie = [
+                      encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(value),
+                      options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
+                      options.path    ? '; path=' + options.path : '',
+                      options.domain  ? '; domain=' + options.domain : '',
+                      options.secure  ? '; secure' : ''
+                  ].join(''));
+              }
+
+              // key and possibly options given, get cookie...
+              options = value || $.cookie.defaults || {};
+              var decode = options.raw ? raw : decoded;
+              var cookies = document.cookie.split('; ');
+              for (var i = 0, parts; (parts = cookies[i] && cookies[i].split('=')); i++) {
+                  if (decode(parts.shift()) === key) {
+                      return decode(parts.join('='));
+                  }
+              }
+              return null;
+          };
+
+          $.cookie.defaults = {};
+
+      })(jQuery, document);
+
+        if ($.cookie("showCompleted") == 'true') {
+          $('.completed').show();
+          $('.to-do').hide();
+          $('#hide-completed-items').show();
+          $('#show-completed-items').hide();
+        } else {
+          $('.completed').hide();
+          $('.to-do').show();
+          $('#hide-completed-items').hide();
+          $('#show-completed-items').show();
+        }
+        $('#show-completed-items').click(function() {
+          $.cookie('showCompleted', 'true');
+          $('.completed').show();
+          $('.to-do').hide();
+          $('#hide-completed-items').show();
+          $('#show-completed-items').hide();
+        });
+        $('#hide-completed-items').click(function() {
+          $.cookie('showCompleted', null);
+          $('.completed').hide();
+          $('.to-do').show();
+          $('#hide-completed-items').hide();
+          $('#show-completed-items').show();
+        });
+    </script>
+
+
+
+
+{% endblock %}

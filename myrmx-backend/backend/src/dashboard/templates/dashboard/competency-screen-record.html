@@ -1,0 +1,527 @@
+{% extends "dashboard/base.html" %} {% load staticfiles %} {% load my %}
+
+{% block body %}
+
+<div class="row">
+  <div class="col-sm-12 objective-modal-content">
+    <div class="card competency-detail">
+      <div class="card-body">
+        <div class="main-header-container">
+          <h2 class="title" id="competency-id" data-id="{{ competency.id }}">
+            <i class="fal fa-desktop left"></i> Screen Record
+            <div class="d-inline-block stage-wrapper">
+              <span class="stage-in">for</span>
+              <span class="stage-name">{% if item %} {{ item }} {% else %} {{ competency.title }} {% endif %}</span>
+            </div>
+          </h2>
+          <div class="action-icons d-flex exit">
+            <a
+              href="
+                  {% if observing %}
+                      {% url 'user_competency_observe' student.id competency.id %}
+                  {% elif is_template %}
+                      {% url 'staff_competency' competency.id %}
+                  {% else %}
+                      {% url 'competency' competency.id %}
+                  {% endif %}
+                  "
+            >
+              <i class="fal fa-times" data-fa-transform="grow-6"></i>
+            </a>
+          </div>
+        </div>
+        <div style="display: none" class="recording" id="countdown">4</div>
+
+        <div id="video-container" class="card-padding">
+          <div class="text-center mb-2">
+            <button class="btn btn-primary" id="btn-start-recording">
+              <i class="fal fa-play"></i> Start Recording
+            </button>
+            <button class="btn-2" id="btn-stop-recording" style="display: none">
+              <i class="fal fa-stop"></i> Stop Recording
+            </button>
+            <div
+              id="saveRecordingInput"
+              class="input-group mb-2"
+              style="display: none"
+            >
+              <input
+                id="filename"
+                type="text"
+                class="form-control"
+                placeholder="Choose Filename"
+                aria-label="Recipient's username"
+                aria-describedby="basic-addon2"
+              />
+              <div class="input-group-append">
+                <button class="btn btn-primary" id="btn-save-recording">
+                  <i class="fal fa-check"></i> Save
+                </button>
+                <button class="btn btn-2 mr-2" id="btn-rerecord">
+                  <i class="fal fa-redo"></i> Redo Screen Record
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a
+  class="objective-modal"
+  href="
+    {% if observing %}
+      {% url 'user_competency_observe' student.id competency.id %}
+    {% elif is_template %}
+      {% url 'staff_competency' competency.id %}
+    {% else %}
+      {% url 'competency' competency.id %}
+    {% endif %}"
+></a>
+
+<form id="attachment-form" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% if item %}
+    <input type="hidden" name="item_id" value="{{ item.id }}" />
+  {% endif %}
+  <div class="m-2">{{ attachment_form.as_p }}</div>
+</form>
+
+{% endblock %} {% block extrafooter %}
+
+<script src="{% static 'dashboard/js/recordRTC.js' %}"></script>
+<script src="{% static 'dashboard/js/getHTMLMediaElement.js' %}"></script>
+<link rel="stylesheet" href="{% static 'dashboard/css/getHTMLMediaElement.css' %}">
+
+<script>
+  document.getElementById("btn-rerecord").style.display = "none";
+  document.getElementById("btn-stop-recording").style.display = "none";
+  document.getElementById("btn-save-recording").style.display = "none";
+  document.getElementById("btn-save-recording").style.display = "none";
+  document.getElementById("filename").style.display = "none";
+  document.getElementById("countdown").style.display = "none";
+
+  var video = document.createElement("video");
+  var mediaElement = getHTMLMediaElement(video, {
+    title: "Recording status: inactive",
+    buttons: [],
+    showOnMouseEnter: false,
+    width: 360,
+  });
+  document.getElementById("video-container").appendChild(mediaElement);
+
+  var div = document.createElement("section");
+  mediaElement.media.parentNode.appendChild(div);
+  mediaElement.media.muted = false;
+  mediaElement.media.autoplay = true;
+  mediaElement.media.playsinline = true;
+  div.appendChild(mediaElement.media);
+
+  var recordingPlayer = mediaElement.media;
+  var recorder; // globally accessible
+  var blob;
+  var btnStartRecording = document.getElementById("btn-start-recording");
+  var mimeType = "video/webm";
+  var fileExtension = "webm";
+  var type = "video";
+  var recorderType;
+
+  function addStreamStopListener(stream, callback) {
+    stream.addEventListener(
+      "ended",
+      function () {
+        callback();
+        callback = function () {};
+      },
+      false
+    );
+    stream.addEventListener(
+      "inactive",
+      function () {
+        callback();
+        callback = function () {};
+      },
+      false
+    );
+    stream.getTracks().forEach(function (track) {
+      track.addEventListener(
+        "ended",
+        function () {
+          callback();
+          callback = function () {};
+        },
+        false
+      );
+      track.addEventListener(
+        "inactive",
+        function () {
+          callback();
+          callback = function () {};
+        },
+        false
+      );
+    });
+  }
+
+  function captureAudioPlusScreen(config) {
+    if (navigator.getDisplayMedia) {
+      navigator
+        .getDisplayMedia({
+          video: {
+            width: 1280,
+            height: 720,
+          },
+        })
+        .then((screenStream) => {
+          navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then(function (mic) {
+              screenStream.addTrack(mic.getTracks()[0]);
+
+              config.onMediaCaptured(screenStream);
+
+              addStreamStopListener(screenStream, function () {
+                // config.onMediaStopped();
+
+                //document.getElementById("btn-stop-recording").onclick();
+              });
+
+              setVideoURL(screenStream, true);
+            });
+        })
+        .catch(function (error) {
+          config.onMediaCapturingFailed(error);
+        });
+    } else if (navigator.mediaDevices.getDisplayMedia) {
+      navigator.mediaDevices
+        .getDisplayMedia({
+          video: {
+            width: 1280,
+            height: 720,
+          },
+        })
+        .then((screenStream) => {
+          navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then(function (mic) {
+              screenStream.addTrack(mic.getTracks()[0]);
+
+              config.onMediaCaptured(screenStream);
+
+              addStreamStopListener(screenStream, function () {
+                // config.onMediaStopped();
+
+                //document.getElementById("btn-stop-recording").onclick();
+              });
+
+              setVideoURL(screenStream, true);
+            });
+        })
+        .catch(function (error) {
+          config.onMediaCapturingFailed(error);
+        });
+    } else {
+      var error = "getDisplayMedia API are not supported in this browser.";
+      config.onMediaCapturingFailed(error);
+      alert(error);
+    }
+  }
+
+  window.onbeforeunload = function() {
+    btnStartRecording.disabled = false;
+  };
+
+  btnStartRecording.onclick = function () {
+    var button = btnStartRecording;
+
+    button.disabled = true;
+    button.style.display = "none";
+    document.getElementById("countdown").style.display = "block";
+
+    var commonConfig = {
+      onMediaCaptured: function (stream) {
+        button.stream = stream;
+        if (button.mediaCapturedCallback) {
+          button.mediaCapturedCallback();
+        }
+
+        button.disabled = false;
+      },
+      onMediaStopped: function () {
+        button.disabled = false;
+      },
+      onMediaCapturingFailed: function (error) {
+        console.error("onMediaCapturingFailed:", error);
+
+        if (
+          error
+            .toString()
+            .indexOf("no audio or video tracks available") !== -1
+        ) {
+          alert(
+            "RecordRTC failed to start because there are no audio or video tracks available."
+          );
+        }
+
+        if (
+          error.name === "PermissionDeniedError" &&
+          DetectRTC.browser.name === "Firefox"
+        ) {
+          alert(
+            "Firefox requires version >= 52. Firefox also requires HTTPs."
+          );
+        }
+        window.history.back();
+        //commonConfig.onMediaStopped();
+      },
+    };
+
+    captureAudioPlusScreen(commonConfig);
+
+    button.mediaCapturedCallback = function () {
+      var options = {
+        type: type,
+        mimeType: mimeType,
+        getNativeBlob: true, // enable it for longer recordings
+        video: recordingPlayer,
+      };
+
+      options.ignoreMutedMedia = false;
+      button.recordRTC = RecordRTC(button.stream, options);
+
+      button.recordingEndedCallback = function (url) {
+        setVideoURL(url);
+        blob = button.recordRTC.getBlob();
+      };
+
+      setTimeout(function () {
+        button.recordRTC.startRecording();
+        var html = "Recording status: active";
+        document.getElementById("btn-stop-recording").style.display = "inline";
+        recordingPlayer.parentNode.parentNode.querySelector(
+          "h2"
+        ).innerHTML = html;
+        document.getElementById("btn-stop-recording").disabled = false;
+      }, 3000);
+
+      var seconds;
+      var temp;
+
+      function countdown() {
+        seconds = document.getElementById("countdown").innerHTML;
+        seconds = parseInt(seconds, 10);
+
+        if (seconds == 0) {
+          temp = document.getElementById("countdown");
+          temp.innerHTML = "Recording";
+          temp.classList.add("recording");
+          return;
+        }
+
+        seconds--;
+        temp = document.getElementById("countdown");
+        temp.innerHTML = seconds;
+        timeoutMyOswego = setTimeout(countdown, 1000);
+      }
+
+      countdown();
+    };
+  };
+
+  document.getElementById("btn-stop-recording").onclick = function () {
+    var button = btnStartRecording;
+    this.disabled = true;
+
+    document.getElementById("btn-start-recording").style.display = "none";
+    document.getElementById("btn-stop-recording").style.display = "none";
+    document.getElementById("btn-rerecord").style.display = "inline";
+    document.getElementById("btn-save-recording").style.display = "inline";
+    document.getElementById("saveRecordingInput").style.display = "flex";
+    document.getElementById("filename").style.display = "inline";
+    document.getElementById("countdown").style.display = "none";
+
+    function stopStream() {
+      if (button.stream && button.stream.stop) {
+        button.stream.stop();
+        button.stream = null;
+      }
+
+      if (button.stream instanceof Array) {
+        button.stream.forEach(function (stream) {
+          stream.stop();
+        });
+        button.stream = null;
+      }
+
+      var html = "Recording status: stopped";
+      recordingPlayer.parentNode.parentNode.querySelector(
+        "h2"
+      ).innerHTML = html;
+    }
+
+    if (button.recordRTC) {
+      if (button.recordRTC.length) {
+        button.recordRTC[0].stopRecording(function (url) {
+          if (!button.recordRTC[1]) {
+            button.recordingEndedCallback(url);
+            stopStream();
+            return;
+          }
+
+          button.recordRTC[1].stopRecording(function (url) {
+            button.recordingEndedCallback(url);
+            stopStream();
+          });
+        });
+      } else {
+        button.recordRTC.stopRecording(function (url) {
+          button.recordingEndedCallback(url);
+          stopStream();
+        });
+      }
+    }
+
+    return;
+  };
+
+  function getURL(arg) {
+    var url = arg;
+
+    if (arg instanceof Blob || arg instanceof File) {
+      url = URL.createObjectURL(arg);
+    }
+
+    if (arg instanceof RecordRTC || arg.getBlob) {
+      url = URL.createObjectURL(arg.getBlob());
+    }
+
+    if (arg instanceof MediaStream || arg.getTracks) {
+      //url = URL.createObjectURL(arg);
+    }
+
+    return url;
+  }
+
+  function setVideoURL(arg, forceNonImage) {
+    var url = getURL(arg);
+
+    var parentNode = recordingPlayer.parentNode;
+    parentNode.removeChild(recordingPlayer);
+    parentNode.innerHTML = "";
+
+    var elem = "video";
+    if (type == "gif" && !forceNonImage) {
+      elem = "img";
+    }
+    if (type == "audio") {
+      elem = "audio";
+    }
+
+    recordingPlayer = document.createElement(elem);
+
+    if (arg instanceof MediaStream) {
+      recordingPlayer.muted = true;
+    }
+
+    recordingPlayer.addEventListener(
+      "loadedmetadata",
+      function () {
+        if (navigator.userAgent.toLowerCase().indexOf("android") == -1) return;
+
+        // android
+        setTimeout(function () {
+          if (typeof recordingPlayer.play === "function") {
+            recordingPlayer.play();
+          }
+        }, 2000);
+      },
+      false
+    );
+
+    recordingPlayer.poster = "";
+
+    if (arg instanceof MediaStream) {
+      recordingPlayer.srcObject = arg;
+    } else {
+      recordingPlayer.src = url;
+      recordingPlayer.controls = true;
+    }
+
+    if (typeof recordingPlayer.play === "function") {
+      recordingPlayer.play();
+    }
+
+    recordingPlayer.addEventListener("ended", function () {
+      url = getURL(arg);
+
+      if (arg instanceof MediaStream) {
+        recordingPlayer.srcObject = arg;
+      } else {
+        recordingPlayer.src = url;
+        recordingPlayer.controls = true;
+      }
+    });
+
+    parentNode.appendChild(recordingPlayer);
+  }
+
+  // only way to change input[type=file] value is with a other FileList instance
+  // and this is currently the only way to construct a new FileList
+  function createFileList(a) {
+    a = [].slice.call(Array.isArray(a) ? a : arguments);
+    for (var c, b = (c = a.length), d = !0; b-- && d; )
+      d = a[b] instanceof File;
+    if (!d)
+      throw new TypeError(
+        "expected argument to FileList is File or array of File objects"
+      );
+    for (b = new ClipboardEvent("").clipboardData || new DataTransfer(); c--; )
+      b.items.add(a[c]);
+    return b.files;
+  }
+</script>
+
+<script>
+  $(document).ready(function () {
+    //var elem = document.querySelector("#id_attachment");
+    //elem.parentNode.removeChild(elem);
+    // Safari 3.0+ "[object HTMLElementConstructor]" 
+    var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
+    if (isSafari) {
+      $("#video-container").html("<p>Your browser does not support screen recording. Please use Google Chrome, Mozilla Firefox or Microsoft Edge to record your screen. Thanks!</p>");
+    }
+
+    $("#filename").change(function() {
+      this.value=this.value.replace(/[\/]/,'-');
+    });
+
+    $("#btn-save-recording").click(function (e) {
+      var form = document.getElementById("attachment-form");
+      var filename = document.getElementById("filename").value;
+      if (filename.length == 0) {
+        date = new Date();
+        filename = date.toDateString();
+      }
+      var file = new File([blob], filename + ".webm", { type: "video/webm" });
+      var input = document.createElement("input");
+      this.innerHTML = "Uploading...";
+      this.disabled = true;
+
+      input.type = "file";
+      // input.multiple = true;
+      input.files = createFileList(file);
+      input.name = "attachment";
+      input.hidden = true;
+
+      form.appendChild(input);
+      $("#attachment-form").submit();
+    });
+    $("#btn-rerecord").click(function (e) {
+      location.reload();
+    });
+  });
+</script>
+
+{% endblock %}

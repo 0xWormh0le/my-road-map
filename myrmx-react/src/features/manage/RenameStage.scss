@@ -1,0 +1,10 @@
+@import '../../styles/mixins';
+
+.manage-rename-stage {
+  flex: 0.5;
+  .stage-name-input {
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+  }
+}

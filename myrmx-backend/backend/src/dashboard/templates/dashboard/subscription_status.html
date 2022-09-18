@@ -1,0 +1,24 @@
+{% extends "dashboard/base.html" %}
+
+{% block body %}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-11 col-md-8 col-lg-6 col-xl-5">
+        {% if unsubscribe %}
+            <div style="text-align:center;color:#999;">
+                <span><b>Unsubscribed.</b> We won't email you again.</span>
+            </div>
+            <div style="padding-top:30px;display:flex;justify-content:space-around;">
+                <a href="{% url 'email_subscribe' user_id token %}">
+                    <button class="btn btn-secondary">Turn email notifications back on</button>
+                </a>
+            </div>
+        {% else %}
+            <div style="text-align:center;color:#999;">
+                <span><b>Welcome Back!</b> You will now receive email notifications.</span>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

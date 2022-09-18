@@ -1,0 +1,26 @@
+{% extends "postman/base_folder.html" %}
+{% load i18n %}
+{% block pagetitle %}Deleted Messages{% endblock %}
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Trash" "" %}
+        {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+    {% endblock %}
+{% endblock %}{% endcomment %}
+{% block pm_delete_button %}{% endblock %}
+{% block pm_archive_button %}{% endblock %}
+{% block pm_subject %}{# no link #}
+     {% include "postman/inc_subject_ex.html" %}
+{% endblock %}
+{% block pm_footer_info %}
+{% trans "" %}
+{% if pm_messages %}
+{% else %}
+<div class="no-messages">
+    <h3 class="mb-3">Trash is empty</h3>
+    <i class="no-content-icon fal fa-trash"></i>
+</div>
+{% endif %}
+{% endblock %}
+{% block active-trash %}btn-secondary{% endblock %}

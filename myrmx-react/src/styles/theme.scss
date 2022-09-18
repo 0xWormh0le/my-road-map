@@ -1,0 +1,155 @@
+$theme-light: light;
+$theme-dark: dark;
+$theme-blue-ocean: blue-ocean;
+
+.theme-bg {
+  background-color: $color-background-light;
+}
+
+.theme-text-normal, .text-normal {
+  color: $color-text-normal;
+}
+
+.theme-text-dark, .text-dark {
+  color: $color-text-normal;
+}
+
+.theme-text-light, .text-light {
+  color: $color-text-light;
+}
+
+.theme-text-lighter, .text-lighter {
+  color: $color-text-lighter;
+}
+
+.theme-text-disabled, .text-disabled {
+  color: $color-text-disabled;
+}
+
+.#{$theme-dark} {
+  .theme-bg {
+    background-color: $color-background-dark;
+  }
+  
+  .theme-text-normal {
+    color: $color-dark-text-normal;
+  }
+  
+  .theme-text-dark {
+    color: $color-dark-text-dark;
+  }
+  
+  .theme-text-light {
+    color: $color-dark-text-light;
+  }
+
+  .theme-text-lighter {
+    color: $color-dark-text-lighter;
+  }
+
+  .theme-text-disabled {
+    color: $color-dark-text-disabled;
+  }
+}
+
+.page-container {
+  @extend .theme-bg;
+}
+
+
+/* Legacy start */
+
+$theme-dark-bg: #2d3842;
+$theme-light-bg: #F6F8F9;
+
+$theme-color-primary: #3e3e3e;
+$theme-color-secondary: #727272;
+
+h1, h2, h3 {
+  color: #3A3A3B;
+}
+
+.blue {
+  background-color: #ECF4FA;
+}
+
+.theme-text {
+  color: #555;
+}
+
+.theme-text-blue {
+  color: #2f80ed;
+}
+
+.color-primary {
+  color: $theme-color-primary;
+}
+
+.color-secondary {
+  color: $theme-color-secondary;
+}
+
+.theme-text-primary {
+  color: $theme-color-primary;
+}
+
+a.theme-text-primary:hover {
+  color: #777;
+}
+
+.theme-text-secondary {
+  color: $theme-color-secondary;
+}
+
+.theme-card {
+  background-color: white;
+}
+
+a.theme-text-secondary:hover {
+  color: #999;
+}
+
+
+.#{$theme-dark} {
+  input.form-control, textarea.form-control {
+    // background-color: #2d3842;
+    // border-color: #3e4c58;
+    // color: $color-item-gray;
+  }
+
+  .theme-text {
+    color: #aaa;
+  }
+
+  .theme-card {
+    // background-color: #28313a;
+  }
+
+  .theme-text-primary {
+    color: #eee;
+  }
+
+  a.theme-text-primary:hover {
+    color: $color-item-gray;
+  }
+
+  .theme-text-secondary {
+    color: #999;
+  }
+
+  a.theme-text-secondary:hover {
+    color: #777;
+  }
+
+  .blue {
+    background-color: $theme-dark-bg;
+  }
+
+  h1, h2, h3 {
+    color: white;
+  }
+
+  .border, .border-thin {
+    background-color: #555;
+  }
+}

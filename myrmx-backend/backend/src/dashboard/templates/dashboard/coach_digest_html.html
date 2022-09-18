@@ -1,0 +1,65 @@
+{% extends 'registration/email_base_html.html' %}
+{% load humanize %}
+
+{% block body %}
+    <table style="font-family:'Open Sans'; font-size: 20px;">
+        <tbody>
+            <tr width="100%">
+                <td style="color:#1D2327;">Hi, {{ recipient.first_name }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="color: #77787D; font-size: 16px; max-width: 400px;">You have <span style="font-weight: bold;font-size: 1.5em; color: black; margin: 0 5px;">{{ unread_notifications_count }}</span> new notification{{ unread_notifications_count|pluralize:",s" }} waiting for you.</p>
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; padding-left: 30px; padding-right: 30px; text-align: center; text-decoration: none; font-weight: 500;" href="{{ notifications }}">View Notifications</a>
+    <div style="background-color: #F7F7F7; margin-top: 20px; margin-bottom: 20px; padding: 20px;">
+        <span style="color: #ADADAD;font-size: 11px; font-weight: 600; letter-spacing: 1.83px; text-transform: uppercase; margin-bottom: 15px;">Recent Activity</span>
+        <table class="active" style="width: 100%; margin-top: 10px;">
+            <tbody>
+                {% for student in active_students %}
+                    <tr width="100%">
+                        <td width="33px"><img style="width: 23px; height: 23px; border-radius: 50%;" src="{{ student.get_photo_url }}" alt="photo of {{ student.get_full_name }}"></td>
+                        <td>{{ student.get_full_name }}</td>
+                        <td style="text-align: right;color: #77787d;font-size: 0.9em;">{{ student.last_seen|naturaltime }}</td>
+                    </tr>
+                {% empty %}
+                    <tr width="100%">
+                        <td>No recent activity.</td>
+                    </tr>
+                {% endfor %}
+                {% if active_remainder %}
+                    <tr width="100%">
+                        <td style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.83px; padding-top: 15px;" colspan=3><a style="color: #9E9E9E;text-decoration: none;" href="{{ home }}">{{ active_remainder }} more...</a></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% if inactive_students %}
+        <div style="background-color: #F7F7F7; margin-top: 20px; margin-bottom: 20px; padding: 20px;">
+            <span style="color: #ADADAD;font-size: 11px; font-weight: 600; letter-spacing: 1.83px; text-transform: uppercase; margin-bottom: 15px;">Inactive Users</span>
+            <table class="inactive" style="width: 100%; margin-top: 10px;">
+                <tbody>
+                    {% for student in inactive_students %}
+                        <tr width="100%">
+                            <td width="33px"><img style="width: 23px; height: 23px; border-radius: 50%;" src="{{ student.get_photo_url }}" alt="photo of {{ student.get_full_name }}"></td>
+                            <td>{{ student.get_full_name }}</td>
+                            <td style="text-align: right;color: #77787d;font-size: 0.9em;">{{ student.last_seen|naturaltime }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% if inactive_remainder %}
+                    <tr width="100%">
+                        <td style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.83px; padding-top: 15px;" colspan=3><a style="color: #9E9E9E;text-decoration: none;" href="{{ home }}">{{ inactive_remainder }} more...</a></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; padding-left: 30px; padding-right: 30px; text-align: center; text-decoration: none; font-weight: 500;" href="{{ home }}">Go to Dashboard</a>
+
+{% endblock %}
+
+{% block email_reason %}
+<p style="text-align:center; color:#666; font-size:13px;">You are receiving this email because you have been assigned as a coach to one or more users.</p>
+{% endblock email_reason %}

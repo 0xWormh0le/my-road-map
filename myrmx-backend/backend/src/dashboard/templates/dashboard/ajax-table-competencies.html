@@ -1,0 +1,217 @@
+{% load my %}
+
+{% if editing %}
+<div class="edit-stage-options-contianer mb-3">
+    <label for="#stage-name-input">Stage Name:</label><input id="stage-name-input" class="form-control" data-source="{% url 'ajax_edit_stage' %}" type="text" value="{{stage.title}}">
+    <label for="#stage-description-input" class="mt-2">Stage Description:</label><textarea rows="2" cols="10" id="stage-description-input" class="form-control" data-source="{% url 'ajax_edit_stage' %}">{% if stage.description %}{{stage.description}}{% endif %}</textarea>
+    {% if request.user.company.coach_notes %}
+        <label for="#stage-coach-notes-input" class="mt-3">Notes for {{ request.user.company.coach_synonym|title }}:</label><textarea rows="2" cols="10" id="stage-coach-notes-input" class="form-control" data-source="{% url 'ajax_edit_stage' %}">{% if stage.coach_notes %}{{stage.coach_notes}}{% endif %}</textarea>
+    {% endif %}
+    <a class="icon-btn-dark" id="delete-stage-button" onclick="deleteStage(this, {{stage.id}})" data-source="{% url 'ajax_delete_stage' %}" title="Delete Stage"><i class="fa fa-trash"></i></a>
+    <a class="icon-btn-dark copy-stage" href="{% url 'copy_stage_staff' stage.id %}" data-toggle="tooltip" title="Copy Stage"><i class="fas fa-copy"></i> </a>
+</div>
+{% else %}
+
+  <h3 class="competencies-header">{{ stage.title }}</h3>
+  {% if stage.description %}
+      <h4 class="competencies-description">{{ stage.description }}</h4>
+  {% endif %}
+  {% if request.user.company.coach_notes %}
+      {% if request.user.is_coach or request.user.is_admin and stage.coach_notes %}
+          <h4 class="competencies-description text-danger"> {{ stage.coach_notes }}</h4>
+      {% endif %}
+  {% endif %}
+
+{% endif %}
+
+{% if not is_template %}
+    {% if stage.title == "Agreement" or stage.title == "Follow Up" and request.user.company.name == "doTERRA" %}
+        {% if request.user.is_coach or request.user.is_admin or request.user.is_cohort_admin %}
+            {% if competencies_info %}
+                <a href="{% url 'hide_all_stage_objectives' student.id stage.id %}" class="btn-2 mb-2 pull-right"><i class="fal fa-eye-slash mr-1"></i> Hide All Objectives in Stage for {{request.user.company.user_synonym|title}}</a>
+            {% else %}
+                <a href="{% url 'show_all_stage_objectives' student.id stage.id %}" class="btn-2 mb-2 pull-right"><i class="fal fa-eye mr-1"></i> Show All Objectives in Stage for {{request.user.company.user_synonym|title}}</a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+
+{% if editing %}
+<div class="d-none d-md-flex row mx-0 mb-1 column-headers ">
+    <div class="col-md-8"></div>
+    <!-- <div class="col-md-1">Info</div> -->
+    <!-- <div class="col-md-2">Action Items</div> -->
+    <div class="col-md-1"></div>
+</div>
+{% else %}
+<div class="row mx-0 column-headers d-none d-md-flex">
+    {% if is_template %}
+        <div class="col-md-8"></div>
+        <!-- <div class="col-md-1">Info</div>
+        <!-- <div class="col-md-2">Action Items</div> -->
+    {% else %}
+        <!-- <div class="col-md-1 pl-0 d-none d-lg-block">Status</div>
+        <div class="col-md-4 d-none d-lg-block">Objective</div>
+        <div class="col-md-2 d-none d-lg-block">Assessment</div>
+        <div class="col-md-2 d-none d-lg-block">Reviewed By</div>
+        <div class="col-md-1 d-none d-lg-block">Info</div> -->
+        <!-- <div class="col-md-2">Action Items</div> -->
+    {% endif %}
+</div>
+{% endif %}
+
+{% if editing or is_template %}
+    <div id="sort-competencies">
+    {% for competency in competencies_template_info %}
+        {% include "dashboard/competency-row-template.html" %}
+    {% endfor %}
+    </div>
+{% else %}
+    {% for competency in competencies_info %}
+        {% if request.user.is_admin or request.user.is_cohort_admin or request.user.is_coach %}
+            {% include "dashboard/competency-row.html" %}
+        {% else %}
+            {% if not competency.hidden_for_all_users  %}
+                {% include "dashboard/competency-row.html" %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    {% if not is_template %}
+        {% for competency in competencies_user_defined_info %}
+              {% include "dashboard/competency-row.html" %}
+        {% endfor %}
+    {% endif %}
+
+{% endif %}
+
+{% if not competencies_info and not competencies_user_defined_info and not competencies_template_info and not editing %}
+    <div class="no-objectives-yet">No competencies/objectives defined</div>
+{% endif %}
+
+{% if not editing and not is_template %}
+    {% if request.user.company.coach_admin_assign_user_specifc_objectives %}
+        {% if not is_template and not editing and request.user.is_coach or request.user.is_admin or request.user.is_cohort_admin %}
+            <a href="{% url 'add_user_specific_objective' student.id stage.id %}" class="add-new-item"><i class="fal fa-plus mr-1"></i> Add {{request.user.company.user_synonym|title}} Specifc Competency/Objective</a>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+{% if not editing and not is_template %}
+    {% if request.user.is_coach or request.user.is_admin or request.user.is_cohort_admin %}
+        {% for competency in competencies_hidden_info %}
+            {% include "dashboard/competency-hidden-row.html" %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+
+{% if editing %}
+    <a class="add-new-item mt-1" href="{% if is_template %}{% url 'staff_competency_add' %}{% else %}{% url 'competency_add' %}{% endif %}?stage_id={{ stage.id }}{% if student %}&student_id={{ student.id }}{% endif %}">
+        <i class="fal fa-plus mr-1"></i> Add new competency/objective
+    </a>
+{% endif %}
+
+<script>
+    $(document).ready(function() {
+        $('#sort-competencies').disableSelection();
+        $('#sort-competencies').sortable({
+            stop: function(){
+                var orderMapping = {}
+                var items = $(this).children('.card-row');
+                for (var i = 0; i < items.length; i++) {
+                    orderMapping[items[i].id.replace('competency-','')] = i;
+                }
+                $.ajax({
+                    url: '/ajax-sort-competencies/',
+                    type: 'POST',
+                    data: {
+                        orderMapping: JSON.stringify(orderMapping),
+                        stage: {{stage.id}}
+                    },
+                    success:function(data) {}
+                });
+            }
+        });
+        $('#stage-name-input').blur(function() {
+            var where = $(this).data('source');
+            var newTitle = $(this).val();
+            $('#click-stage{{ stage.id }}').children().text(newTitle);
+            $.ajax({
+                url: where,
+                type: 'POST',
+                data: {
+                    id: {{ stage.id }},
+                    newTitle: newTitle,
+                },
+                success:function(data) {}
+            });
+        });
+        $('#stage-description-input').blur(function() {
+            var where = $(this).data('source');
+            var newDescription = $(this).val();
+            $.ajax({
+                url: where,
+                type: 'POST',
+                data: {
+                    id: {{ stage.id }},
+                    newDescription: newDescription,
+                },
+                success:function(data) {}
+            });
+        });
+        $('#stage-coach-notes-input').blur(function() {
+            var where = $(this).data('source');
+            var newCoachNotes = $(this).val();
+            $.ajax({
+                url: where,
+                type: 'POST',
+                data: {
+                    id: {{ stage.id }},
+                    newCoachNotes: newCoachNotes,
+                },
+                success:function(data) {}
+            });
+        });
+    });
+
+    function selectNextClosestStage(el) {
+        var closestStageLink = $('#click-stage{{ stage.id }}').prev();
+        if (!closestStageLink.length) {
+            closestStageLink = $('#click-stage{{ stage.id }}').next();
+        }
+        closestStageLink.click();
+    }
+
+    function deleteStage(el, id) {
+        Swal.fire({
+            title: "Delete this Stage?",
+            text: 'Stage name: {{stage.title}}. This action cannot be undone.',
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#F74400',
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: $(el).data('source'),
+                    type: 'POST',
+                    data: {
+                        id: id,
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            selectNextClosestStage(el);
+                            $('#click-stage{{ stage.id }}').remove();
+                        }
+                        else {
+                            Swal.fire('Sorry', 'You cannot delete the last stage. Add another stage first.', 'warning');
+                        }
+                    }
+                });
+            }
+        }).catch(Swal.noop);
+    }
+
+</script>

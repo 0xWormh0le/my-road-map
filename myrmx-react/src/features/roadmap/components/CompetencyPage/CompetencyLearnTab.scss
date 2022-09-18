@@ -1,0 +1,412 @@
+@import '../../../../styles/mixins';
+
+.roadmap-components-competency-page-competency-learn-tab {
+  .print-header {
+    text-align: center;
+    font-weight: bold;
+    display: none;
+  }
+
+  .coach-notes {
+    font-size: $font-size-small;
+    color: $color-assessment-red;
+  }
+
+  .description-container {
+    color: $color-text-normal;
+    font-size: $font-size-small;
+    overflow-x: hidden;
+    @include media-breakpoint-up(lg) { 
+      font-size: $font-size-normal;
+
+    }
+
+    img {
+      max-width: calc(100vw - 30px);
+      height: auto !important;
+    }
+  }
+
+  .embed {
+    display: flex;
+    flex-direction: column;
+    figure {
+      flex-grow: 1;
+
+      & > div {
+        flex-grow: 1;
+      }
+    }
+  }
+
+  .notes-container {
+    a {
+      text-decoration: none;
+    }
+    .notes-description a {
+      @extend .mrm-main-box-shadow;
+      @extend .mrm-p-0_75;
+      @extend .mrm-mb-1;
+
+      background-color: #ffffff;
+      display: flex;
+      flex-flow: column;
+      border-radius: 10px;
+      &:hover {
+        opacity: 1;
+      }
+      pre {
+        @extend .mrm-mb-0_5;
+
+        font-size: $font-size-normal;
+        color: $color-text-light;
+        font-family: inherit;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    }
+  }
+
+  @media print {
+    .print-header {
+      display: block;
+    }
+  }
+
+  .self-reflection {
+    .assessment-container {
+      @extend .mrm-main-box-shadow;
+      @extend .mrm-mb-1;
+
+      background-color: white;
+      border-radius: 10px;
+      color: $color-text-normal;
+      min-height: 3em;
+
+      p {
+        font-size: $font-size-normal;
+        color: $color-text-normal;
+        line-height: 20px;
+      }
+
+      .slider-container {
+        @extend .mrm-px-0_75;
+        .rc-slider {
+          &::before {
+            position: absolute;
+            content: '';
+            border: 4px solid rgba(255, 255, 255, 0.55);
+            height: 1rem;
+            z-index: 10;
+            left: 26.5%;
+          }
+
+          &::after {
+            position: absolute;
+            content: '';
+            border: 4px solid rgba(255, 255, 255, 0.55);
+            height: 1rem;
+            right: 26.5%;
+          }
+
+          .rc-slider-rail {
+            background: linear-gradient(to right, $color-assessment-red, $color-assessment-yellow, $color-assessment-green);
+            height: 1rem;
+            padding: 0;
+            left: -0.5rem;
+            width: calc(100% + 1rem);
+            border-radius: 10px;
+          }
+
+          .rc-slider-step {
+            display: none;
+          }
+
+          .rc-slider-mark {
+            top: 30px;
+            &:first-child {
+              display: none;
+            }
+            .rc-slider-mark-text:first-of-type {
+              visibility: hidden;
+            }
+          }
+
+          .rc-slider-handle {
+            margin-top: -10px;
+            width: 1.875rem;
+            height: 1.875rem;
+            border: 1px solid $color-background-light-gray;
+            background-color: white;
+            border-radius: 10px;
+            @extend .mrm-box-shadow;
+          }
+        }
+      }
+
+      .selected {
+        font-size: 30px;
+        @extend .mrm-ml-0_5;
+        vertical-align: inherit;
+        display: initial;
+      }
+      .assessment {
+        border-bottom: 2px solid #F6F8F9;
+        cursor: pointer;
+
+        &.red.active {
+          background-color: lighten($color-assessment-red, 30%);
+          border-top-left-radius: 10px;
+          border-top-right-radius: 10px;
+
+        }
+        &.yellow.active {
+          background-color: lighten($color-assessment-yellow, 25%);
+        }
+        &.green.active {
+          background-color: lighten($color-assessment-green, 41%);
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+        }
+
+        .circle {
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          margin: auto;
+          display: block;
+          position: relative;
+          left: 6px;
+
+          &.selected:before {
+            position: absolute;
+            content: ' ';
+            width: 60%;
+            height: 60%;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+          }
+        }
+
+        .card-body {
+          @extend .mrm-py-0_75;
+          @extend .mrm-px-0_75;
+        }
+        .card-title {
+          font-size: $font-size-normal;
+          line-height: 22px;
+        }
+      }
+      .red {
+        .selected:before {
+          background-color: $color-assessment-red;
+        }
+        .circle {
+          border: 1px solid $color-assessment-red;
+        }
+      }
+      .yellow {
+        .selected:before {
+          background-color: $color-assessment-yellow;
+        }
+        .circle {
+          border: 1px solid $color-assessment-yellow;
+        }
+      }
+      .green {
+        border-bottom: none;
+        .selected:before {
+          background-color:  $color-assessment-green;
+        }
+        .circle {
+          border: 1px solid  $color-assessment-green;
+        }
+      }
+    }
+    .assessment-slider-container {
+      @extend .mrm-p-0_75;
+      min-height: 8em;
+      p {
+        @extend .mrm-mb-0_75;
+        @extend .mrm-mt-0_5;
+        margin-left: 4px;
+      }
+  }
+  .btn-bottom-left-rounded {
+      @extend .mrm-px-1_5;
+
+      border-radius: 0;
+      border-bottom-left-radius: 10px;
+      &.active {
+        background-color: $primary;
+        color: white;
+      }
+    }
+    .btn-bottom-right-rounded {
+      @extend .mrm-px-1_5;
+
+      border-radius: 0;
+      border-bottom-right-radius: 10px;
+      &.active {
+        background-color: $primary;
+        color: white;
+      }
+    }
+    .btn-bottom-left-rounded, .btn-bottom-right-rounded {
+      svg {
+        vertical-align: middle;
+      }
+    }
+    .border-br-none {
+      border-bottom-right-radius: unset !important;
+    }
+    .assessment-approve {
+      margin-top: 1px;
+    }
+  }
+
+  .questions-section {
+    @extend .mrm-main-box-shadow;
+
+    background-color: white;
+    border-radius: 10px;
+
+    .question-item {
+      @extend .mrm-py-0_75;
+      @extend .mrm-px-0_75;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      line-height: 22px;
+      min-height: 58px;
+
+      .answer {
+        @extend .mrm-mt-0_5;
+        @extend .mrm-ml-1;
+        @extend .mrm-mb-0_25;
+        font-size: $font-size-normal;
+        color: $color-dark-text-lighter;
+      }
+
+      pre {
+        max-width: 100%;
+        font-size: $font-size-normal;
+        font-family: inherit;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin-bottom: 0;
+        color: $color-text-normal;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 2px solid $color-background-light;
+        @include media-breakpoint-up(lg) {
+          border-bottom: 2px solid #f1f1f1;
+        }
+      }
+      svg {
+        margin-left: .625rem;
+      }
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    .notes-container {
+      .notes-description a {
+        @include mrm-white-on-white-vivid-box-shadow;
+      }
+    }
+
+    .self-reflection {
+      .assessment-container {
+        display: flex;
+        box-shadow: none;
+        border-radius: 0;
+        align-items: stretch;
+
+        .assessment {
+          margin-left: get-scaled-size($scale-factor-0_25);
+          margin-right: get-scaled-size($scale-factor-0_25);
+          flex: 1 0 0;
+          border-radius: 10px;
+          position: relative;
+          &:first-of-type {
+            margin-left: 0;
+          }
+          &:last-of-type {
+            margin-right: 0;
+          }
+
+          .assessment-header {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            height: get-scaled-size($scale-factor-0_75);
+            position: absolute;
+            top: 0;
+          }
+
+          .card-body {
+            padding-top: get-scaled-size($scale-factor-1_5);
+          }
+
+          &.red {
+            .assessment-header {
+              background-color: $color-assessment-red;
+            }
+
+            &.active {
+              border: 2px solid $color-assessment-red;
+            }
+          }
+          &.yellow {
+            .assessment-header {
+              background-color: $color-assessment-yellow;
+            }
+
+            &.active {
+              border: 2px solid $color-assessment-yellow;
+            }
+          }
+          &.green {
+            .assessment-header {
+              background-color: $color-assessment-green;
+            }
+
+            &.active {
+              border: 2px solid $color-assessment-green;
+            }
+          }
+
+          &.active .assessment-header {
+            border-top-left-radius: get-scaled-size($scale-factor-0_25);
+            border-top-right-radius: get-scaled-size($scale-factor-0_25);
+          }
+        }
+
+        .assessment-approve-desktop-container {
+          height: 0;
+          justify-content: center;
+
+          .assessment-approve {
+            position: relative;
+            top: -(get-scaled-size($scale-factor-0_5));
+
+            button {
+              border-radius: 10px;
+            }
+          }
+        }
+      }
+      .assessment-slider-container {
+        @include mrm-white-on-white-vivid-box-shadow;
+        padding: .75rem;
+        display: block;
+      }
+    }
+  }
+}

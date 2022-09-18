@@ -1,0 +1,79 @@
+@import '../../styles/mixins';
+
+.common-user-avatar {
+
+  .profile-photo {
+    display: flex;
+    justify-content: center;
+    img {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+    }
+
+    &.xsmall {
+      img {
+        width: 1.6rem;
+        height: 1.6rem;
+      }
+    }
+
+    &.small {
+      img {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+    &.large {
+      img {
+        width: 5rem;
+        height: 5rem;
+      } 
+    }
+
+    &.xlarge {
+      img {
+        width: 7rem;
+        height: 7rem;
+      }
+    }
+  }
+
+  .initials {
+    &.small {
+      width: 2rem;
+      height: 2rem;
+
+      span {
+        font-size: 0.9rem;
+        color: #ffffff;
+      }
+    }
+
+    &.xsmall {
+      width: 1.6rem;
+      height: 1.6rem;
+
+      span {
+        font-size: 0.7rem;
+      }
+    }
+  
+    &.large {
+      width: 5rem;
+      height: 5rem;
+      span {
+        font-size: 2rem;
+        line-height: 2.75rem;
+      }
+    }
+
+    &.xlarge {
+      width: 7rem;
+      height: 7rem;
+      span {
+        font-size: 3.25rem;
+      }
+    }
+  }
+}

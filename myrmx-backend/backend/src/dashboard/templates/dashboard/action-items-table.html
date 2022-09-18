@@ -1,0 +1,360 @@
+{% load my %}
+
+
+{% if action_items %}
+    <div id="action-items-list">
+        <!-- <div class="table-header d-none d-lg-block">
+            <div class="row px-3">
+                <div class="d-flex col-12 col-lg-8 justify-content-between">
+                    <div class="column-label">Item</div>
+                    {% if not is_template %}
+                        <div class="column-label">Due</div>
+                    {% endif %}
+                </div>
+                <div class="col-12 col-lg-4 second-row mt-2 mt-lg-0">
+                    <div class="row">
+                        {% if competency.stage.roadmap.simplified_ai %}
+                            {% if not is_template %}
+                                {% if request.user.is_coach or request.user.is_student %}
+                                    <div class="col column-label">Completed</div>
+                                    <div class="col column-label">Approved</div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        <div class="col column-label"></div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        {% for item in action_items %}
+            <div id="ai-{{item.id}}" class="col-12 outer mb-2 {% if editing or not item.parent and item.student and not is_all_ai %} can-sort {% endif %}">
+                <div class="col-12">
+                    <div class="row no-gutters">
+                        <div class="col-12">
+                            <div class="d-flex">
+                                <div class="flex-fill ai-title">
+                                    {% if editing or not item.parent and item.student and not is_all_ai %}<i class="fa fa-bars mr-2 handle"></i>{% endif %}
+                                    {% if item.date_marked_done and "requires approval" in item.parent.resolutions|stringformat:"s" and not item.approved_done %}<span><i class="fal fa-clock"></i> Pending approval</span>{% endif %}
+                                    {% if item.date_marked_done and "requires approval" in item.parent.resolutions|stringformat:"s" and item.approved_done %}<span class="completed"><i class="fal fa-check"></i> Completed and approved</span>{% endif %}
+                                    {% if item.date_marked_done and not "requires approval" in item.parent.resolutions|stringformat:"s" %}<span class="completed"><i class="fal fa-check"></i> Completed</span>{% endif %}
+                                    {{ item|urlize }}
+                                </div>
+                            </div>
+                        </div>
+                        {% if item.due_date %}
+                            <div class="ai-due-date {% if item.is_urgent %}text-danger{% endif %}">
+                                <span class="column-label mr-1">Due</span>
+                                <span id="date" data-value="{{ item.due_date }}">{% firstof item.due_date|short_date %}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <span class="ml-3 btn btn-secondary mb-2 mt-1" data-toggle="collapse" aria-expanded="false" href="#action-item-detail-{{item.id}}" id="action-item-detail-{{item.id}}-toggle">View Details <i class="fal fa-chevron-down"></i></span>
+                <div id="action-item-detail-{{item.id}}" class="collapse">
+                    <div class="col-12">
+                        <div class="d-flex">
+                            <div class="flex-fill ai-description">
+                                {% if item.parent.aiDescription %}
+                                    {{ item.parent.aiDescription|safe }}
+                                {% endif %}
+                                {{ item.aiDescription|safe }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2 nopadding">
+                        {% if not item.competency.stage.roadmap.simplified_ai %}
+                            <div class="col-12">
+                                {% if not is_template %}
+                                    {% if item.notes %}
+                                        <div class="mt-2 ai-notes ai-notes-edit ai-notes-edit-2" data-url="{% url 'ajax_edit_ai_note'%}" data-pk={{item.pk}}>{{item.notes|urlize|linebreaks}}</div>
+                                    {% else %}
+                                        <div class="ai-notes ai-notes-edit-2" data-url="{% url 'ajax_edit_ai_note'%}" data-pk={{item.pk}}></div>
+                                    {% endif %}
+                                    <textarea class="mt-2 d-none form-control"></textarea>
+                                    <div>
+                                        {% if student == request.user or request.user.is_coach and not is_template %}
+                                            {% if "input text" in item.parent.resolutions|stringformat:"s" and not item.competency.stage.roadmap.simplified_ai %}
+                                                {% if item.notes %}
+                                                    <div class="ai-notes-edit ai-notes-edit-1 btn btn-outline-secondary ai-resolution-btn" data-url="{% url 'ajax_edit_ai_note'%}" data-pk={{item.pk}}><i class="fal fa-pencil"></i> edit response</div>
+                                                {% else %}
+                                                    <div class="ai-notes-edit ai-notes-edit-1 btn btn-outline-secondary ai-resolution-btn" data-url="{% url 'ajax_edit_ai_note'%}" data-pk={{item.pk}}><i class="fal fa-pencil"></i> respond</div>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if item.parent %}
+                                                {% if "attach file" in item.parent.resolutions|stringformat:"s" %}
+                                                    <a class="btn btn-outline-secondary ai-resolution-btn" onclick="addItemToForm({{ item.id }});document.getElementById('id_attachment').click();"><i class="fal fa-paperclip"></i> attach file</a>
+                                                {% endif %}
+                                                {% if "attach screen recording" in item.parent.resolutions|stringformat:"s" %}
+                                                    <a class="btn btn-outline-secondary ai-resolution-btn" data-url="{% url 'ai_screen_record' item.id %}" onclick="proceedToScreenRecording(event)"><i class="fal fa-desktop"></i> add screen recording</a>
+                                                {% endif %}
+                                                {% if "attach audio recording" in item.parent.resolutions|stringformat:"s" %}
+                                                    <a class="btn btn-outline-secondary ai-resolution-btn" href="{% url 'ai_audio_record' item.id %}"><i class="fal fa-plus"></i> add audio recording</a>
+                                                {% endif %}
+
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    {% if item.attachments %}
+                                        {% for attachment in item.attachments.all %}
+                                            <div class="card flex-row mt-1 py-3 px-3">
+                                                {% if "image" in attachment.file_type %}
+                                                    <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> IMG</span>
+                                                {% endif %}
+                                                {% if "video" in attachment.file_type %}
+                                                    <span class="help-text file-type mr-2"><i class="fal fa-video"></i> VIDEO</span>
+                                                {% endif %}
+                                                {% if "audio" in attachment.file_type %}
+                                                    <span class="help-text file-type mr-2"><i class="fal fa-microphone"></i> AUDIO</span>
+                                                {% endif %}
+                                                {% if "text" in attachment.file_type %}
+                                                    <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> FILE</span>
+                                                {% endif %}
+                                                {% if "spreasheet" in attachment.file_type %}
+                                                    <span class="help-text file-type mr-2"><i class="fal fa-file-spreadsheet"></i> XLS</span>
+                                                {% endif %}
+                                                {% if attachment.file_type %}
+                                                {% else %}
+                                                    <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> FILE</span>
+                                                {% endif %}
+                                                <div class="attachment-info">
+                                                    <a class="mr-2 attachment-url" href="{{ attachment.attachment.url }}" target="_blank">
+                                                        {{ attachment.filename }}
+                                                    </a>
+                                                </div>
+                                                {% if attachment.attacher == request.user and attachment.user or not student %}
+                                                    <div class="delete_ai_attachment" data-pk="{{ attachment.id }}" data-url="{% url 'ajax_attachment_delete' %}"><i class="fal fa-trash"></i></div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if item.marked_done %}
+                                        {% if not item.approved_done %}
+                                            <a href="#" class="ai-unmark-done" data-href="{% url 'action_item' item.pk %}">
+                                                <i class="fa fa-check-square mr-2"></i>
+                                            </a>
+                                        {% else %}
+                                            <i class="fa fa-check-square mr-2"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if request.user.is_coach or request.user.is_student %}
+                                            {% if item.parent %}
+                                                <!-- {% if "attach file" in item.parent.resolutions|stringformat:"s" %}
+                                                    <input type="button" class="btn btn-outline-secondary ai-resolution-btn" value="attach file" onclick="addItemToForm({{ item.id }});document.getElementById('id_attachment').click();">
+                                                    <a class="btn btn-outline-secondary ai-resolution-btn" onclick="addItemToForm({{ item.id }});document.getElementById('id_attachment').click();"><i class="fal fa-paperclip"></i> attach file</a>
+                                                {% endif %}
+                                                {% if "attach screen recording" in item.parent.resolutions|stringformat:"s" %}
+                                                    <a class="btn btn-outline-secondary ai-resolution-btn" href="{% url 'ai_screen_record' item.id %}"><i class="fal fa-desktop"></i> add screen recording</a>
+                                                {% endif %}
+                                                {% if "attach audio recording" in item.parent.resolutions|stringformat:"s" %}
+                                                    <a class="btn btn-outline-secondary ai-resolution-btn" href="{% url 'ai_audio_record' item.id %}"><i class="fal fa-plus"></i> add audio recording</a>
+                                                {% endif %} -->
+                                                {% if "mark complete" in item.parent.resolutions|stringformat:"s" %}
+                                                    <a href="#" class="ai-mark-done btn btn-outline-secondary ai-resolution-btn" data-href="{% url 'action_item' item.pk %}"><i class="fal fa-check"></i> mark complete</a>
+                                                {% endif %}
+                                            {% else %}
+                                                <a href="#" class="ai-mark-done btn btn-outline-secondary ai-resolution-btn" data-href="{% url 'action_item' item.pk %}"><i class="fal fa-check"></i> mark complete</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                    {{ item.date_marked_done|short_date }}
+                                    {% if item.date_marked_done %}(completed){% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="col-12">
+                                {% if item.approved_done %}
+                                    {% if "requires approval" in item.parent.resolutions|stringformat:"s" or not item.parent %}
+                                        {% if request.user.is_coach %}
+                                            <a href="#" class="ai-remove-approval" data-href="{% url 'action_item' item.pk %}">
+                                                <i class="fas fa-check-square mr-2"></i>
+                                            </a>
+                                        {% else %}
+                                            <i class="fas fa-check-square mr-2"></i>
+                                        {% endif %}
+                                    {% endif %}
+                                {% else %}
+                                    {% if item.marked_done %}
+                                        {% if request.user.is_coach %}
+                                            <a href="#" class="ai-mark-reviewed-done d-flex" data-href="{% url 'action_item' item.pk %}">
+                                                <i class="fal fa-square mr-1"></i><span class="help-text">(pending)</span>
+                                            </a>
+                                        {% else %}
+                                            <i class="fal fa-clock mr-1"></i><span> pending</span>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                                {% if "requires approval" in item.parent.resolutions|stringformat:"s" or not item.parent %}
+                                    {{ item.date_approved_done|short_date }}
+                                    {% if item.date_approved_done %}(approved){% endif %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="ai-actions col-12 mb-2 mt-2">
+                    {% if request.user.is_coach or request.user.is_admin or request.user.is_cohort_admin or request.user.is_student and request.user.company.users_can_add_action_items %}
+                        {% if is_template %}
+                            {% if editing or not item.parent and item.student and not is_all_ai %}
+                                <div class="edit-action-item" style="display: inline-block;">
+                                    <i title="Edit item"
+                                        class="fal fa-pencil pointer ml-3"
+                                        data-competency="{% if competency %}{{ competency.id }}{% else %}0{% endif %}"
+                                        {% if student %}
+                                        data-student="{{ student.id }}"
+                                        {% endif %}
+                                        data-id="{{ item.pk }}"
+                                        data-target="#edit-action-item-modal"
+                                        data-toggle="modal"
+                                        data-backdrop="static"
+                                        data-toggle="modal"
+                                        data-url="{% url 'ajax_global_action_item_edit' %}"
+                                    ></i>
+                                </div>
+                                <i title="Delete item" class="fal fa-trash ai-delete pointer ml-3" data-href="{% url 'global_action_item' item.pk %}"></i>
+                            {% endif %}
+                        {% elif not item.parent %}
+                            {% if item.marked_done and item.approved_done %}
+                                {% if item.competency.stage.roadmap.users_can_edit_ai %}
+                                    <!-- <i title="Archive item" class="fal fa-briefcase ai-archive pointer ml-3" data-href="{% url 'action_item' item.pk %}" data-archive="{{ item.archived }}"></i> -->
+                                    <i title="Delete item" class="fal fa-trash ai-delete pointer ml-3" data-href="{% url 'action_item' item.pk %}"></i>
+                                {% endif %}
+                            {% endif %}
+                            {% if not item.approved_done %}
+                                {% if item.competency.stage.roadmap.users_can_edit_ai or observing %}
+                                    <i title="Edit item" class="fal fa-pencil ai-edit pointer ml-3" data-href="{% url 'action_item' item.pk %}"></i>
+                                {% endif %}
+                            {% endif %}
+                                {% if item.competency.stage.roadmap.users_can_edit_ai or observing %}
+                                    <i title="Delete item" class="fal fa-trash ai-delete pointer ml-3" data-href="{% url 'action_item' item.pk %}"></i>
+                                {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="outer help-text p-2">No action items</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% comment %} In template view mode, we don't need date or actions. is_template is the variable{% endcomment %}
+
+<script>
+    function addItemToForm(item_id) {
+        var form = document.getElementById("attachment-form");
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "item_id";
+        input.value = item_id;
+        form.appendChild(input);
+    }
+    function proceedToScreenRecording(e) {
+        el = $(e.currentTarget)
+        url = el.data('url')
+        saveNotesUnderEdit(function() {
+          window.location = url
+        });
+    }
+    $('.delete_ai_attachment').click((e)=>{
+        el = $(e.currentTarget)
+        url = el.data('url')
+        pk = el.data('pk')
+        Swal.fire({
+            title: 'Delete this attachment?',
+            showCancelButton: true,
+            confirmButtonColor: 'rgba(247, 68, 0, 1)',
+            confirmButtonText: 'Delete'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        pk: pk,
+                    },
+                    success: function (data) {
+                        location.reload();
+                    }
+                });
+            }
+        }).catch(Swal.noop);
+    });
+    $('.edit-action-item').click(function (e) {
+        var where = $(e.target).is('path') ? $(e.target).closest('svg').data('url') : $(e.target).data('url');
+        var item = $(e.target).is('path') ? $(e.target).closest('svg').data('id') : $(e.target).data('id');
+        $.ajax({
+            url: where,
+            type: 'GET',
+            data: {
+                item_id: item
+            },
+            success: function (data) {
+                $('.modal-content-edit-ai').html(data['modal_html'])
+            },
+            complete: function (data) {
+                CKEDITOR.replace('id_aiDescription', {
+                    'allowedContent': true,
+                    'embed_provider': '/embed/?url={url}&callback={callback}',
+                    'toolbar': 'roadmap',
+                    'toolbar_roadmap': [
+                        {'name': 'basicstyles',
+                        'items': ['Bold', 'Italic', 'Underline','RemoveFormat']},
+                        {'name': 'paragraph',
+                        'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', '-',
+                                'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']},
+                        {'name': 'links', 'items': ['Link', 'Unlink']},
+                        {'name': 'insert',
+                        'items': ['Image', 'Table', 'HorizontalRule', 'SpecialChar','EmbedBase', 'Embed', 'Iframe', 'Scayt' ]},
+                        '/',
+                        {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
+                        {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+                        {'name': 'document', 'items': ['Source']},
+                    ],
+                    'filebrowserUploadUrl': '/ckeditor/upload/?',
+                    'extraPlugins': [
+                        'uploadimage',
+                        'autolink',
+                        'embedbase',
+                        'embed',
+                        'autoembed',
+                        'embedsemantic',
+                        'autogrow',
+                        'widget',
+                        'lineutils',
+                        'clipboard',
+                        'dialog',
+                        'dialogui',
+                        'elementspath'
+                    ].join(','),
+                });
+            }
+        });
+    });
+
+    $('#action-items-list').sortable({
+        axis: 'y',
+        items: ".can-sort",
+        handle: ".handle",
+        cursor: "move",
+        stop: ()=>{
+            var sortedIDs = $( "#action-items-list" ).sortable( "toArray" );
+            var orderMapping = {}
+            sortedIDs.forEach((el, i)=>{
+                orderMapping[el.replace('ai-','')] = i;
+            })
+            $.ajax({
+                url: '/ajax-sort-action-items/',
+                type: 'POST',
+                data: {
+                    orderMapping: JSON.stringify(orderMapping),
+                    is_globals: '{{ editing }}'.toLowerCase(),
+                },
+                success: function(data) {}
+            });
+        }
+    })
+    $('.ai-notes-input').keydown((e)=>{
+        el = e.target;
+        el.style.height = "";
+        el.style.height = el.scrollHeight + "px";
+    })
+</script>

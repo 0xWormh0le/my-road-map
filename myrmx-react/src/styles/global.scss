@@ -1,0 +1,436 @@
+@import './mixins';
+@import '~bootstrap/scss/bootstrap';
+@import '~react-datepicker/dist/react-datepicker.css';
+@import '~react-circular-progressbar/dist/styles.css';
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+// Here you put all global css rules.
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+
+body,
+#root,
+.home-app,
+.page-container {
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.page-container {
+  padding-bottom: 1px;
+}
+
+.container {
+  width: 100vw;
+}
+
+a {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span {
+  font-family: 'Open Sans', sans-serif;
+}
+
+h2 {
+  font-size: 1.125rem;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  height: 2px;
+  background: #E5E5E5;
+
+}
+
+button {
+  border: none;
+  background: none;
+}
+
+.btn {
+  font-weight: bold;
+  border-radius: 10px;
+  min-height: 40px;
+  border: none;
+  width: auto;
+  font-size: .875rem;
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.btn-100 {
+  width: 100%;
+}
+
+.btn-center {
+  display: block;
+  margin: auto;
+}
+
+.btn-orange {
+  @include button-variant(#f86630, #f86630, #f86630);
+}
+
+.btn-lg {
+  font-size: 0.875rem;
+  height: 50px;
+  width: 100%;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #727272;
+  font-weight: normal;
+  &:hover {
+    cursor: pointer;
+  }
+  &:focus, &:active, &:hover {
+    background: transparent;
+    color: #727272;
+  }
+}
+
+.btn-destructive {
+  background: transparent;
+  color: #FF3B30;
+  font-size: 1rem;
+  font-weight: 400;
+  &:hover {
+    color: darken(#FF3B30, 5%);
+  }
+}
+
+.btn-menu-item {
+  color: #3e3e3e;
+  font-size: 1rem;
+  font-weight: 400;
+  &:focus {
+    border: none;
+  }
+  &:hover {
+    color: #212529;
+  }
+}
+
+.more-btn-desktop {
+  svg {
+    background: #F4F4F5;
+    border-radius: 8px;
+    position: relative;
+    color: $color-text-light;
+    font-size: 1.5rem;
+    width: 40px !important;
+    height: 40px;
+    padding: 8px;
+    &:hover {
+      opacity: 1;
+      cursor: pointer;
+      background-color: darken(#F4F4F5, 2%);
+    }
+  }
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.confirmation-modal {
+  .modal-content .modal-title h1 {
+    font-size: 1rem;
+  }
+  h2 {
+    font-size: 1rem;
+    color: #3e3e3e;
+  }
+  small {
+    font-size: .875rem;
+    color: #727272;
+  }
+  .btn {
+    font-size: 1rem;
+  }
+  .btn-cancel {
+    font-weight: 400;
+    color: #3e3e3e;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .btn-cancel {
+    &:hover {
+      background-color: darken($color-background-light-gray, 2%);
+      opacity: 1;
+    }
+  }
+}
+
+.btn-primary {
+  background-color: #2f80ed;
+  border-color: #2f80ed;
+}
+
+.card-img {
+  border-radius: 10px;
+}
+
+.card-title {
+  margin-bottom: 0;
+}
+
+.border {
+  height: 2px;
+  width: 100%;
+  background-color: #E5E5E5;
+  border: none !important;
+}
+
+.border-thin {
+  height: 1px;
+  width: 100%;
+  background-color: #E5E5E5;
+  border: none !important;
+}
+
+.border-bottom {
+  width: 100%;
+  border-bottom: 1px solid #E5E5E5;
+}
+
+.form-control {
+  border-radius: 10px;
+  height: 40px;
+  border: 1px solid #eee;
+  color: #3E3E3E;
+  &:focus {
+    box-shadow: none;
+    border: 1px solid #2f80ed;
+  }
+}
+
+.input-group-text {
+  border-radius: 10px;
+  border: inherit;
+}
+
+.form-label {
+  color: #727272;
+}
+
+.dropdown-menu {
+  @extend .mrm-white-on-white-vivid-box-shadow;
+  border-radius: 10px;
+  border: none;
+  .form-check-input {
+    margin-top: 0.25rem;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  background-color: #2f80ed;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+input,
+textarea,
+[contenteditable] {
+  caret-color: #3e3e3e;
+}
+
+.card {
+  border-radius: 10px;
+  border: none;
+}
+
+.desktop-page-secondary-header-wrapper {
+  @extend .mrm-main-box-shadow;
+  background: #fff;
+  border-radius: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.initials {
+  height: 35px;
+  width: 35px;
+  display: flex;
+  background-color: #a768b7;
+  border-radius: 50%;
+  margin-right: 5px;
+
+  span {
+    color: #ffffff;
+    font-size: 15px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.md {
+    height: 47px;
+    width: 47px;
+
+    span {
+      font-size: 18px;
+    }
+  }
+
+  &.lg {
+    height: 80px;
+    width: 80px;
+
+    span {
+      font-size: 32px;
+    }
+  }
+}
+
+.navbar {
+  a:hover {
+    opacity: 1;
+  }
+}
+
+.bg-grey {
+  background-color: #f6f8f9;
+}
+
+.modal-content {
+  border-radius: 10px;
+  border: none;
+  .modal-header {
+    border-bottom: 1px solid #E5E5E5;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  .modal-title {
+    text-align: center;
+
+    h1 {
+      width: 100%;
+      font-size: 1.125rem;
+      font-weight: bold;
+      margin-bottom: 0px;
+      line-height: 24px;
+    }
+    p {
+      color: #727272;
+      font-size: 1rem;
+    }
+  }
+
+  button {
+    height: 50px;
+  }
+}
+
+.modal-mobile-slide-from-bottom {
+  @include media-breakpoint-down(xs) {
+    .modal-dialog {
+      display: flex;
+      align-items: flex-end;
+      min-height: calc(100% - 1rem);
+    }
+  
+    &.fade .modal-dialog {
+      transform: translateY(50px);
+    }
+  
+    &.show .modal-dialog {
+      transform: none;
+    }
+  }
+}
+
+.border-rounded {
+  border-radius: 10px;
+}
+
+input[type=checkbox] {
+  position: relative;
+
+  &.is-invalid::after {
+    border: 1px solid $danger;
+  }
+  
+  &::after {
+    content: '';
+    width: 1.4rem;
+    height: 1.4rem;
+    position: absolute;
+    border-radius: 30%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+
+    background-color: white;
+    border: 1px solid lightgray;
+  }
+
+  &:checked::after {
+    background-color: #2f80ed;
+    border: 1px solid #2f80ed;
+  }
+
+  &:checked::before {
+    content: '';
+    background-image: url(https://s.w.org/images/core/emoji/13.0.0/svg/2714.svg);
+    width: 0.7rem;
+    height: 0.7rem;
+    filter: brightness(9);
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    color: white;
+    z-index: 4;
+    position: absolute;
+  }
+
+  ~ label {
+    margin-left: 0.75em;
+  }
+}
+
+a {
+  text-decoration: none;
+
+  &:hover {
+    opacity: .7;
+    text-decoration: none;
+  }
+
+  &.no-format {
+    color: inherit;
+    font-weight: inherit;
+  }
+}

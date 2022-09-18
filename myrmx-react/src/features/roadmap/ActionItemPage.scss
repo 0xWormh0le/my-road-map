@@ -1,0 +1,39 @@
+@import '../../styles/mixins';
+
+.roadmap-action-item-page {
+  min-height: 100vh;
+  @extend .mrm-pb-4;
+
+  .ai-description {
+    overflow-wrap: break-word;
+    @extend .mrm-py-1;
+
+    img {
+      max-width: calc(100% - 30px);
+      margin: auto;
+      display: block;
+      border-radius: 10px;
+    }
+  }
+
+  .ai-notes {
+    @extend .mrm-mt-0_75;
+    margin-bottom: 0;
+  }
+
+  #formNotes {
+    @extend .mrm-mt-0_75;
+  }
+
+  .action-button {
+    width: 15em;
+  }
+  
+  button {
+    @extend .mrm-mt-0_75;
+  }
+  
+  .upload-progress {
+    width: 8em;
+  }
+}

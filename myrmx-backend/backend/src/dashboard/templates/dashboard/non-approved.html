@@ -1,0 +1,17 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Not approved{% endblock %}
+{% block pagetitle %}You haven't been approved yet{% endblock %}
+
+{% block body %}
+
+<div class="card mt-4">
+    <div class="card-body">
+        <div class="not-approved text-center">
+            <i class="fal fa-hand-paper big-icon m-3 mt-4" style="font-size: 4em !important;" aria-hidden="true"></i>
+            <h1>Not Approved</h1>
+            <p>To be able to use the software you have to first be approved. But you can still <a href="{% url "profile" %}">edit your profile</a>.</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,83 @@
+@import '../../styles/mixins';
+
+.manage-user-page {
+  .profile-card {
+    @extend .mrm-my-2;
+
+    .card-body {
+      border-radius: 10px;
+    }
+  }
+
+  .no-roadmap {
+    color: $color-text-light;
+    font-size: $font-size-smaller;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .active-icon {
+    &.active {
+      color: green;
+    }
+    &.inactive {
+      color: lightgray;
+    }
+  }
+
+  .btn-edit-assigned-roadmaps {
+    text-decoration: none;
+    background-color: $color-background-light-gray;
+    line-height: 2;
+    width: 15em;
+    @include media-breakpoint-up(lg) {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+  }
+
+  .info {
+    font-size: $font-size-small;
+
+    div {
+      @extend .mrm-mb-0_5;
+    }
+  }
+
+  .field {
+    color: $color-text-light;
+  }
+
+  .edit-profile-button {
+    position: absolute;
+    top: 0;
+    right: 15px;
+  }
+
+  .desktop-view-container {
+
+    .common-desktop-back-button {
+      @extend .mrm-main-box-shadow;
+      background: #fff;
+    }
+
+    .users-cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+
+      & > div {
+        flex-basis: 49.2%;
+      }
+    }
+  }
+
+  .mobile-view-container {
+    .avatar {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -60%);
+    }
+  }
+}

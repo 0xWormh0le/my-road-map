@@ -1,0 +1,52 @@
+@import '../../styles/mixins';
+
+.roadmap-edit-assigned-coaches-page {
+  .common-header {
+    button {
+      background-color: transparent;
+      box-shadow: none;
+      
+      &:hover {
+        opacity: .7;
+      }
+    }
+
+    .btn-save {
+      color: $primary;
+    }
+  }
+
+  .default-roadmap-thumbnail {
+    background-color: $color-item-lightpurple;
+    border-radius: 10px;
+    height: 1.2em;
+    width: 1.2em;
+    color: white;
+    @extend .mrm-p-0_25;
+  }
+
+  .coach-type, .coach-email {
+    color: $color-text-light;
+  }
+
+  .coach-card {
+    p {
+      word-break: break-all;
+      line-height: 1;
+    }
+
+    button {
+      height: inherit;
+      font-size: $font-size-smaller;
+
+      &.unassign {
+        background-color: inherit;
+        box-shadow: none;
+
+        &:hover {
+          background-color: white;
+        }
+      }
+    }
+  }
+}

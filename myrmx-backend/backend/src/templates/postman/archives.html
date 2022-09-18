@@ -1,0 +1,18 @@
+{% extends "postman/base_folder.html" %}
+{% load i18n %}
+{% block pagetitle %}Archived Messages{% endblock %}
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Messages" "postman:inbox" %}
+        {% breadcrumb "Archive" "" %}
+        {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+    {% endblock %}
+{% endblock %}
+
+{% block pm_archive_button %}{% endblock %}
+{% block pm_undelete_button %}{% endblock %}
+{% block pm_footer_info %}
+{% trans "Messages in this folder will never be removed. You can use this folder for long term storage." %}
+{% endblock %}
+{% block active-archive %}btn-secondary{% endblock %}

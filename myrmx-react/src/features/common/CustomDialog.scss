@@ -1,0 +1,15 @@
+@import '../../styles/mixins';
+
+.common-custom-dialog {
+  .btn-cancel {
+    color: $color-text-normal;
+    
+    &:focus {
+      border: none;
+    }
+
+    &:hover {
+      color: lighten($color-text-light, 10%);
+    }
+  }  
+}

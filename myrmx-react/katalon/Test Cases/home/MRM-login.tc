@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>User Login in and Log out</description>
+   <name>MRM-login</name>
+   <tag>User</tag>
+   <comment></comment>
+   <testCaseGuid>473be195-8efc-4896-8c44-806a5670da8e</testCaseGuid>
+</TestCaseEntity>

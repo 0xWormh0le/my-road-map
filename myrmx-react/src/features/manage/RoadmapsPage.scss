@@ -1,0 +1,45 @@
+@import '../../styles/mixins';
+
+.manage-roadmaps-page {
+  .status-active {
+    display: block;
+    background-color: $color-item-green;
+    @extend .mrm-p-0_25;
+    border-radius: 10px;
+    color: white;
+    max-width: 80px;
+    margin: auto;
+    font-weight: 600;
+  }
+  .common-search-bar {
+    flex-grow: 1;
+    margin-right: 1rem;
+  }
+  .search {
+    background: $color-input-dark-blue;
+    -webkit-appearance: none;
+  }
+  .btn-action {
+    background-color: $color-background-light-gray;
+    min-height: 30px;
+
+    svg {
+      vertical-align: middle;
+    }
+  }
+}
+
+
+.desktop-page-container {
+  .common-custom-table {
+    th, td {
+      padding-left: 15px;
+      padding-right: 15px;
+      font-size: 1rem;
+    }
+    a {
+      font-weight: 600;
+    }
+  }
+}
+

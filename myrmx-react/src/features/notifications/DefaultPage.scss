@@ -1,0 +1,16 @@
+@import '../../styles/mixins';
+
+.notifications-default-page {
+  min-height: 50vh;
+
+  .container {
+    @extend .mrm-pt-0_5;
+  }
+}
+
+.mark-all-as-read-modal {
+  .modal-content {
+    background-color: transparent;
+    border: none;
+  }
+}

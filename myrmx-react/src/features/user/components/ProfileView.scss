@@ -1,0 +1,142 @@
+@import '../../../styles/mixins';
+
+.common-profile-view {
+  .profile-card {
+    @extend .mrm-my-1_5;
+    @extend .mrm-py-1;
+    @extend .mrm-main-box-shadow;
+
+    background-color: white;
+    border-width: 0;
+    border-radius: 10px;
+
+    .wrap {
+      overflow-wrap: break-word;
+    }
+
+    .card-in-card {
+      @extend .mrm-white-on-white-box-shadow;
+      @extend .mrm-p-0_5;
+
+      background-color: #fff;
+      font-weight: bold;
+      min-height: get-scaled-size($scale-factor-4);
+      display: flex;
+      align-items: center;
+
+      &>span {
+        @extend .mrm-ml-1;
+      }
+    }
+
+    .profile-card-header {
+      p {
+        margin-bottom: 0;
+
+        &.font-italic {
+          font-size: $font-size-small;
+          color: $color-text-light;
+        }
+
+        &:first-child {
+          font-size: $font-size-large;
+          color: $color-text-normal;
+        }
+      }
+    }
+
+    .header {
+      font-size: $font-size-large;
+      color: $color-text-normal;
+    }
+  }
+
+  .edit-profile-btn {
+    @extend .mrm-px-1;
+    width: auto;
+    border-width: 0;
+    position: relative;
+    top: -4px;
+    right: -2px;
+  }
+
+  .desktop-profile-header {
+    .avatar {
+      position: absolute;
+      left: get-scaled-size($scale-factor-2);
+      transform: translate(0, -30%);
+    }
+
+    .profile-card:first-child {
+      @extend .mrm-mt-3;
+      min-height: get-scaled-size($scale-factor-8);
+    }
+
+    .profile-card-item {
+      &>div:first-child {
+        text-align: center;
+      }
+    }
+  }
+
+  .desktop-view-container {
+    .users-cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+
+      & > div {
+        flex-basis: 49.2%;
+      }
+    }
+  }
+}
+
+.user-components-profile-view {
+  .coach-card {
+    @extend .mrm-mt-0_75;
+    position: relative;
+  }
+
+  hr {
+    margin-top: 1.3rem;
+    margin-bottom: 1.3rem;
+    background: #e8e8e8;
+  }
+
+  .desktop-view-container {
+    .invite-coach {
+      position: absolute;
+      top: get-scaled-size($scale-factor-0_75);
+      right: get-scaled-size($scale-factor-1);
+    }
+
+    .users-cards-container {
+      .dropdown {
+        .more-btn-desktop {
+          top: unset;
+          bottom: get-scaled-size($scale-factor-0_5);
+        }
+      }
+    }
+  }
+
+  .mobile-view-container {
+    .container {
+      @extend .mrm-pt-1;
+      @extend .mrm-pb-4;
+    }
+
+    .avatar {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -60%);
+    }
+
+    .invite-coach {
+      position: absolute;
+      top: -11px;
+      right: 0;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>User> EntrepRoadmap> Stage> +Add Action item</description>
+   <name>add_action_item</name>
+   <tag>User</tag>
+   <comment></comment>
+   <testCaseGuid>86fe9f14-b9d6-40b9-b36f-d1a0fe0aa797</testCaseGuid>
+</TestCaseEntity>

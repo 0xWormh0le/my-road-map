@@ -1,0 +1,58 @@
+{% extends 'registration/email_base_html.html' %}
+{% load humanize %}
+
+{% block body %}
+    <table style="font-family: 'Open Sans'; font-size: 20px;">
+        <tbody>
+            <tr width="100%">
+                <td style="color:#1D2327;">Hi, {{ user.first_name }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% if is_coach %}
+        <p style="color: #77787D; font-size: 16px; max-width: 400px;">You have a new {{ user.company.user_synonym|lower }} to coach.</p>
+        <table style="margin-bottom: 20px;">
+            <tbody>
+                <tr width="100%">
+                    {% if new_user.photo %}
+                        <td>
+                          <img style="width: 45px; height: 45px; border-radius: 50%; margin-right: 10px;" src="{{ new_user.get_photo_url }}" alt="photo of {{ new_user.get_full_name }}">
+                        </td>
+                    {% else %}
+                        <td style="background-color:#A768B7; border-radius:16px; line-height:16px; min-width:32px; height:32px; width:32px; text-align:center; vertical-align:middle">
+                          <span style="font-size:11px; font-weight:400; line-height:16px; color:#fff">{{ new_user.first_name|slice:"1"|title }}{{ new_user.last_name|slice:"1"|title }}</span>
+                        <td>
+                    {% endif %}
+                    <td style="color:#1D2327;">{{ new_user.get_full_name }} ({{ new_user.email }})</td>
+                </tr>
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: #77787D; font-size: 16px; max-width: 400px;">
+            {% if accepted_invite %}
+                {{ coach.get_full_name }} ({{ coach.email }}) has accepted your invitation and is now your {{ user.company.coach_synonym|lower }}.
+            {% else %}
+                Say hello to your new {{ user.company.coach_synonym|lower }}{% if coaches_count != 1 %}es{% endif %}.
+            {% endif %}
+        </p>
+        <table style="margin-bottom: 20px;">
+            <tbody>
+                {% for coach in coaches %}
+                    <tr width="100%">
+                        {% if coach.photo %}
+                            <td>
+                                <img style="width: 45px; height: 45px; border-radius: 50%; margin-right: 10px;" src="{{ coach.get_photo_url }}" alt="photo of {{ coach.get_full_name }}">
+                            </td>
+                        {% else %}
+                            <td style="background-color:#A768B7; border-radius:16px; line-height:16px; min-width:32px; height:32px; width:32px; text-align:center; vertical-align:middle">
+                                <span style="font-size:11px; font-weight:400; line-height:16px; color:#fff">{{ coach.first_name|slice:"1"|title }}{{ coach.last_name|slice:"1"|title }}</span>
+                            </td>
+                        {% endif %}
+                        <td style="color:#1D2327;">{{ coach.get_full_name }} ({{ coach.email }})</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; padding-left: 30px; padding-right: 30px; text-align: center; text-decoration: none; font-weight: 500; margin-top: 10px;" href="{{ primary_link }}">Go to Dashboard</a>
+{% endblock %}

@@ -1,0 +1,96 @@
+.btn-white {
+  background-color: white;
+  color: $color-text-light;
+  @extend .mrm-main-box-shadow;
+
+  &:focus, &:active, &:hover {
+    background-color: white;
+    @extend .mrm-main-box-shadow;
+    color: $color-text-light;
+  }
+}
+
+.btn-gray {
+  background-color: $color-background-light-gray;
+  color: $color-text-light;
+  &:focus, &:active, &:hover {
+    color: $color-text-light;
+    background-color: darken($color-background-light-gray, 3%);
+    opacity: 1;
+  }
+}
+
+.css-xb97g8:hover {
+  cursor: pointer;
+}
+.css-g1d714-ValueContainer {
+  .css-1rhbuit-multiValue {
+    border-radius: 6px;
+    .css-12jo7m5 {
+      font-size: 1rem;
+    }
+  }
+}
+
+.delete-comment-message-icon {
+  @extend .mrm-pl-0_5;
+  @extend .mrm-pr-0_25;
+
+  color: $color-text-disabled; 
+  font-size: .75rem;
+
+  &:hover {
+    color: lighten($color-text-disabled, 3%);
+    cursor: pointer;
+  }
+}
+
+.card {
+  @extend .mrm-main-box-shadow;
+}
+
+.rc-slider-disabled {
+  background-color: transparent;
+}
+
+
+.fadein {
+  animation: fadein 1s;
+  -moz-animation: fadein 1s; /* Firefox */
+  -webkit-animation: fadein 1s; /* Safari and Chrome */
+  -o-animation: fadein 1s; /* Opera */
+}
+
+@keyframes fadein {
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}
+
+@-moz-keyframes fadein { /* Firefox */
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}
+@-o-keyframes fadein { /* Opera */
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}

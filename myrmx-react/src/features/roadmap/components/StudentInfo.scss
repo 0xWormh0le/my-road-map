@@ -1,0 +1,10 @@
+@import '../../../styles/mixins';
+
+.roadmap-components-student-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  strong {
+    color: $color-text-normal;
+  }
+}

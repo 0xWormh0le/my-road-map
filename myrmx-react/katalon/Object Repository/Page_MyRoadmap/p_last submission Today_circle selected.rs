@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebElementEntity>
+   <description></description>
+   <name>p_last submission Today_circle selected</name>
+   <tag></tag>
+   <elementGuidId>cac31275-1890-4356-8931-e94e8c9e7620</elementGuidId>
+   <selectorCollection>
+      <entry>
+         <key>XPATH</key>
+         <value>//div[@id='root']/div/div[2]/div/div[2]/div/div[2]/div/div/div/div[3]/div/p</value>
+      </entry>
+      <entry>
+         <key>CSS</key>
+         <value>p.circle.selected</value>
+      </entry>
+   </selectorCollection>
+   <selectorMethod>XPATH</selectorMethod>
+   <useRalativeImagePath>true</useRalativeImagePath>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>tag</name>
+      <type>Main</type>
+      <value>p</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>class</name>
+      <type>Main</type>
+      <value>circle selected</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath</name>
+      <type>Main</type>
+      <value>id(&quot;root&quot;)/div[@class=&quot;home-app&quot;]/div[@class=&quot;page-container blue-ocean&quot;]/div[@class=&quot;roadmap-competency-page&quot;]/div[@class=&quot;p-3&quot;]/div[@class=&quot;roadmap-components-competency-page-competency-learn-tab tab-container&quot;]/div[@class=&quot;d-flex flex-column&quot;]/div[@class=&quot;self-reflection pb-2 order-0 row&quot;]/div[@class=&quot;col&quot;]/div[@class=&quot;assessment-container overflow-hidden&quot;]/div[@class=&quot;align-items-center assessment green active row no-gutters&quot;]/div[@class=&quot;col-1&quot;]/p[@class=&quot;circle selected&quot;]</value>
+   </webElementProperties>
+   <webElementXpaths>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:idRelative</name>
+      <type>Main</type>
+      <value>//div[@id='root']/div/div[2]/div/div[2]/div/div[2]/div/div/div/div[3]/div/p</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:position</name>
+      <type>Main</type>
+      <value>//div[3]/div/p</value>
+   </webElementXpaths>
+</WebElementEntity>

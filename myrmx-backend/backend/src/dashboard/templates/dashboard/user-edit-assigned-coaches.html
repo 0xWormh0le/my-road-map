@@ -1,0 +1,43 @@
+{% extends "dashboard/base.html" %}
+
+{% block body %}
+
+<a class="back-btn mb-3" href="{% url 'roadmaps' %}"><i class="far fa-arrow-left"></i></a>
+
+<div class="card edit-assigned-coaches">
+  <div class="card-body">
+      <h4 class="mb-3">{{ roadmap.title }}</h4>
+      <h5><b>Current Coaches</b></h5>
+      {% for coach in assigned_coaches %}
+          <div class="coach-card mb-3 d-flex justify-content-between">
+            <div class="align-self-center coach-name">{{ coach.first_name }} {{ coach.last_name }}<br> <i>{{ coach.email }}</i></div>
+            <div class="align-self-center">
+              <a class="btn btn-2" href="{% url 'remove_coach' roadmap_id coach.id student_id %}"><i class="fal fa-trash"></i> Remove</a>
+            </div>
+          </div>
+      {% empty %}
+          <div class="help-text-2">No Assigned Coaches</div>
+      {% endfor %}
+      <h5 class="mb-3"><b>Available Coaches</b></h5>
+      {% if coach_templates %}
+          {% for coach in coach_templates %}
+              <div class="coach-card mb-3 d-flex justify-content-between">
+                <div class="align-self-center coach-name">{{ coach.first_name }} {{ coach.last_name }}<br> <i>{{ coach.email }}</i></div>
+                <div class="align-self-center">
+                  <a class="btn btn-primary" href="{% url 'assign_coach' roadmap_id coach.id student_id %}"><i class="fal fa-plus"></i> Assign</a>
+                </div>
+              </div>
+          {% empty %}
+              <div class="help-text-2">No Available Coaches</div>
+          {% endfor %}
+      {% else %}
+          <div class="help-text-2">No Available Coaches</div>
+      {% endif %}
+  </div>
+</div>
+
+{% endblock body %}
+
+{% block extrafooter %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+{% endblock %}

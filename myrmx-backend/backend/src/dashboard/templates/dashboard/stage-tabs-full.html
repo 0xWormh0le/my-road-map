@@ -1,0 +1,68 @@
+<div id="stages-tabs-full" class="{% if editing %}sort-tabs{% endif %}" >
+{% if request.user.is_student and not request.user.is_admin %}
+    {% if not request.user.is_coach %}
+        {% for stage in stages_info.stages %}
+            {% if not stage.hidden_from_users %}
+                <a class="tab {% if not request_user_company_has_dark_ui %}light-ui{% endif %} can-sort"
+                    id="click-stage{{ stage.id }}"
+                    data-toggle="tab-toggle" href="#stage{{ stage.id }}"
+                    data-source="{% url 'ajax_competencies' %}"
+                    data-student="{{ student.id }}"
+                    data-stage="{{ stage.id }}"
+                    data-number="{{ forloop.counter0 }}"
+                >
+                    <div class="title">
+                        {% if stage.unread_activity %}
+                            <div class="notification-dot"></div>
+                        {% endif %}
+                        {{ stage.title }}
+                    </div>
+                    {% if not is_template %}
+                        <div class="progress-info">
+                            <div class="progress">
+                                <div style="width: {{ stage.progress }}%" role="progressbar" class="progress-bar"></div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+{% if request.user.is_coach or request.user.is_admin %}
+    {% for stage in stages_info.stages %}
+            <a class="tab can-sort"
+                id="click-stage{{ stage.id }}"
+                data-toggle="tab-toggle" href="#stage{{ stage.id }}"
+                data-source="{% url 'ajax_competencies' %}"
+                data-student="{{ student.id }}"
+                data-stage="{{ stage.id }}"
+                data-number="{{ forloop.counter0 }}"
+            >
+                <div class="title">
+                    {% if stage.unread_activity %}
+                        <div class="notification-dot"></div>
+                    {% endif %}
+                    {{ stage.title }} {% if stage.hidden_from_users %}<span>(hidden for {{request.user.company.user_synonym|lower}})</span>{% endif %}
+                </div>
+                {% if not is_template %}
+                    <div class="progress-info">
+                        <div class="progress">
+                            <div style="width: {{ stage.progress }}%" role="progressbar" class="progress-bar"></div>
+                        </div>
+                    </div>
+                {% endif %}
+            </a>
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+    {% if editing %}
+        <a class="tab add-stage-tab" href="#" id="click-add-stage" data-source="{% url 'ajax_add_stage' %}">
+            + <span class="full-text">Add Stage</span>
+        </a>
+    {% endif %}
+</div>

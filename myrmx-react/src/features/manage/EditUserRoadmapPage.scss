@@ -1,0 +1,87 @@
+@import '../../styles/mixins';
+
+.manage-edit-user-roadmap-page {
+  .avatar {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -60%);
+  }
+
+  .card-body {
+    border-radius: 10px;
+  }
+
+  .common-header {
+    button {
+      background-color: transparent;
+      box-shadow: none;
+      
+      &:hover {
+        opacity: .7;
+      }
+    }
+
+    .btn-save {
+      color: $primary;
+    }
+  }
+}
+
+.manage-edit-user-roadmap-component {
+  .no-roadmaps {
+    font-style: italic;
+    color: $color-text-disabled;
+    text-align: center;
+  }
+  .card-in-card {
+    @extend .mrm-white-on-white-box-shadow;
+
+    background-color: #fff;
+    min-height: 55px;
+    line-height: 20px;
+  }
+  .roadmap-title  {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    @extend .mrm-p-0_5;
+    @extend .mrm-mt-1;
+    font-size: $font-size-normal;
+    border-bottom: 1px solid #ebebeb;
+
+    button {
+      height: inherit;
+      font-size: $font-size-small;
+
+      &.unassign {
+        background-color: inherit;
+        box-shadow: none;
+
+        &:hover {
+          background-color: white;
+        }
+      }
+    }
+  }
+}
+
+.manage-edit-user-roadmap-modal {
+  .modal-header {
+    .common-user-avatar {
+      @extend .mrm-mr-0_5;
+
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    p {
+      margin-bottom: 0;
+      text-align: center;
+    }
+  }
+
+  .modal-content {
+    @extend .mrm-pb-2;
+  }
+}

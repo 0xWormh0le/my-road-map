@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Dashboard" "dashboard" %}
+            {% breadcrumb  name  "" %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block content %}
+
+<a class="btn btn-2 float-right" href="{% url 'dashboard' %}"><i class="fal fa-arrow-left"></i> Back to Dashboard</a>
+
+<h3>Add/Edit User Specific Objective </h3>
+
+<p>{{ stage.id }}</p>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include 'dashboard/form-table-vertical.html' %}
+    {{ form.media }}
+    <a><button type="submit" class="btn btn-primary mb-3">Save</button></a>
+
+</form>
+
+<a class="btn btn-2 float-right" href="{% url 'dashboard' %}"><i class="fal fa-arrow-left"></i> Back to Dashboard</a>
+
+
+{% endblock content %}

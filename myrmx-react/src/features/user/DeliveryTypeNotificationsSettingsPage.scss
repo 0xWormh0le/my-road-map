@@ -1,0 +1,21 @@
+@import '../../styles/mixins';
+
+.user-delivery-type-notifications-settings-page {
+  .notification-type-switch {
+    padding: 15px;
+
+    div:last-child {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  .button-container {
+    padding: 15px;
+
+    button {
+      background-color: #f4f4f5;
+    }
+  }
+}

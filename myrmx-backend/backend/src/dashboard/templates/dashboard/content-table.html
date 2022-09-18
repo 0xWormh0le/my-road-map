@@ -1,0 +1,92 @@
+{% load my %}
+
+<div id="content-list">
+    <div class="table-header d-none d-lg-block bg-white">
+        <div class="row px-3">
+            <div class="d-flex col-12 col-lg-8 justify-content-between">
+                <div class="c-title column-label"></div>
+            </div>
+            <div class="col-12 col-lg-4 second-row mt-2 mt-lg-0">
+                <div class="row">
+                    <div class="col column-label"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% for item in content %}
+        <div id="q-{{item.id}}" class="outer {% if editing or not item.parent and item.student and not is_all_c %} can-sort {% endif %}">
+          <div class="row px-3">
+              <div class="col-12">
+                  <div class="row no-gutters">
+                      <div class="col-10">
+                          <div class="d-flex">
+                              <div class="flex-fill c-title">
+                                  {% if editing or not item.parent and item.student and not is_all_c %}<i class="fa fa-bars mr-2"></i>{% endif %}
+                                  {% firstof item.parent.title item.title|urlize %}
+                              </div>
+                              {% if student == request.user or request.user.is_coach and not is_template %}
+                                  {% if item.response %}
+                                      {% if item.competency.stage.roadmap.users_can_edit_content or observing %}
+                                          <div class="c-response-edit c-response-edit-1 c-response-edit-btn text-nowrap" data-url="{% url 'ajax_edit_c_response'%}" data-pk={{item.pk}}>Edit</div>
+                                      {% endif %}
+                                  {% else %}
+                                      <div class="c-response-edit c-response-edit-1 c-response-edit-btn text-nowrap" data-url="{% url 'ajax_edit_c_response'%}" data-pk={{item.pk}}>Add</div>
+                                  {% endif %}
+                              {% endif %}
+                          </div>
+                          {% if item.response %}
+                              {% if item.competency.stage.roadmap.users_can_edit_content or observing %}
+                                  <div class="mt-2 c-response c-response-edit c-response-edit-2" data-url="{% url 'ajax_edit_c_response'%}" data-pk={{item.pk}}>{{item.response|safe|linebreaks|urlize}}</div>
+                              {% else %}
+                                  <div class="mt-2">{{item.response|safe|linebreaks|urlize}}</div>
+                              {% endif %}
+                          {% else %}
+                              <div class="c-response"></div>
+                          {% endif %}
+                          <textarea class="mt-2 d-none form-control"></textarea>
+                      </div>
+                      <div class="col-2">
+                          <div class="c-actions">
+                              {% if is_template %}
+                                  <i title="Edit item" class="fal fa-pencil c-edit pointer ml-3 float-right" data-href="{% url 'global_content' item.pk %}"></i>
+                                  <i title="Delete item" class="fas fa-trash c-delete pointer ml-3 float-right" data-href="{% url 'global_content' item.pk %}"></i>
+                              {% elif not item.parent %}
+                                      <i title="Delete item" class="fal fa-trash c-delete pointer ml-3 float-right" data-href="{% url 'content' item.pk %}"></i>
+                                      <i title="Edit item" class="fal fa-pencil c-edit pointer ml-3 float-right" data-href="{% url 'content' item.pk %}"></i>
+                              {% endif %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="outer help-text p-2">No content</div>
+    {% endfor %}
+</div>
+
+
+<script>
+    $('#content-list').sortable({
+        axis: 'y',
+        items: ".can-sort",
+        cursor: "move",
+        stop: ()=>{
+            var sortedIDs = $( "#content-list" ).sortable( "toArray" );
+            var orderMapping = {}
+            sortedIDs.forEach((el, i)=>{
+                orderMapping[el.replace('c-','')] = i;
+            })
+            $.ajax({
+                url: '/ajax-sort-content/',
+                type: 'POST',
+                data: {
+                    orderMapping: JSON.stringify(orderMapping),
+                    is_globals: '{{ editing }}'.toLowerCase(),
+                },
+                success: function(data) {}
+            });
+        }
+    })
+</script>

@@ -1,0 +1,155 @@
+{
+  "project_info": {
+    "project_number": "235319889313",
+    "firebase_url": "https://myroadmap-62fec.firebaseio.com",
+    "project_id": "myroadmap-62fec",
+    "storage_bucket": "myroadmap-62fec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235319889313:android:910158eac2f248c62a4fe0",
+        "android_client_info": {
+          "package_name": "io.myroadmap.addo_university.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpVhthq0zzPeL4o6Tz5qNSSSaJm-d09xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235319889313-6ui2avbj1tcrpt6nqvs9r01i2ai7f4ko.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.myroadmap.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235319889313:android:3ec0a592d1e7f4202a4fe0",
+        "android_client_info": {
+          "package_name": "io.myroadmap.bloom.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpVhthq0zzPeL4o6Tz5qNSSSaJm-d09xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235319889313-6ui2avbj1tcrpt6nqvs9r01i2ai7f4ko.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.myroadmap.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235319889313:android:0d7b96dd3ccbea872a4fe0",
+        "android_client_info": {
+          "package_name": "io.myroadmap.myroadmap_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpVhthq0zzPeL4o6Tz5qNSSSaJm-d09xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235319889313-6ui2avbj1tcrpt6nqvs9r01i2ai7f4ko.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.myroadmap.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235319889313:android:209aeb0de3fb1c2f2a4fe0",
+        "android_client_info": {
+          "package_name": "io.myroadmap.parent_guidance.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpVhthq0zzPeL4o6Tz5qNSSSaJm-d09xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235319889313-m2lbs1tc4dn04lduee58du76au18hcv0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235319889313-6ui2avbj1tcrpt6nqvs9r01i2ai7f4ko.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.myroadmap.ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

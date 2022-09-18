@@ -1,0 +1,314 @@
+{% extends "dashboard/base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+
+{% block breadcrumbs_space %}
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% if request.user.company.id == 999 %}
+    {% breadcrumb "Dashboard" "" %}
+{% endif %}
+{% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+{% endblock %}
+
+{% block body %}
+
+{% if not request.user.company.id == 87 %}
+    <div class="row">
+      <div class="col-md-6">
+        <div class="h1-section-header {% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %}">Unseen Activity ( {{notifications_count}} items )</div>
+        <div class="dashboard-notifications-wrapper mb-3">
+          <div class="card">
+              {% if notifications %}
+                  <!-- <a class="float-right btn-2 mb-2" id="mark-all-as-read" href="{% url 'notifications:notifications_all' %}?r=1">Mark all as seen</a> -->
+                  <div class="notification-cards mb-4">
+                      {% for note in notifications %}
+                      <a href="{{ note.get_link_2 }}">
+                          <div class="notification-card d-flex">
+                              <div class="left d-flex justify-content-center">
+                                <div class="profile-photo" style="{% if note.sender_object.photo %} background-image: url('{{ note.sender_object.get_photo_url }}') {% endif %}" aria-label="photo of {{ note.sender_object.get_full_name }}"> {% if not note.sender_object.photo %}<span>{{ note.sender_object.first_name|slice:"1"|title }}{{ note.sender_object.last_name|slice:"1"|title }} </span>{% endif %}</div>
+                                {% if note.verb == "COMMENTED" %}<div class="badge"><i class="fal fa-comment icon"></i></div>{% endif %}
+                                {% if note.verb == "NEEDS_APPROVAL" %}<div class="badge"><i class="fal fa-clock icon"></i></div>{% endif %}
+                                {% if note.verb == "APPROVED" %}<div class="badge"><i class="far fa-check icon"></i></div>{% endif %}
+                                {% if note.verb == "NEEDS_WORK" %}<div class="badge"><i class="fal fa-exclamation-triangle icon"></i></div>{% endif %}
+                                {% if note.verb == "NEW_USER" %}<div class="badge"><i class="fal fa-user-plus icon"></i></div>{% endif %}
+                                {% if note.verb == "NEW_ACTION_ITEM" %}<div class="badge"><i class="fal fa-check-circle icon"></i></div>{% endif %}
+                                {% if note.verb == "AI_NEEDS_APPROVAL" %}<div class="badge"><i class="fal fa-check-circle icon"></i></div>{% endif %}
+                                {% if note.verb == "AI_APPROVED" %}<div class="badge"><i class="fal fa-check-circle icon"></i></div>{% endif %}
+                              </div>
+                              <div class="flex-grow-1">
+                                <div class="text">
+                                  <div class="note">{{ note|safe }}</div>
+                                  <div class="date">{{ note.timestamp }}</div>
+                                </div>
+                              </div>
+                        </div>
+                        </a>
+                      {% endfor %}
+                  </div>
+              {% else %}
+              <div class="no-notifications">
+                <h3 class="mb-3 text-center">You're all caught up!</h3>
+                <i class="no-content-icon fal fa-thumbs-up"></i>
+              </div>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-5">
+          {% if request.user.is_superuser %}
+            <table id="admin-table" class="display">
+              <thead style="background: #ddd;">
+                <tr>
+                  <th scope="col">Org Name</th>
+                  <th scope="col">Total Accounts</th>
+                  <th scope="col">Roadmaps</th>
+                  <th scope="col">Users assigned to a Roadmap</th>
+                  <th scope="col">Users assigned to a Coach</th>
+                  <th scope="col">Users with at least 1 new approved green assessment in the last month</th>
+                  <th scope="col">Active user accounts (login within last 30 days)</th>
+                  <th scope="col">Active coach accounts (login within last 30 days)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ascension Guru</td>
+                  <td>93</td>
+                  <td>2</td>
+                  <td>(9/13) 80%</td>
+                  <td>(7/13) 60%</td>
+                  <td>(4/12) 40%</td>
+                  <td>(9/12) 70%</td>
+                  <td>(0/1) 0%</td>
+                </tr>
+                <tr>
+                  <td>Bloom For Women</td>
+                  <td>17</td>
+                  <td>2</td>
+                  <td>(9/13) 80%</td>
+                  <td>(7/13) 60%</td>
+                  <td>(4/12) 40%</td>
+                  <td>(9/12) 70%</td>
+                  <td>(0/1) 0%</td>
+                </tr>
+              </tbody>
+            </table>
+            {% endif %}
+
+
+            {% if roadmaps.count == 0 and request.user.is_admin %}
+                <div class="container">
+                  <div class="main-content-card rounded no-roadmaps-admin">
+                    <h3>Do data to display.</h3>
+                    <p style="text-align:center;">There will be no data to display until you create a Roadmap</p>
+                    <i class="fal fa-chart-bar no-content-icon"></i>
+                    <a class="btn btn-primary" href="{% url 'staff_roadmaps' %}"> Go to Roadmap Library</a>
+                  </div>
+                </div>
+            {% elif roadmaps.count == 0 and request.user.is_coach %}
+                <div class="container">
+                  <div class="main-content-card rounded no-roadmaps-admin">
+                    <h3>Do data to display.</h3>
+                    <p style="text-align:center;">There will be no data to display until an Admin creates a Roadmap or your users make progress on a Roadmap</p>
+                    <i class="fal fa-chart-bar no-content-icon"></i>
+                  </div>
+                </div>
+            {% else %}
+                <div class="h1-section-header {% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %}">Published Roadmaps ({{roadmaps.count}})</div>
+                <div class="mb-3 dashboard-roadmap-container">
+                    <div class="content-card" style="padding: 15px;">
+                        {% for roadmap in roadmaps %}
+                              <div class="roadmap-row row card-row py-2 align-items-center card-row hover-shadow">
+                                  <div class="col-10 dashboard-roadmap-title">{{ roadmap.title }}</div>
+                                  <!-- <div class="col-2 dashboard-roadmap-users">{{ roadmap.users_count }} {{ request.user.company.user_synonym }}s</div> -->
+                                  <!-- <div class="col-2">{{ roadmap.not_started }}</div>
+                                  <div class="col-2">{{ roadmap.coaches.count }}</div> -->
+                                  {% if request.user.is_admin %}
+                                      <div class="col-1 d-flex align-items-center px-0">
+                                          <a href="{% url 'roadmap_stats' roadmap.id %}">
+                                            <div class="btn btn-primary"><i class="fas fa-chart-area"></i></div>
+                                          </a>
+                                          <!-- <div class="status-counts d-flex flex-fill">
+                                              <div class="green-count">{{ roadmap.greens }}</div>
+                                              <div class="yellow-count">{{ roadmap.yellows }}</div>
+                                              <div class="red-count">{{ roadmap.reds }}</div>
+                                          </div>
+                                          <div class="chart-container d-flex align-items-center flex-fill" style="position: relative; height:100%; width:50%">
+                                              <canvas class="doughnutChart" width="10" height="6" data-data="{{ roadmap.chartdata }}"></canvas>
+                                          </div> -->
+                                      </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- <div class="col-12 col-md-3">
+                    <div class="p-3" style="background-color: #fff; color: #333; border-radius: 3px;">
+
+                        <div class="chart-container aggregate-roadmaps-chart mx-auto mb-3" style="position: relative; height:100%; width:60%">
+                            <canvas class="doughnutChart" data-data="{{summary}}" width="62px" height="62px"></canvas>
+                        </div>
+
+
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label">Total Roadmaps</div>
+                            <div>{{ roadmaps.count }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label">Total Objectives</div>
+                            <div>{{ summary.total }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label">Green</div>
+                            <div>{{ summary.green }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label ml-4">Pending</div>
+                            <div>{{ summary.green_pending }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label ml-4">Approved</div>
+                            <div>{{ summary.green_approved }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label ml-4">Rejected</div>
+                            <div>{{ summary.green_rejected }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label">Yellow</div>
+                            <div>{{ summary.yellow }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label">Red</div>
+                            <div>{{ summary.red }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="summary-label">Not Assessed</div>
+                            <div>{{ summary.grey }}</div>
+                        </div>
+                    </div>
+                </div> -->
+            {% endif %}
+        </div>
+      </div>
+    </div>
+{% endif %}
+
+
+{% if request.user.company.follow_up_schedule %}
+    <div class="d-flex justify-content-between">
+        <div class="h1-section-header {% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %} mb-3">Follow Up Schedule<div id="show-completed-items" class="btn btn-2 ml-3">Show completed items</div><div id="hide-completed-items" class="btn btn-2 ml-3">Show uncompleted items</div></div>
+    </div>
+
+    <div id="all-follow-up-items" data-source="{% url 'ajax_follow_up_items' %}{% if edit %}?e=1{% endif %}">
+        <div id="load-follow-up-items"></div>
+    </div>
+{% endif %}
+
+<div class="d-flex justify-content-between mb-3">
+    <div class="h1-section-header {% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %} mb-4">
+      {% if request.user.company.id == 87 %}
+          My Coaching
+      {% else %}
+          All {{ request.user.company.user_synonym }}s
+      {% endif %}
+      ({{ students_count }})
+    </div>
+    {% include "dashboard/header-dropdown.html" with name="sort_by" options=sort_by_options %}
+</div>
+
+{% if request.user.companies|length > 1 %}
+  <div class="card rounded mb-4">
+    <p class="m-2" style="text-align:center">Looking for your other connections? Go to your <a href="{% url 'profile' %}">profile page</a> to switch which organization you are working under.</p>
+  </div>
+{% endif %}
+
+<div class="card-container mt-3 mt-md-0">
+    {% for student in students %}
+        {% include "dashboard/student-card.html" %}
+        {% empty %}
+        <div class="card p-4">You have no {{ request.user.company.user_synonym }}s to coach. </div>
+    {% endfor %}
+</div>
+
+<div id="roadmap-modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content dashboard-modal-content">
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extrafooter %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#admin-table').DataTable();
+    } );
+    setTimeout(function(){
+        $(".doughnutChart").each(function(i, el){
+            el = $(el)
+            var data = JSON.parse(el.data('data').replace(/'/g, '"'))
+            new Chart(el[0].getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ["Green", "Yellow", "Red", "Not Assessed"],
+                    datasets: [{
+                        data: [data.green, data.yellow, data.red, data.grey],
+                        backgroundColor: [
+                            'rgba(30, 211, 125, 1)',
+                            'rgba(234, 220, 115, 1)',
+                            'rgba(247, 68, 0, 1)',
+                            'rgba(175,175,175,0.3)',
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    cutoutPercentage: 75,
+                    legend: {
+                        display: false,
+                    },
+                    scales: {
+                    },
+                    layout: {
+                        padding: {
+                            right: 0,
+                        }
+                    }
+                }
+            });
+        })
+    }, 1000);
+
+    // $('.roadmap-row').click(function () {
+    //     var modal = $('#roadmap-modal')
+    //     modal.find('.modal-content').html("<div class='m-auto py-5'><i class='fa fa-spinner fa-spin fa-3x fa-fw'></i></div>")
+    //     modal.modal()
+    //     var roadmap = $(this).data('roadmap');
+    //     var url = $(this).data('url');
+    //     $.ajax({
+    //         url: url,
+    //         type: 'GET',
+    //         data: {
+    //             roadmap_id: roadmap
+    //         },
+    //         success: function (data) {
+    //             $('.modal-content').html(data['modal_html']);
+    //         }
+    //     });
+    // });
+
+
+
+
+</script>
+{% endblock %}

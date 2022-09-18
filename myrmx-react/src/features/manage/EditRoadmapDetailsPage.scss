@@ -1,0 +1,46 @@
+@import '../../styles/mixins';
+
+.manage-edit-roadmap-details-page {
+  @extend .mrm-mb-2;
+
+  .common-header {
+    .btn-save {
+      color: $primary;
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    .btn-cancel {
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+}
+
+.manage-edit-roadmap-details-form {
+  .roadmap-icon {
+    border-radius: 50%;
+    width: 4em;
+    height: 4em;
+  }
+
+  .invalid-icon {
+    font-size: $font-size-normal;
+
+    &.is-invalid {
+      color: $danger;
+    }
+  }
+}
+
+.manage-edit-roadmap-details-modal {
+  .modal-content {
+    min-height: get-scaled-size($scale-factor-16);
+  }
+
+  &.loading {
+    .modal-content .modal-header {
+      border-bottom: none;
+    }
+  }
+}

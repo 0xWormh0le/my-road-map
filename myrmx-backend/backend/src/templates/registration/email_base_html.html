@@ -1,0 +1,96 @@
+{% load django_bootstrap_breadcrumbs %}
+{% load staticfiles %}
+
+{% load i18n %}{% autoescape off %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet" type="text/css">
+    <style>
+        .btn {
+            border-radius: 3px;
+            padding: 8px 12px;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            text-decoration: none;
+            margin: 10px 0;
+            letter-spacing: 1.83px;
+        }
+        .btn-blue {
+            background-color: #4A69E8;
+        }
+        .btn-black {
+            background-color: #262E36;
+            flex: 1;
+            width: 100%;
+            color: white;
+        }
+    </style>
+    {% block extended_css %}{% endblock extended_css %}
+</head>
+
+<table style="background-color: #F7F7F7; color:#1D2328; padding:20px; width:100%; font:15px 'Open Sans',Arial,Helvetica;" cellspacing="0" cellpadding="0" border="0">
+    <tbody>
+        <tr width="100%">
+            <td valign="top" align="left">
+                <table style="border:none; margin: auto;">
+                    <tbody style="border-bottom: 1px solid #E3E3E2;">
+                        <tr style="width:100%; padding:20px;">
+                            {% if recipient.company.private_labeled and recipient.company.logo and not invite %}
+                                <td style="text-align:center;" valign="top" align="center">
+                                    <img style="height:70px; width:auto; margin-bottom:8px !important; border-radius:8px;" src="{{ recipient.company.logo.url }}">
+                                </td>
+                            {% elif user.company.private_labeled and user.company.logo%}
+                                <td style="text-align:center;" valign="top" align="center">
+                                    <img style="height:70px; width:auto; margin-bottom:8px !important; border-radius:8px;" src="{{ user.company.logo.url }}">
+                                </td>
+                            {% else %}
+                                <td style="text-align:center;" valign="top" align="center">
+                                    <img style="height:70px; width:auto; margin-bottom:8px !important; border-radius:8px;" src="https://s3.us-west-2.amazonaws.com/myroadmap.io/images/company-logos/apple-touch-icon-152x152.png" title="MyRoadmap">
+                                </td>
+                            {% endif %}
+                        </tr>
+                        <tr style="width:100%; padding:20px;">
+                            <td style="background:#FFFFFF; padding:24px; border-radius:8px; border: 1px solid #eee;" valign="top" align="left">
+                                <div class="body-container">
+                                    {% block body %}{% endblock %}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="width:100%; padding:20px;">
+                            <td style="max-width: 350px;">
+                                <p style="text-align:center; color:#666; font-size:13px;">
+                                    {% block email_reason %}{% endblock %}
+                                </p>
+                                <p style="text-align:center; color:#666; font-size:13px;">
+                                    {% if recipient %}
+                                        © {% now "Y" %} {{ recipient.company.name }}, All rights reserved. {{ recipient.company.legal_address }}
+                                    {% elif user %}
+                                        © {% now "Y" %} {{ user.company.name }}, All rights reserved. {% if user.company.legal_address %}{{ user.company.legal_address }}{% else %}389 S 1300 W BLDG F, F241 Pleasant Grove, Utah 84062{% endif %}
+                                    {% endif %}
+                                </p>
+                                <p style="text-align:center; color:#666; font-size:13px;">
+                                    {% if unsubscribe_url %}
+                                        <a href="{{ unsubscribe_url }}" target="_blank" data-saferedirecturl="">Unsubscribe</a> to stop receiving future emails.
+                                    {% endif %}
+                                </p>
+                                <p style="text-align:center; color:#666; font-size:13px;">We want to hear from you! Reply to this email to send us your feedback.</p>
+                            </td>
+                            <!-- Keeps Gmail client from trimming conent -->
+                            <p style="display:none !important;">{% now "Y, m, d, H, M, S, f" %}</p>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</html>
+{% endautoescape %}

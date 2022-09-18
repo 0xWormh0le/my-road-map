@@ -1,0 +1,32 @@
+@import '../../styles/mixins';
+
+.common-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9;
+
+  &.screen-center {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+  }
+
+  &.local-center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+  }
+}
+
+.#{$theme-dark} {
+  .common-loader {
+    .spinner-border {
+      color: $color-dark-text-light;
+    }
+  }
+}

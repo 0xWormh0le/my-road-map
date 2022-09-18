@@ -1,0 +1,23 @@
+{% extends 'signup_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_header %}{% endblock page_header %}
+
+{% block form-title %}{% if private_company %}{{private_company.name}}{% endif %} Log in{% endblock form-title %}
+
+{% block submit-text %}Login{% endblock submit-text %}
+
+{% block links %}
+
+<div class="d-flex justify-content-between">
+  <a class="create-account" href="{% url 'email_signup' %}">Create Account</a>
+
+  <a class="forgot" href="{% url 'password_reset' %}">Forgot Password?</a>
+
+</div>
+
+<script>
+  document.getElementsByTagName("button")[0].disabled = true;
+</script>
+
+{% endblock links %}

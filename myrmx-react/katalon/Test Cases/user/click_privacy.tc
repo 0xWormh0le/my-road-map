@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Clciking on Privacy Policy open external site to respective page</description>
+   <name>click_privacy</name>
+   <tag>User</tag>
+   <comment></comment>
+   <testCaseGuid>883678ff-92a4-41c7-9a57-c1d84cde398d</testCaseGuid>
+</TestCaseEntity>

@@ -1,0 +1,30 @@
+{% load my %}
+
+<div class="assessment-wrapper {{ color }}{% if not edit and current %} current{% endif %}" {% if student == request.user and not edit %}onclick="submitAssessment({{ status }}, {{ competency.id }}, this)" style="cursor: pointer"{% endif %}  {% if request.user.company.coaches_admin_can_assess_objectives and not edit %}onclick="submitAssessment({{ status }}, {{ competency.id }}, this, {{ student.id }})" style="cursor: pointer"{% endif %} >
+    <div class="assessment-wrapper-inner{% if edit %} edit{% endif %}">
+        <div class="assessment-body {% if edit %} edit{% endif %}">
+            {% if edit %}
+                {{ field|addcss:"rounded-input" }}
+            {% else %}
+                {{ description }}
+            {% endif %}
+        </div>
+    </div>
+    {% if request.user.company.coaches_approve_green_assessments %}
+        {% if request.user in student.coach.all and not edit and color == 'green' and assessment.user or request.user.is_admin and not edit and color == 'green' and assessment.user %}
+            <div class="action-buttons" {% if not current %} style="display: none;" {% endif %}>
+                <button type="button" class="btn {% if assessment.rejected %}btn-primary{% else %}btn-light{% endif %} competency-action"
+                    data-id="{{ assessment.pk }}" data-url="{% url 'ajax_competencies' %}" data-action="reject_assessment">
+                    <i class="fas fa-exclamation-triangle"></i> NEEDS WORK
+                </button>
+                <button type="button" class="btn {% if assessment.approved %}btn-primary{% else %}btn-light{% endif %} competency-action"
+                    data-id="{{ assessment.pk }}" data-url="{% url 'ajax_competencies' %}" data-action="approve_assessment">
+                    <i class="fas fa-check"></i> APPROVE
+                </button>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if edit %}
+    <p class="char-limit">max length 500 characters</p>
+    {% endif %}
+</div>

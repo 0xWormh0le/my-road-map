@@ -1,0 +1,53 @@
+@import '../../styles/mixins';
+
+.welcome-page {
+  height: 100vh;
+  
+  h1 {
+    color: white;
+  }
+}
+
+.#{$theme-light} {
+  .welcome-page {
+    background-color: #ECF4FA;
+
+    h1 {
+      color: $color-text-normal;
+    }
+  }
+}
+
+.#{$theme-blue-ocean} {
+  .welcome-page {
+    background-image: url(../images/beach-bg.jpg);
+    background-size: cover;
+    background-position-x: 80%;
+  }
+}
+
+.#{$theme-light} {
+  .welcome-page {
+    background-color: #ECF4FA;
+
+    h1 {
+      color: #3A3A3B;
+    }
+  }
+}
+
+.#{$theme-blue-ocean} {
+  .welcome-page {
+    background-image: url(../images/beach-bg.jpg);
+    background-size: cover;
+    background-position-x: 80%;
+  }
+}
+
+.welcome {
+  .desktop-welcome {
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+}

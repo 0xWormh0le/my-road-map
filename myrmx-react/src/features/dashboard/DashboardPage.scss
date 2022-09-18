@@ -1,0 +1,33 @@
+@import '../../styles/mixins';
+
+.dashboard-dashboard-page {
+  min-height: 100vh;
+
+  .tab-selector-container {
+    height: 4em;
+  }
+  .dashboard-tab-selector {
+    @extend .mrm-px-1;
+    position: fixed;
+    left: 0;
+    right: 0;
+
+    .nav {
+      @extend .mrm-py-0_5;
+    }
+    .nav-link {
+      font-size: $font-size-small;
+      &:hover {
+        color: initial;
+      }
+    }
+  }
+}
+
+&.#{$theme-blue-ocean} {
+  .dashboard-dashboard-page {
+    background-image: url(../images/beach-bg.jpg);
+    background-position-x: 80%;
+    background-size: cover;
+  }
+}

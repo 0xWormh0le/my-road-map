@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>send_new_direct_message</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>dbcf32e6-6d8f-441d-a877-78c46720f1d4</testCaseGuid>
+</TestCaseEntity>

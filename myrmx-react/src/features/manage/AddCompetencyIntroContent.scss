@@ -1,0 +1,26 @@
+@import '../../styles/mixins';
+
+.manage-add-competency-intro-content {
+  .ck-rounded-corners {
+    .ck.ck-editor__top {
+      .ck-sticky-panel {
+        .ck-toolbar {
+          border-top-left-radius: 10px;
+          border-top-right-radius: 10px;
+        }
+      }
+    }
+
+    .ck.ck-editor__main {
+      > .ck-editor__editable {
+        min-height: get-scaled-size($scale-factor-12);
+
+        &.ck-rounded-corners {
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+        }
+      }
+    }
+  }
+  
+}

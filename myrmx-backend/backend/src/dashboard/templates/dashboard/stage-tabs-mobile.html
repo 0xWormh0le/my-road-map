@@ -1,0 +1,76 @@
+{% if request.user.is_student and not request.user.is_admin %}
+    {% if not request.user.is_coach %}
+        <div id="stages-carousel" class="carousel slide" data-wrap=false data-interval=false>
+            {% if stages_count > 1 %}
+                <ol class="carousel-indicators">
+                    {% for stage in stages_info.stages %}
+                        {% if not stage.hidden_from_users %}
+                            <li data-target="#stages-carousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+            {% endif %}
+            <div class="carousel-inner">
+                {% for stage in stages_info.stages %}
+                    {% if not stage.hidden_from_users %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}" href="#stage{{ stage.id }}">
+                            <div class="stage-title">
+                                {{ stage.title }}
+                            </div>
+                            {% if not is_template %}
+                                <div class="progress-info">
+                                    <div class="progress">
+                                        <div style="width: {{ stage.progress }}%" role="progressbar" class="progress-bar"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% if stages_count > 1 %}
+                <a class="carousel-control-prev" href="#stages-carousel" role="button" data-slide="prev">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#stages-carousel" role="button" data-slide="next">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    <span class="sr-only">Next</span>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+{% if request.user.is_coach or request.user.is_admin %}
+    <div id="stages-carousel" class="carousel slide" data-wrap=false data-interval=false>
+        <ol class="carousel-indicators">
+            {% for stage in stages_info.stages %}
+                <li data-target="#stages-carousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
+            {% endfor %}
+        </ol>
+        <div class="carousel-inner">
+            {% for stage in stages_info.stages %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}" href="#stage{{ stage.id }}">
+                    <div class="stage-title">
+                        {{ stage.title }} {% if stage.hidden_from_users %}<span>(hidden for {{request.user.company.user_synonym|lower}})</span>{% endif %}
+                    </div>
+                    {% if not is_template %}
+                        <div class="progress-info">
+                            <div class="progress">
+                                <div style="width: {{ stage.progress }}%" role="progressbar" class="progress-bar"></div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#stages-carousel" role="button" data-slide="prev">
+            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#stages-carousel" role="button" data-slide="next">
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+{% endif %}

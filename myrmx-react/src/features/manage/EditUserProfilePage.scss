@@ -1,0 +1,79 @@
+@import '../../styles/mixins';
+
+.manage-edit-user-profile-page {
+  .common-header {
+    button {
+      background-color: transparent;
+      box-shadow: none;
+
+      &:hover {
+        opacity: .7;
+      }
+    }
+
+    .btn-save {
+      color: $primary;
+    }
+  }
+}
+
+.manage-edit-user-profile-modal {
+  .modal-header {
+    position: fixed;
+    width: 498px;
+    z-index: 1100;
+    background: white;
+  }
+
+  .modal-body {
+    @extend .mrm-mt-6;
+  }
+}
+
+.manage-edit-user-profile-component {
+  @extend .mrm-mb-2;
+
+  label {
+    @extend .mrm-ml-0_5;
+    margin-bottom: 0;
+  }
+
+  .error-message {
+    @extend .mrm-ml-0_5;
+    color: $danger;
+  }
+
+  .action-button {
+    width: 17em;
+  }
+
+  .account-photo {
+    border-radius: 50%;
+    width: 4em;
+    height: 4em;
+  }
+
+  .invalid-avatar {
+    font-size: $font-size-normal;
+
+    &.is-invalid {
+      color: $danger
+    }
+  }
+  @include media-breakpoint-up(lg) {
+    .form-control {
+      border-color: #cccccc;
+      &:active, &:focus {
+        border-color: #6E9FE0;
+      }
+    }
+  }
+}
+
+.desktop-page-secondary-header-wrapper {
+  .btn-save {
+    float: right;
+    background: $color-item-blue;
+    color: #fff;
+  }
+}

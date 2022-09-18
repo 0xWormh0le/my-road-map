@@ -1,0 +1,136 @@
+{% load my %}
+{% load static %}
+
+<a id="competency-{{ competency.id }}" class="row card-row" href="
+        {% if observing %}
+            {% url 'user_competency_observe' student.id competency.id %}
+        {% elif editing %}
+            {% url 'staff_competency_edit' competency.id %}?i=1
+        {% elif is_template %}
+            {% url 'staff_competency' competency.id %}
+        {% else %}
+            {% url 'competency' competency.id %}
+        {% endif %}
+        ">
+    <div class="col-10 col-md-7">
+      {% if editing %}
+          <i class="handle-icon far fa-bars mr-3"></i>
+      {% endif %}
+      {% if competency.hidden_for_all_users  %}
+          <span class="text-danger">Hidden for all {{ request.user.company.user_synonym }}s</span> <span class="ml-1 mr-1"> - </span>
+      {% endif %}
+      <span class="py-2">{{ competency.title }}</span>
+    </div>
+    {% if editing %}
+        <div class="col-1 d-flex d-md-none">
+          <object><a class="copy-competency mr-3" href="{% url 'copy_competency_staff' competency.id %}" title="Copy"><i class="fas fa-copy"></i> </a></object>
+          <div class="delete-competency delete-competency-{{ competency.id }}" data-source="{% url 'ajax_delete_competency' %}" title="Delete"><i class="fas fa-trash"></i></div>
+        </div>
+    {% endif %}
+    <!-- <div style="flex-wrap: wrap" class="mobile-details-container w-100 d-flex d-md-none ml-3 mb-2">
+        {% if competency.has_video or competency.content or competency.has_questions or competency.comment_count or competency.action_items_total > 0 or competency.assessment and competency.status == 3 %}
+            <div class="info mt-1">
+                {% if competency.assessment and competency.status == 3 %}
+                    {% if competency.assessment.approved %}
+                        <div class="green-assessment-status mr-3"><i class="fal fa-check mr-1"></i>Approved</div>
+                    {% elif competency.assessment.rejected %}
+                        <div class="green-assessment-status mr-3"><i class="fal fa-exclamation-triangle mr-1"></i>Rejected</div>
+                    {% else %}
+                        <div class="green-assessment-status mr-3"><i class="fal fa-clock mr-1"></i>Pending Approval</div>
+                    {% endif %}
+                {% endif %}
+                {% if competency.has_video %}
+                    <i class="fal fa-video mr-3" title="Includes video content"></i>
+                {% endif %}
+                {% if competency.content %}
+                    <i class="fal fa-book-open mr-3" title="Includes content"></i>
+                {% endif %}
+                {% if competency.has_questions %}
+                    <span class="mr-3">
+                      <i class="fal fa-question" title="Includes questions"></i>
+                      <span style="font-size: 14px; letter-spacing: -1px;">{{ competency.question_count_total }}</span>
+                    </span>
+                {% endif %}
+                {% if competency.comment_count %}
+                <span class="mr-3">
+                    <i class="fal fa-comments" title="Comment activity"></i>
+                    <span style="font-size: 14px; letter-spacing: -1px;">{{ competency.comment_count }}</span>
+                </span>
+                {% endif %}
+                {% if competency.global_action_items_total > 0 %}
+                    <span  style="display: inline-flex;" class="mr-3">
+                        <i class="fal fa-check-circle" title="Completed action items"></i>
+                        <span class="ai-count-template">{{ competency.global_action_items_total }}</span>
+                    </span>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div> -->
+    <div class="d-none d-md-flex col-md-3 info">
+        {% if competency.has_video %}
+            <i class="fal fa-video mr-3" title="Includes video content"></i>
+        {% endif %}
+        {% if competency.content %}
+            <i class="fal fa-book-open mr-3" title="Includes content"></i>
+        {% endif %}
+        {% if competency.has_attachments and competency.global_attachment_count > 0 %}
+            <span style="display: inline-flex;" class="mr-3">
+                <i class="fal fa-paperclip" title="Includes attachments"></i>
+                <span class="comment-count">{{ competency.global_attachment_count }}</span>
+            </span>
+        {% endif %}
+        {% if competency.has_questions %}
+            <span style="display: inline-flex;" class="mr-3">
+                <i class="fal fa-question" title="Includes questions"></i>
+                <span class="question-count">{{ competency.question_count_total }}</span>
+            </span>
+        {% endif %}
+        {% if competency.global_action_items_total > 0 %}
+            <span  style="display: inline-flex;" class="mr-3">
+                <i class="fal fa-check-circle" title="Completed action items"></i>
+                <span class="ai-count-template">{{ competency.global_action_items_total }}</span>
+            </span>
+        {% endif %}
+    </div>
+    {% if editing %}
+        <div class="col-2 d-none flex-row-reverse d-md-flex">
+            <div class="delete-competency delete-competency-{{ competency.id }}" data-source="{% url 'ajax_delete_competency' %}" title="Delete"><i class="fas fa-trash"></i></div>
+            <object><a class="copy-competency mr-3" href="{% url 'copy_competency_staff' competency.id %}" data-toggle="tooltip" title="Copy"><i class="fas fa-copy"></i> </a></object>
+        </div>
+    {% endif %}
+</a>
+
+
+
+<script>
+    $(document).ready(function() {
+        $("#competency-{{ competency.id }}").mousedown(function(event){
+            $(document.activeElement).blur();
+        });
+        $(".delete-competency-{{ competency.id }}").click(function(event){
+            event.preventDefault();
+            event.stopPropagation();
+            Swal.fire({
+                title: "Delete this Competency/Objective?",
+                text: 'Competency/Objective Name: {{competency.title}}. This action cannot be undone.',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: $(this).data("source"),
+                        type: 'POST',
+                        data:{
+                            competency: {{ competency.id }},
+                        },
+                        success:function(data) {
+                            $("#competency-{{ competency.id }}").remove();
+                        }
+                    });
+                }
+            }).catch(Swal.noop);
+        });
+    });
+</script>

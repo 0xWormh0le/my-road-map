@@ -1,0 +1,13 @@
+{% extends 'registration/email_base_html.html' %}
+
+{% block body %}
+    <table style="font-family: 'Open Sans';font-size: 20px;">
+        <tbody>
+            <tr width="100%">
+                <td style="color:#1D2327;">Hi, {{ user.first_name }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="color: #77787D; font-size: 16px;">{{ approver.get_full_name }} has approved your account with {{ user.company }}.</p>
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; text-align: center; text-decoration: none; font-weight: 500; width: 100%;" href="{{ primary_link }}">Log in</a>
+{% endblock %}

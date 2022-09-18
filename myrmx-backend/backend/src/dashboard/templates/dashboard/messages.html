@@ -1,0 +1,23 @@
+{% for message in messages %}
+     $.notify({
+        {% ifequal message.tags "debug" %}
+            icon: "fa fa-info",
+        {% endifequal %}
+        {% ifequal message.tags "info" %}
+            icon: "fa fa-info",
+        {% endifequal %}
+        {% ifequal message.tags "warning" %}
+       	    icon: "fa fa-exclamation-triangle",
+        {% endifequal %}
+        {% ifequal message.tags "danger" %}
+            icon: "fa fa-exclamation-triangle",
+        {% endifequal %}
+        {% ifequal message.tags "success" %}
+            icon: "fa fa-check",
+        {% endifequal %}
+            message: "{{ message|safe }}"
+        },{
+            type: '{{ message.tags }}',
+            timer: 4000
+        });
+{% endfor %}

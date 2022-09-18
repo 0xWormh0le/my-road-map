@@ -1,0 +1,70 @@
+# This is a sample build configuration for JavaScript.
+# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+
+pipelines:
+  branches: # Pipelines that run automatically on a commit to a branch can also be triggered manually
+    release/*:
+      - step:
+          image: node:14.11.0
+          script:
+            - npm install
+            - REACT_APP_ENV=staging npm run build
+            - cd build
+            - apt-get update
+            - apt-get install zip
+            - zip -r ../deploy.zip .
+          artifacts:
+            - deploy.zip
+      - step:
+          script:
+            - pipe: atlassian/aws-elasticbeanstalk-deploy:0.6.7
+              variables:
+                AWS_ACCESS_KEY_ID: 'AKIAUSMLOYZE3MF42ON6' # Optional if already defined in the context.
+                AWS_SECRET_ACCESS_KEY: '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' # Optional if already defined in the context.
+                AWS_DEFAULT_REGION: 'us-west-2' # Optional if already defined in the context.
+                APPLICATION_NAME: 'myroadmap-react'
+                ENVIRONMENT_NAME: 'myroadmap-react-stage1'
+                ZIP_FILE: 'deploy.zip'
+                S3_BUCKET: 'elasticbeanstalk-us-west-2-314361955913' # Optional.
+                # VERSION_LABEL: '<string>' # Optional.
+                # DESCRIPTION: '<string>' # Optional.
+                # WAIT: '<boolean>' # Optional.
+                # WAIT_INTERVAL: '<integer>' # Optional.
+                # WARMUP_INTERVAL: '<integer>' # Optional.
+                # COMMAND: '<string>' # Optional.
+                # DEBUG: '<boolean>' # Optional.
+    develop:
+      - step:
+          image: node:14.11.0
+          script:
+            - npm install
+            - REACT_APP_ENV=development npm run build
+            - cd build
+            - apt-get update
+            - apt-get install zip
+            - zip -r ../deploy.zip .
+          artifacts:
+            - deploy.zip
+      - step:
+          script:
+            - pipe: atlassian/aws-elasticbeanstalk-deploy:0.6.7
+              variables:
+                AWS_ACCESS_KEY_ID: 'AKIAUSMLOYZE3MF42ON6'
+                AWS_SECRET_ACCESS_KEY: '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'
+                AWS_DEFAULT_REGION: 'us-west-2'
+                APPLICATION_NAME: 'myroadmap-react'
+                ENVIRONMENT_NAME: 'myroadmap-react-dev'
+                ZIP_FILE: 'deploy.zip'
+                S3_BUCKET: 'elasticbeanstalk-us-west-2-314361955913'
+      # - step:
+      #     image: katalonstudio/katalon
+      #     services:
+      #       - docker
+      #     script:
+      #       # Run Test
+      #       - katalon-execute.sh -browserType="Chrome" -retry=0 -statusDelay=15 -testSuitePath="Test Suites/MRM-DEV-Deskotp" -apiKey="5b710718-3907-46c3-8a13-fc457faeed4d"
+      #     artifacts: # defining the artifacts .
+      #       - report/**

@@ -1,0 +1,1065 @@
+{% extends "dashboard/base.html" %}
+
+{% load embed_video_tags %}
+{% load staticfiles %}
+{% load my %}
+
+{% block title %}
+    {{ competency.title }}
+{% endblock %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% if observing %}
+            {% breadcrumb competency.stage.roadmap dashboard_url %}
+            {% breadcrumb competency.title "" %}
+        {% elif not student %}
+            {% breadcrumb "Roadmaps" "" %}
+            {% breadcrumb competency.stage.roadmap "" %}
+        {% else %}
+            {% breadcrumb competency.stage.roadmap dashboard_url %}
+            {% breadcrumb competency.title "" %}
+        {% endif %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block body %}
+
+<div class="print-content">
+  <div class="row">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-padding">
+            <h3 class="mb-3">Roadmap: {{competency.stage.roadmap}}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-padding">
+            <h3>Your name: {{request.user.get_full_name}}</h3>
+            <h3>Your {{request.user.company.coach_synonym}}(s):</h3>
+            {% for coach in user.coach.all %}
+            <li>{{ coach }} - {{ coach.phone_number }} - {{ coach.email }}</li>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="POST" id="assessment-form">
+    {% csrf_token %}
+    <input type="hidden" name="status" id="id_status">
+</form>
+
+{% if edit %}
+<form method="POST" id="competency-form">
+    {% csrf_token %}
+{% endif %}
+    <div class="row">
+        <div class="col-sm-12 objective-modal-content">
+            <div class="prev-next-arrows">
+                {% if previous_competency_url %}
+                    <a class="prev-arrow" href="{{ previous_competency_url }}">
+                        <i class="far fa-arrow-left left" aria-hidden="true"></i>
+                        {{ previous_competency_name|truncatechars:40 }}
+                    </a>
+                {% else %}<div></div>{% endif %}
+                {% if next_competency_url %}
+                    <a class="next-arrow" href="{{ next_competency_url }}">
+                        {{ next_competency_name|truncatechars:40 }}
+                        <i class="far fa-arrow-right right" aria-hidden="true"></i>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="card competency-detail">
+                <div class="card-body{% if edit %}-edit{% endif %}">
+                    {% if edit %}
+                        <div class="d-flex align-items-center w-100">
+                            <span class="edit-stage-name"><span>in</span> {{ competency.title_with_stage_without_roadmap }}</span>
+                            <div class="ml-auto text-nowrap">
+                                {# Empty button makes it so cancel is not submitted when pressing enter in text field #}
+                                <button style="display:none"></button>
+                                <button class="btn btn-2" id="objective-modal-cancel" name="cancel">Cancel</button>
+                                <button class="btn btn-primary" id="objective-modal-save" type="submit">Save</button>
+                                <span id="objective-modal-save-progress" style="display:none">
+                                    <i class="far fa-spin fa-spinner objective-modal-edit-icon" title="Save"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <span id="competency-id" data-id="{{ competency.id }}"></span>
+                        <div class="d-flex align-items-center w-100 edit-competency-title-form">
+                            {{ form.title|addcss:"form-control mt-2 font-lg"}}
+                        </div>
+                        <div class="header top-head mb-2 mt-4">
+                            <i class="fal fa-align-left left"></i>
+                            <h2 class="title smaller-title mr-auto">Description</h2>
+                        </div>
+                        <div>
+                          {% autoescape off %}
+                            {{ form.description|addcss:"form-control" }}
+                          {% endautoescape %}
+                          <p><small><i class="fal fa-exclamation-triangle"></i> Attention! Images uploaded in this field aren't completely private.</small></p>
+                        </div>
+                        {% if request.user.company.coach_notes %}
+                            <div class="header top-head mb-2 mt-4">
+                                <i class="fal fa-align-left left"></i>
+                                <h2 class="title smaller-title mr-auto">Notes for {{ request.user.company.coach_synonym|title }}</h2>
+                            </div>
+                            <div>
+                              {% autoescape off %}
+                                {{ form.coach_notes|addcss:"form-control" }}
+                              {% endautoescape %}
+                            </div>
+                        {% endif %}
+                        <!-- <div class="header top-head mb-2 mt-4">
+                            {% autoescape off %}
+                                {{ form.daily_assessment|addcss:"form-control" }}
+                            {% endautoescape %}
+                            <label for="daily_assessment">Send daily assessments</label>
+                        </div> -->
+                        {% if not competency.hidden_for_all_users %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="hideCompetency(this)" data-url="{% url 'ajax_hide_competency' competency.id %}"><i class="fal fa-eye-slash"></i> Hide competency for all {{request.user.company.user_synonym|title}} </div>
+                        {% else %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="showCompetency(this)" data-url="{% url 'ajax_show_competency' competency.id %}"><i class="fal fa-eye"></i> Show competency for all {{request.user.company.user_synonym|title}}</div>
+                        {% endif %}
+                        {% if competency.ai_visible %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="hideActionItems(this)" data-url="{% url 'ajax_hide_ai' competency.id %}"><i class="fal fa-eye-slash"></i> Hide action items  </div>
+                        {% else %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="showActionItems(this)" data-url="{% url 'ajax_show_ai' competency.id %}"><i class="fal fa-eye"></i> Show action items  </div>
+                        {% endif %}
+                        {% if competency.comments_visible %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="hideComments(this)" data-url="{% url 'ajax_hide_comments' competency.id %}"><i class="fal fa-eye-slash"></i> Hide comments  </div>
+                        {% else %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="showComments(this)" data-url="{% url 'ajax_show_comments' competency.id %}"><i class="fal fa-eye"></i> Show comments items  </div>
+                        {% endif %}
+                        {% if competency.attachments_visible %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="hideAttachments(this)" data-url="{% url 'ajax_hide_attachments' competency.id %}"><i class="fal fa-eye-slash"></i> Hide attachments  </div>
+                        {% else %}
+                            <div class="btn btn-2 mt-4 mr-2" onclick="showAttachments(this)" data-url="{% url 'ajax_show_attachments' competency.id %}"><i class="fal fa-eye"></i> Show attachments  </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="main-header-container">
+                            <h2 class="title" id="competency-id" data-id="{{ competency.id }}">
+                                {% if hidden_for_student or competency.hidden_for_all_users %}
+                                    <span class="text-danger">Hidden for {{request.user.company.user_synonym }} - </span>
+                                {% endif %}
+                                {% if competency.user_defined %}
+                                    {{request.user.company.coach_synonym|title}} defined -
+                                {% endif %}
+                                {{ competency.title }}
+                                <div class="d-inline-block stage-wrapper">
+                                    <span class="stage-in">in</span> <span class="stage-name">{{ competency.title_with_stage_without_roadmap }}</span>
+                                </div>
+                            </h2>
+                            {% if competency.description %}
+                                <p class="competency-description">{{ competency.description|safe|linebreaks }}</p>
+                            {% endif %}
+                            {% if request.user.company.coach_notes %}
+                                {% if request.user.is_coach or request.user.is_admin and competency.coach_notes %}
+                                    <p class="competency-coach-notes text-danger"> {{ competency.coach_notes|urlize }}</p>
+                                {% endif %}
+                            {% endif %}
+                            <div class="action-icons d-flex exit">
+                                {% if can_edit %}
+                                    <a href="{{ edit_url }}" class="mr-2">
+                                        <i class="far fa-pencil" title="Edit"></i>
+                                    </a>
+                                {% endif %}
+                                {% if competency.user_defined %}
+                                    {% if request.user.is_coach or request.user.is_admin %}
+                                        <a href="#">
+                                          <div class="mr-2 delete-competency delete-competency-{{ competency.id }}" data-source="{% url 'ajax_delete_competency' %}">
+                                            <i class="fal fa-trash"></i>
+                                          </div>
+                                        </a>
+
+                                        <a href="{% url 'edit_user_specific_objective' competency.id %}"><div class="mr-3 delete-competency">
+                                            <i class="fal fa-pencil"></i>
+                                        </div></a>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if not edit and request.user.company.show_print_competency_detail_button %}
+                                    <a class="print-btn mr-2" href="#" onClick="javascript:window.print()">
+                                        <i class="fal fa-print" title="Print"></i>
+                                    </a>
+                                {% endif %}
+
+
+                                {% if request.user.company.coach_admin_edit_visibility_user_objectives and request.user.is_coach or request.user.is_admin or request.user.is_cohort_admin %}
+                                    {% if not can_edit %}
+                                    {% if not competency.hidden_for_all_users %}
+                                        {% if hidden_for_student %}
+                                            <a href="{% url 'unhide_user_objective' student.id competency.id %}"><div class="mr-2 delete-competency">
+                                                <i class="fal fa-eye"></i>
+                                            </div></a>
+                                        {% else %}
+                                            <a href="{% url 'hide_user_objective' student.id competency.id %}"><div class="mr-2 delete-competency">
+                                                <i class="fal fa-eye-slash"></i>
+                                            </div></a>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% endif %}
+                                {% endif %}
+
+                                <a href="{{ dashboard_url }}">
+                                    <i class="fal fa-times" data-fa-transform="grow-6"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-padding">
+                    {% endif %}
+
+
+                    {% if competency.red_description or competency.yellow_description or competency.green_description  %}
+                        <div class="header d-flex align-items-center mb-2 mt-4">
+                            <i class="fal fa-clipboard-check left"></i>
+                            <h2 class="title smaller-title mr-auto">{{ request.user.company.assessment_synonym }}</h2>
+                            {% if assessment and not edit and not assessment.is_grey %}
+                                <div class="header-detail assessment-status">
+                                    Last Assessed {{ assessment.date|relative_date }} by {% if assessment.user == request.user %} You {% else %} {{ assessment.user }}{% endif %}
+                                    {% if request.user.company.coaches_approve_green_assessments %}
+                                        {% if assessment.approved %}
+                                            | Approved {{ assessment.review_date|relative_date }} by {% if assessment.reviewer == request.user %} You {% else %} {{ assessment.reviewer.get_full_name }} {% endif %}
+                                        {% endif %}
+                                        {% if assessment.rejected %}
+                                            | Rejected {{ assessment.review_date|relative_date }} by {% if assessment.reviewer == request.user %} You {% else %} {{ assessment.reviewer.get_full_name }} {% endif %}
+                                        {% endif %}
+                                        {% if assessment.is_green and not assessment.approved and not assessment.rejected %}
+                                            | Waiting for approval
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    {% if edit %}
+                        <div class="row no-gutters">
+                              <div class="col-12 col-lg-4 mb-2 mb-lg-0 pr-lg-2 d-flex">
+                                  {% include 'dashboard/competency-detail-assessment.html' with color='red' current=assessment.is_red status=1 description=competency.red_description field=form.red_description %}
+                              </div>
+                              <div class="col-12 col-lg-4 mb-2 mb-lg-0 pr-lg-2 d-flex">
+                                  {% include 'dashboard/competency-detail-assessment.html' with color='yellow' current=assessment.is_yellow status=2 description=competency.yellow_description field=form.yellow_description %}
+                              </div>
+                              <div class="col-12 col-lg-4 d-flex">
+                                  {% include 'dashboard/competency-detail-assessment.html' with color='green' current=assessment.is_green status=3 description=competency.green_description field=form.green_description  %}
+                              </div>
+                        </div>
+                    {% else %}
+                        <div class="row no-gutters">
+                            {% if competency.red_description %}
+                                <div class="col-12 col-lg-4 mb-1 mb-lg-0 pr-lg-2 d-flex">
+                                    {% include 'dashboard/competency-detail-assessment.html' with color='red' current=assessment.is_red status=1 description=competency.red_description field=form.red_description %}
+                                </div>
+                                {% if request.user.company.default_red_assessment_prompt %}
+                                    <div class="mt-2 prompts red-prompt prompts-md-screen">
+                                        <p>{{ request.user.company.default_red_assessment_prompt }}</p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            {% if competency.yellow_description %}
+                                <div class="col-12 col-lg-4 mb-1 mb-lg-0 pr-lg-2 d-flex">
+                                    {% include 'dashboard/competency-detail-assessment.html' with color='yellow' current=assessment.is_yellow status=2 description=competency.yellow_description field=form.yellow_description %}
+                                </div>
+                                {% if request.user.company.default_yellow_assessment_prompt %}
+                                    <div class="mt-2 prompts yellow-prompt prompts-md-screen">
+                                        <p>{{ request.user.company.default_yellow_assessment_prompt }}</p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            {% if competency.green_description %}
+                                <div class="col-12 col-lg-4 d-flex">
+                                    {% include 'dashboard/competency-detail-assessment.html' with color='green' current=assessment.is_green status=3 description=competency.green_description field=form.green_description  %}
+                                </div>
+                                {% if request.user.company.default_green_assessment_prompt %}
+                                    <div class="mt-2 prompts green-prompt prompts-md-screen">
+                                        <p>{{ request.user.company.default_green_assessment_prompt }}</p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-2 prompts prompts-lg-screen">
+                        {% if request.user.company.default_red_assessment_prompt %}
+                            <p class="red-prompt">{{ request.user.company.default_red_assessment_prompt }}</p>
+                        {% endif %}
+                        {% if request.user.company.default_yellow_assessment_prompt %}
+                            <p class="yellow-prompt">{{ request.user.company.default_yellow_assessment_prompt }}</p>
+                        {% endif %}
+                        {% if request.user.company.default_green_assessment_prompt %}
+                            <p class="green-prompt">{{ request.user.company.default_green_assessment_prompt }}</p>
+                        {% endif %}
+                    </div>
+
+
+                    {% if competency.daily_assessment %}
+                        <div id="daily-assessment-charts" class="row no-gutters mt-3 p-3">
+                            <div class="col-2">
+                                <div class="btn btn-4" onclick="dailyAssessmentDateRange=7;setupCharts();">
+                                    Week
+                                </div><br>
+                                <div class="btn btn-4" onclick="dailyAssessmentDateRange=30;setupCharts();">
+                                    Month
+                                </div>
+                                <!-- <div class="btn btn-4" onclick="dailyAssessmentDateRange=364;setupCharts();">
+                                    Year
+                                </div> -->
+                            </div>
+                            <div id="donut" class="ct-chart col-3" data-student="{{ student.id }}" data-url="{% url 'ajax_assessment_data' competency.id %}"></div>
+                            <div id="bar" class="ct-chart col-7" data-student="{{ student.id }}" data-url="{% url 'ajax_assessment_data' competency.id %}"></div>
+                        </div>
+                    {% endif %}
+
+
+                    {% if competency.ai_visible or edit %}
+                        <div id="all-action-items" data-source="{% url 'ajax_action_items' %}{% if edit %}?e=1{% endif %}" data-student="{{ student.id }}">
+                            <div class="header mt-4">
+                                <i class="fal fa-check-circle left"></i>
+                                <h4 class="title smaller-title">
+                                    <a id="open-action-items" class="load-action-items">
+                                        {{ student|yesno:"Action Items,Global Action Items" }}
+                                        {% if not student %} ({{ global_action_items_total }}) {% endif %}
+                                        {% if student and action_items_total > 0 %} ({{ action_items_done }} of {{action_items_total}} completed) {% endif %}
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="load-action-items"></div>
+                            {% if edit %}
+                                <div id="add-action-item" class="btn"
+                                        data-competency="{% if competency %}{{ competency.id }}{% else %}0{% endif %}"
+                                        {% if student %}
+                                        data-student="{{ student.id }}"
+                                        {% endif %}
+                                        data-target="#add-new-action-item-modal"
+                                        data-toggle="modal"
+                                        data-backdrop="static"
+                                        data-keyboard="false"
+                                        data-url="{% url 'ajax_action_item_add' %}{% if request.user.is_admin and edit %}?g=1{% endif %}">
+                                    Add Action Item
+                                </div>
+                            {% endif %}
+                            {% if student %}
+                                {% if request.user.is_coach or request.user.is_admin or request.user.is_student and request.user.company.users_can_add_action_items %}
+                                    <div id="add-action-item" class="btn"
+                                            data-competency="{% if competency %}{{ competency.id }}{% else %}0{% endif %}"
+                                            {% if student %}
+                                            data-student="{{ student.id }}"
+                                            {% endif %}
+                                            data-target="#add-new-action-item-modal"
+                                            data-toggle="modal"
+                                            data-url="{% url 'ajax_action_item_add' %}{% if request.user.is_admin and edit %}?g=1{% endif %}">
+                                          Add Action Item
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+
+                    {% if global_questions or edit %}
+                        <div id="all-questions" data-source="{% url 'ajax_questions' %}{% if edit %}?e=1{% endif %}" data-student="{{ student.id }}">
+                            <div class="header mt-4">
+                                <i class="fal fa-question left"></i>
+                                <h4 class="title smaller-title">
+                                    <a id="open-questions" class="load-questions">
+                                        {{ student|yesno:"Questions,Global Questions" }}
+                                        <!-- {% if edit %} (<i class="fal fa-exclamation-triangle"></i> Use Global Action Items for Questions) {% endif %} -->
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="load-questions"></div>
+                            {% if edit %}
+                                <div id="add-question" class="btn"
+                                        data-competency="{% if competency %}{{ competency.id }}{% else %}0{% endif %}"
+                                        {% if student %}
+                                        data-student="{{ student.id }}"
+                                        {% endif %}
+                                        data-target="#add-new-question-modal"
+                                        data-toggle="modal"
+                                        data-url="{% url 'ajax_question_add' %}{% if request.user.is_admin and edit %}?g=1{% endif %}">
+                                      Add Question
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+
+                    {% if global_content or edit %}
+                        <div id="all-content" data-source="{% url 'ajax_content' %}{% if edit %}?e=1{% endif %}" data-student="{{ student.id }}">
+                            <div class="header mt-4">
+                                <i class="fal fa-book left"></i>
+                                <h4 class="title smaller-title">
+                                    <a id="open-questions" class="load-questions">
+                                        {{ student|yesno:"Content,Global Content" }}
+                                        {% if edit %} (<i class="fal fa-exclamation-triangle"></i> Use Global Action Items for Content) {% endif %}
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="load-content"></div>
+                            {% if edit %}
+                                <!-- <div id="add-content" class="btn btn-4"
+                                        data-competency="{% if competency %}{{ competency.id }}{% else %}0{% endif %}"
+                                        {% if student %}
+                                        data-student="{{ student.id }}"
+                                        {% endif %}
+                                        data-target="#add-new-content-modal"
+                                        data-toggle="modal"
+                                        data-url="{% url 'ajax_content_add' %}{% if request.user.is_admin and edit %}?g=1{% endif %}">
+                                      Add Content
+                                </div> -->
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+
+                    {% if competency.comments_visible %}
+                        {% if not edit and student %}
+                            <div class="comments edge-to-edge mt-4 py-3">
+                                <div class="header">
+                                    <i class="fal fa-comment left"></i>
+                                    <h2 class="title smaller-title">Comments</h2>
+                                </div>
+                                <div class="comments-body">
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="profile-image" style="{% if request.user.photo %} background-image: url('{{ request.user.get_photo_url }}') {% endif %}" aria-label="{{ request.user.get_full_name }} profile picture"><span>{% if not user.photo %}{{ request.user.first_name|slice:"1"|title }}{{ request.user.last_name|slice:"1"|title }}{% endif %}</span></div>
+                                        <!-- <img src="{{ request.user.get_photo_url }}" class="profile-image mini" alt="empty profile picture"> -->
+                                        <textarea placeholder="Write a comment..." data-competency={{competency.id}} data-student={{student.id}} class="add-input" id="comment" name="comment"></textarea>
+                                    </div>
+                                    <button class="submit-comment-button no-text-in-comment-box" onclick="submitComment($('#comment').val(), $('#comment').data('competency'), $('#comment').data('student'))">Save</button>
+                                    <div class="comments-container">
+                                    {% for comment in competency.comments.all|filter_student:student.id|dictsortreversed:"date" %}
+                                        <div class="comment-{{comment.id}} d-flex align-items-center {% if forloop.last %}mt-3{% else %}my-3{% endif %}">
+                                            <div class="profile-image" style="{% if comment.user.photo %} background-image: url('{{ comment.user.get_photo_url }}') {% endif %}" aria-label="{{ comment.user.get_full_name }} profile picture"><span>{% if not user.photo %}{{ comment.user.first_name|slice:"1"|title }}{{ comment.user.last_name|slice:"1"|title }}{% endif %}</span></div>
+                                            <!-- <img src="{{ comment.user.get_photo_url }}" class="profile-image" alt="empty profile picture"> -->
+                                            <div class="w-100">
+                                                <div class="d-flex">
+                                                    <div class="poster">{{ comment.user.get_full_name }}</div>
+                                                    <div class="date">{{ comment.date|relative_date }}</div>
+                                                </div>
+                                                <div class="comment">{{ comment.text|urlize }}</div>
+                                                {% if comment.user == request.user %}
+                                                    <div class="actions">
+                                                        <span class="delete link" onclick="deleteComment({{comment.id}})">Delete</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if request.user.company.users_can_attach_files and student and not edit %}
+                        {% if competency.attachments_visible %}
+                            <div class="edge-to-edge py-3 mt-4 attachments-container">
+                                <div class="header">
+                                    <i class="fal fa-paperclip left"></i>
+                                    <div class="title smaller-title">{{ student|yesno:"Attachments,Global Attachments" }}</div>
+                                </div>
+                                <div id="attachments-wrapper">
+                                  {% if request.user.company_id == 10 or request.user.company_id == 77 or request.user.company_id == 2 %}
+                                      <!-- <div class="card mt-1 py-2 px-3 mb-2">
+                                        <div class="attachment-info">
+                                            <span class="help-text file-type mr-2"><i class="fal fa-video mr-1"></i> VIDEO</span>
+                                            <a class="mr-2" href="#" target="_blank">screenrecording1.mp4</a>
+                                            <span class="help-text mr-2"> Terry Roberts</span>
+                                            <span class="help-text mr-2"> Sept 25, 2019</span>
+                                            <a class="btn btn-2" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">View Responses (3)</a>
+                                        </div>
+                                        <div class="delete_attachment" data-pk="{{ attachment.id }}" data-url="{% url 'ajax_attachment_delete' %}"><i class="fal fa-trash"></i></div>
+                                        <div class="collapse" id="collapseExample">
+                                          <div style="width: 92%; float: right;">
+                                            <hr>
+                                            <p class="help-text"><i class="fal fa-comment-alt-lines"></i> Mike Smith - Dec 11, 2019 - I think you did a great job. Try talking a little louder though.</p>
+                                            <hr>
+                                            <p class="help-text"><i class="fal fa-video"></i> Mike Smith - Dec 15, 2019 -  <a class="mr-2" href="#" target="_blank">video430.mp4</a></p>
+                                            <hr>
+                                            <p class="help-text"><i class="fal fa-comment-alt-lines"></i> Terry Roberts - Dec 19, 2019 - Thanks for the feedback. I'll do another screen recording.</p>
+                                            <hr>
+                                            <div class="btn-group dropright">
+                                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                  Respond
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                  <a class="dropdown-item" href="#"><i class="fal fa-comment-alt-lines"></i> Text</a>
+                                                  <a class="dropdown-item" href="#"><i class="fal fa-paperclip"></i> File</a>
+                                                  <a class="dropdown-item" href="#"><i class="fal fa-video"></i> Video</a>
+                                                  <a class="dropdown-item" href="#"><i class="fal fa-desktop"></i> Screen Record</a>
+                                                </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div> -->
+                                  {% endif %}
+
+                                {% for attachment in student_attachments %}
+                                    {% if attachment.user %}
+                                        <div class="card flex-row mt-1 py-3 px-3">
+                                            {% if "image" in attachment.file_type %}
+                                                <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> IMG</span>
+                                            {% endif %}
+                                            {% if "video" in attachment.file_type %}
+                                                <span class="help-text file-type mr-2"><i class="fal fa-video"></i> VIDEO</span>
+                                            {% endif %}
+                                            {% if "audio" in attachment.file_type %}
+                                                <span class="help-text file-type mr-2"><i class="fal fa-microphone"></i> AUDIO</span>
+                                            {% endif %}
+                                            {% if "text" in attachment.file_type %}
+                                                <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> FILE</span>
+                                            {% endif %}
+                                            {% if "spreasheet" in attachment.file_type %}
+                                                <span class="help-text file-type mr-2"><i class="fal fa-file-spreadsheet"></i> XLS</span>
+                                            {% endif %}
+                                            {% if attachment.file_type %}
+                                            {% else %}
+                                                <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> FILE</span>
+                                            {% endif %}
+                                            <div class="attachment-info">
+                                                <a class="mr-2 attachment-url" href="{{ attachment.attachment.url }}" target="_blank">
+                                                    {{ attachment.filename }}
+                                                </a>
+                                                {% if attachment.user %}
+                                                    <span class="help-text mr-2"> {{ attachment.attacher }}</span>
+                                                {% endif %}
+                                                {% if attachment.date_attached %}
+                                                    <span class="help-text mr-2"> {{ attachment.date_attached }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% if attachment.attacher == request.user and attachment.user or not student %}
+                                                <div class="delete_attachment" data-pk="{{ attachment.id }}" data-url="{% url 'ajax_attachment_delete' %}"><i class="fal fa-trash"></i></div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% empty %}
+                                    <!-- <div class="help-text">No attachments yet</div> -->
+                                {% endfor %}
+                                </div>
+                                {% if not edit and student %}
+                                    <input type="button" class="btn btn-outline-secondary add-attachment-btn" value="Add Attachment" onclick="document.getElementById('id_attachment').click();">
+                                {% endif %}
+                                {% if request.user.company_id == 84 %}
+                                    <input type="button" class="btn btn-outline-secondary add-attachment-btn" value="Record Video Now" onclick="document.getElementById('id_attachment').click();">
+                                {% endif %}
+
+                                {% if not edit and student %}
+                                    {% if request.user.company_id == 10 or request.user.company_id == 77 or request.user.company_id == 2 %}
+                                        <a class="btn btn-outline-secondary add-attachment-btn" href="{% url 'competency_screen_record' competency.id student.id %}"><i class="fal fa-desktop"></i> Screen Record</a>
+                                        <a class="btn btn-outline-secondary add-attachment-btn" href="{% url 'competency_audio_record' competency.id student.id %}"><i class="fal fa-microphone"></i> Audio</a>
+                                        <a class="btn btn-outline-secondary add-attachment-btn" href="#" data-target="#add-new-webcam-video-modal" data-toggle="modal"><i class="fal fa-video"></i>Webcam</a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if request.user.company.competency_notes_journal_section %}
+                        {% if student %}
+                            {% if note or student == request.user %}
+                            <div class="header mt-4 mb-2">
+                                <i class="fal fa-sticky-note left"></i>
+                                <h4 class="title smaller-title">{% if student == request.user %}My{% else %} {{ request.user.company.coach_synonym }} {% endif %} Notes/Journal</h4>
+                            </div>
+                            {% endif %}
+
+                            <div class="notes-container">
+                                {% if student == request.user %}
+                                <div id="student-notes" data-url="{% url 'ajax_edit_competency_note' %}" data-id="{% if note %}{{ note.id }}{% else %}0{% endif %}" data-competency="{{ competency.id }}">
+                                {% else %}
+                                <div>
+                                {% endif %}
+                                {% if note %}
+                                    <div class="notes-body {% if student == request.user %}notes-editable{% endif %} ">{{note.text|linebreaks|urlize}}</div>
+                                {% elif student == request.user %}
+                                    <div class="no-notes">Add thoughts...</div>
+                                {% endif %}
+                                </div>
+                                <div id="notes-form-place"></div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if competency.content or competency.video or edit or competency.global_attachments or global_attachments %}
+                        <div class="competency-content">
+                            <div class="header mt-4">
+                                <i class="fal fa-book-open left"></i>
+                                <h4 class="title smaller-title">Supplemental Info</h4>
+                            </div>
+                            <div id="attachments-wrapper" class="mb-3">
+                            {% if request.user.is_admin and edit %}
+                                <input type="button" class="btn btn-outline-secondary add-attachment-btn" value="Add Attachment" onclick="document.getElementById('id_attachment').click();">
+                            {% endif %}
+                            {% for attachment in global_attachments %}
+                                {% if not attachment.user %}
+                                    <div class="card mt-1 py-3 px-3 flex-row">
+                                        {% if "image" in attachment.file_type %}
+                                            <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> IMG</span>
+                                        {% endif %}
+                                        {% if "video" in attachment.file_type %}
+                                            <span class="help-text file-type mr-2"><i class="fal fa-video"></i> VIDEO</span>
+                                        {% endif %}
+                                        {% if "audio" in attachment.file_type %}
+                                            <span class="help-text file-type mr-2"><i class="fal fa-microphone"></i> AUDIO</span>
+                                        {% endif %}
+                                        {% if "text" in attachment.file_type %}
+                                            <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> FILE</span>
+                                        {% endif %}
+                                        {% if "spreasheet" in attachment.file_type %}
+                                            <span class="help-text file-type mr-2"><i class="fal fa-file-spreadsheet"></i> XLS</span>
+                                        {% endif %}
+                                        {% if attachment.file_type %}
+                                        {% else %}
+                                            <span class="help-text file-type mr-2"><i class="fal fa-paperclip"></i> FILE</span>
+                                        {% endif %}
+                                        <div class="attachment-info">
+                                            <a href="{{ attachment.attachment.url }}" target="_blank">
+                                                {{ attachment.filename }}
+                                            </a>
+                                        </div>
+                                        {% if request.user.is_admin and edit %}
+                                            <div class="delete_attachment" data-pk="{{ attachment.id }}" data-url="{% url 'ajax_attachment_delete' %}"><i class="fal fa-trash"></i></div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+
+                            {% if competency.content or competency.video or edit %}
+                                <div  class="{% if not edit %} competency-content-content {% endif %}">
+                                  <div class="{% if edit %} mb-3{% endif %}">
+                                      {% if competency.video %}
+                                          <div class="videoWrapper mb-3">
+                                              {% video competency.video as my_video %}
+                                              {% video my_video 'tiny' %}
+                                              {% endvideo %}
+                                          </div>
+                                      {% endif %}
+                                      {% if edit %}
+                                          {{ form.media }}
+                                          {{ form.content }}
+                                          <p><small><i class="fal fa-exclamation-triangle"></i> Attention! Images uploaded in this field aren't completely private.</small></p>
+                                      {% else %}
+                                          {{ competency.content|safe }}
+                                      {% endif %}
+                                  </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if not edit and student and history %}
+                        <div class="history">
+                            <div class="header mt-4">
+                                <i class="fal fa-history left"></i>
+                                <h4 class="title smaller-title">{{ request.user.company.assessment_synonym }} History</h4>
+                                <span class="ml-2 link header-detail" data-toggle="collapse" aria-expanded="false" href="#history-items" id="history-items-toggle">Expand</span>
+                            </div>
+                            <div id="history-items" class="collapse">
+                                {% for assessment in history %}
+                                    {% if assessment.approved or assessment.rejected %}
+                                        {% if assessment.reviewer %}
+                                            <div class="history-row
+                                                {% if assessment.is_red %}danger{% endif %}
+                                                {% if assessment.is_yellow %}warning{% endif %}
+                                                {% if assessment.is_green %}success{% endif %}">
+                                                <div class="mr-auto">
+                                                    <span class="name">{{ assessment.reviewer.get_full_name }}</span>
+                                                    {% if assessment.approved %}approved assessment{% else %}marked assessment as needs more work - {% endif %}
+                                                    {% if assessment.is_red %}
+                                                        "{{ competency.red_description }}"
+                                                    {% elif assessment.is_yellow %}
+                                                        "{{ competency.yellow_description }}"
+                                                    {% elif assessment.is_green %}
+                                                        "{{ competency.green_description }}"
+                                                    {% endif %}
+                                                </div>
+                                                <div class="ml-1">{{ assessment.review_date|relative_date }}</div>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                    <div class="history-row
+                                        {% if assessment.is_red %}danger{% endif %}
+                                        {% if assessment.is_yellow %}warning{% endif %}
+                                        {% if assessment.is_green %}success{% endif %}">
+                                        <div class="mr-auto">
+                                            {% if assessment.user == student and request.user == student %}
+                                                <span class="name">You</span> self-assessed
+                                            {% else %}
+                                                <span class="name">{{ assessment.user.get_full_name }}</span> assessed
+                                            {% endif %}
+                                            as
+                                            {% if assessment.is_red %}
+                                                "{{ competency.red_description }}"
+                                            {% elif assessment.is_yellow %}
+                                                "{{ competency.yellow_description }}"
+                                            {% elif assessment.is_green %}
+                                                "{{ competency.green_description }}"
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-1">{{ assessment.date|relative_date }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% if edit %}
+</form>
+{% endif %}
+
+<form id="attachment-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="m-2">{{ attachment_form.as_p }}</div>
+</form>
+
+<div class="modal fade add-new-action-item-modal-class" id="add-new-action-item-modal" role="dialog" tabindex="">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content-ai">
+            {# AJAX form for new Action Item #}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade edit-action-item-modal-class" id="edit-action-item-modal" role="dialog" tabindex="">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content-edit-ai">
+            {# AJAX form for edit Action Item #}
+        </div>
+    </div>
+</div>
+<!-- <a class="objective-modal" href="{{ dashboard_url }}"></a> -->
+
+<div class="modal fade add-new-question-modal-class" id="add-new-question-modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content-q">
+            {# AJAX form for new Question #}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade add-new-content-modal-class" id="add-new-content-modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content-c">
+            {# AJAX form for new Content #}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade add-new-web-video-class" id="add-new-webcam-video-modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content">
+            <h1>Video Webcam Recording</h1>
+
+            <br>
+
+            <button id="btn-start-recording">Start Recording</button>
+            <button id="btn-stop-recording" disabled>Stop Recording</button>
+
+            <hr>
+            <video id="webcam-video" controls autoplay playsinline></video>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block extrafooter %}
+    <script src="{% static 'dashboard/js/competency.js' %}"></script>
+    {% if competency.daily_assessment %}
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <script src="{% static 'dashboard/js/daily_assessment_charts.js' %}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+    {% endif %}
+
+    <script>
+        var now = "{% now "m/d/Y" %}";
+    </script>
+
+    <script>
+        var video = document.querySelector('#webcam-video');
+        function captureCamera(callback) {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then(function(camera) {
+                callback(camera);
+            }).catch(function(error) {
+                alert('Unable to capture your camera. Please check console logs.');
+                console.error(error);
+            });
+        }
+        function stopRecordingCallback() {
+            video.src = video.srcObject = null;
+            video.muted = false;
+            video.volume = 1;
+            video.src = URL.createObjectURL(recorder.getBlob());
+
+            recorder.camera.stop();
+            recorder.destroy();
+            recorder = null;
+        }
+        var recorder; // globally accessible
+        document.getElementById('btn-start-recording').onclick = function() {
+            this.disabled = true;
+            captureCamera(function(camera) {
+                video.muted = true;
+                video.volume = 0;
+                video.srcObject = camera;
+                recorder = RecordRTC(camera, {
+                    type: 'video'
+                });
+                recorder.startRecording();
+                // release camera on stopRecording
+                recorder.camera = camera;
+                document.getElementById('btn-stop-recording').disabled = false;
+            });
+        };
+        document.getElementById('btn-stop-recording').onclick = function() {
+            this.disabled = true;
+            recorder.stopRecording(stopRecordingCallback);
+        };
+    </script>
+
+    {% if assessment.is_red %}
+    <script>
+        $(".prompts").css("display", "block");
+        $(".yellow-prompt").css("display", "none");
+        $(".green-prompt").css("display", "none");
+        $(".red-prompt").css("display", "block");
+    </script>
+    {% endif %}
+    {% if assessment.is_yellow %}
+    <script>
+        $(".prompts").css("display", "block");
+        $(".yellow-prompt").css("display", "block");
+        $(".green-prompt").css("display", "none");
+        $(".red-prompt").css("display", "none");
+    </script>
+    {% endif %}
+    {% if assessment.is_green %}
+    <script>
+        $(".prompts").css("display", "block");
+        $(".yellow-prompt").css("display", "none");
+        $(".green-prompt").css("display", "block");
+        $(".red-prompt").css("display", "none");
+    </script>
+    {% endif %}
+
+    <script>
+        $(document).ready(function(){
+            $(".modal").on("hidden.bs.modal", function(){
+                $(".modal-content").html("");
+            });
+
+            $('.attachment-url').each(function() {
+                let url = $(this).attr("href");
+                newUrl = url.replace(".webm", ".mp4");
+                //$(this).attr("href", newUrl);
+                let filename = $(this).html();
+                newFilename = filename.replace(".webm", ".mp4");
+                //$(this).html(newFilename);
+            });
+
+            $('.competency-content').find('a').click(function(e){
+                e.preventDefault();
+                window.open($(this).attr('href'));
+            })
+            $('#id_description, .add-input').keydown((e)=>{
+                el = e.target;
+                el.style.height = "";
+                el.style.height = el.scrollHeight + "px";
+            })
+            $('#id_attachment').change((e)=>{
+                $("#attachments-wrapper").append("<div><i class='fa fa-spinner fa-spin'></i> Uploading...</div>")
+                saveNotesUnderEdit(function() {
+                  $("#attachment-form").submit()
+                })
+            })
+            var updateSendButtonStyle = function() {
+                if ($.trim($('.add-input').val()).length < 1) {
+                  $('.submit-comment-button').addClass('no-text-in-comment-box');
+                  $('.submit-comment-button').attr("disabled", true);
+                  $('.submit-comment-button').removeClass('text-in-comment-box');
+                } else {
+                  $('.submit-comment-button').addClass('text-in-comment-box');
+                  $('.submit-comment-button').removeAttr("disabled");
+                }
+              };
+            $('.add-input').change(function() {
+              updateSendButtonStyle();
+            });
+            $('.add-input').keydown(function() {
+              updateSendButtonStyle();
+            });
+            $('.add-input').keyup(function() {
+              updateSendButtonStyle();
+            });
+            $('.delete_attachment').click((e)=>{
+                el = $(e.currentTarget)
+                url = el.data('url')
+                pk = el.data('pk')
+                Swal.fire({
+                    title: 'Delete this attachment?',
+                    showCancelButton: true,
+                    confirmButtonColor: 'rgba(247, 68, 0, 1)',
+                    confirmButtonText: 'Delete'
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                pk: pk,
+                            },
+                            success: function (data) {
+                                el.parent().remove()
+                            }
+                        });
+                    }
+                }).catch(Swal.noop);
+            })
+
+        })
+        $("#competency-{{ competency.id }}").mousedown(function(event){
+            $(document.activeElement).blur();
+        });
+        $(".delete-competency-{{ competency.id }}").click(function(event){
+            event.preventDefault();
+            event.stopPropagation();
+            Swal.fire({
+                title: "Delete User Specific Objective?",
+                text: 'Objective Name: {{competency.title}}. This action cannot be undone.',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: $(this).data("source"),
+                        type: 'POST',
+                        data:{
+                            competency: {{ competency.id }},
+                        },
+                        success:function(data) {
+                            $("#competency-{{ competency.id }}").remove();
+                            $(location).attr('href', "{{ dashboard_url }}");
+                        }
+                    });
+                }
+            }).catch(Swal.noop);
+        });
+        function hideActionItems(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='showActionItems(this)' data-url='{% url 'ajax_show_ai' competency.id %}'><i class='fal fa-eye'></i> Show action items  </div>")
+                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+        function showActionItems(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='hideActionItems(this)' data-url='{% url 'ajax_hide_ai' competency.id %}'><i class='fal fa-eye-slash'></i> Hide action items  </div>")
+                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+        function hideComments(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='showComments(this)' data-url='{% url 'ajax_show_comments' competency.id %}'><i class='fal fa-eye'></i> Show comments  </div>")                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+        function showComments(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='hideComments(this)' data-url='{% url 'ajax_hide_comments' competency.id %}'><i class='fal fa-eye-slash'></i> Hide comments  </div>")
+                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+        function hideAttachments(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='showAttachments(this)' data-url='{% url 'ajax_show_attachments' competency.id %}'><i class='fal fa-eye'></i> Show attachments  </div>")
+                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+        function showAttachments(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='hideAttachments(this)' data-url='{% url 'ajax_hide_attachments' competency.id %}'><i class='fal fa-eye-slash'></i> Hide attachments  </div>")
+                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+        function hideCompetency(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='showCompetency(this)' data-url='{% url 'ajax_show_competency' competency.id %}'><i class='fal fa-eye'></i> Show competency for all users  </div>")
+                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+        function showCompetency(el) {
+            var container = $(el)
+            container.html("<i class='fa fa-spinner fa-spin'></i>")
+            $.ajax({
+                url: $(el).data('url'),
+                type: 'POST',
+                success: function (result) {
+                    container.replaceWith("<div class='btn btn-2 mt-4 mr-2' onclick='hideCompetency(this)' data-url='{% url 'ajax_hide_competency' competency.id %}'><i class='fal fa-eye-slash'></i> Hide competency for all users  </div>")
+                },
+                error: (err)=>{console.log(err)}
+            });
+        }
+
+    </script>
+
+{% endblock %}

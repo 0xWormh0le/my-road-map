@@ -1,0 +1,6 @@
+{% load my %}
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+    <label for="{{ field.id_for_label }}" class="control-label">{{ field.label }}</label>
+    {{ field|addcss:"form-control registration-field" }}
+</div>
+

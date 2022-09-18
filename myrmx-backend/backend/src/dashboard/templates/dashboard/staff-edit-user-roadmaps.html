@@ -1,0 +1,99 @@
+{% extends "dashboard/base.html" %}
+
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "Dashboard" "dashboard" %}
+            {% breadcrumb  name  "" %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}{% endcomment %}
+
+{% block body %}
+
+<a class="back-btn mb-3" href="{% url 'dashboard' %}"><i class="far fa-arrow-left"></i></a>
+
+<div class="card edit-assigned-roadmaps">
+  <div class="card-body">
+
+    <h4 class="mb-3">{{ name|title }}'s Roadmaps:</h4>
+
+    <h5><b>Current Roadmaps</b></h5>
+
+    {% for roadmap in roadmaps %}
+        <div class="roadmap-card mb-3 d-flex justify-content-between">
+          <div class="align-self-center roadmap-name">{{ roadmap.title }}</div>
+          {% if not roadmap.assign_to_all_users %}
+              {% if request.user.company.archive_roadmaps %}
+                  <div class="align-self-center">
+                      <a class="btn btn-2"  href="{% url 'archive_roadmap' student_id roadmap.id %}"><i class="fal fa-archive"></i> Archive</a>
+                  </div>
+              {% else %}
+                  <div class="align-self-center">
+                      <a class="btn btn-2"  href="{% url 'remove_roadmap' student_id roadmap.id %}"><i class="fal fa-trash"></i> Remove</a>
+                  </div>
+              {% endif %}
+          {% endif %}
+        </div>
+    {% empty %}
+        <div class="help-text-2">No Roadmaps assigned</div>
+    {% endfor %}
+
+
+    <h5><b>Available Roadmaps</b></h5>
+
+    {% if roadmap_templates %}
+        {% for roadmap in total %}
+            {% if roadmap.is_published %}
+                <div class="roadmap-card mb-3 d-flex justify-content-between">
+                  <div class="align-self-center roadmap-name">{{ roadmap.title }}</div>
+                  <div class="align-self-center">
+                      <a class="btn btn-primary" href="{% url 'assign_roadmap' student_id roadmap.id %}"><i class="fal fa-plus"></i> Assign</a>
+                  </div>
+                </div>
+            {% endif %}
+        {% empty %}
+            <div class="help-text-2">No Roadmaps assigned</div>
+        {% endfor %}
+    {% else %}
+        <div class="help-text-2">No Available Roadmaps</div>
+    {% endif %}
+
+
+    {% if request.user.company.archive_roadmaps %}
+        <h5><b><i class="fal fa-archive"></i> Archived Roadmaps</b></h5>
+        {% for roadmap in archived_roadmaps %}
+          <div class="roadmap-card mb-3 d-flex justify-content-between">
+            <div class="align-self-center roadmap-name">{{ roadmap.title }}</div>
+            <div class="align-self-center">
+                <a class="btn btn-primary" href="{% url 'reassign_roadmap' student_id roadmap.id %}"><i class="far fa-redo"></i> Reopen</a>
+            </div>
+          </div>
+          {% empty %}
+          <div class="help-text-2">No Archived Roadmaps</div>
+        {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock body %}
+
+
+{% block extrafooter %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        function archiveUserRoadmap(url, event) {
+            event.stopPropagation();
+            Swal.fire({
+                title: "Archive this Roadmap?",
+                text: 'Progress will be saved.',
+                showCancelButton: true,
+                confirmButtonText: 'Archive',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                  location.href = url;
+                }
+            }).catch(Swal.noop);
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "dashboard/base.html" %}
+{% load humanize %}
+
+
+{% block title %}
+    Notifications
+{% endblock %}
+
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb 'Recent Activity' 'notifications:all' %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}{% endcomment %}
+
+{% block body %}
+<a class="back-btn mb-3" href="javascript:history.go(-1)"><i class="far fa-arrow-left"></i></a>
+
+
+<div class="notifications-wrapper">
+
+  <div class="card">
+      {% if notifications %}
+          <a class="float-right btn-5 mb-2" id="mark-all-as-read" href="{% url 'notifications:notifications_all' %}?r=1">Mark All As Read</a>
+          <div class="notification-cards mb-4">
+            <h4 class='mb-3'>Notifications</h4>
+
+              {% for note in notifications %}
+
+                  <div class="notification-card {% if note.read %} {% else %}not-read{% endif %}">
+                    <a href="{{ note.get_link_2 }}">
+                    <div class="profile-photo" style="{% if note.sender_object.photo %} background-image: url('{{ note.sender_object.get_photo_url }}') {% endif %}" aria-label="photo of {{ note.sender_object.get_full_name }}"> {% if not note.sender_object.photo %}<span>{{ note.sender_object.first_name|slice:"1"|title }}{{ note.sender_object.last_name|slice:"1"|title }} </span>{% endif %}</div>
+                    <div class="text">
+                      <div class="note">{{ note|safe }}</div>
+                      <div class="date">{{ note.timestamp|naturaltime }}</div>
+                    </div>
+                    <div class="read-reciept">
+                        {% if note.read %}
+                            <i style="color:#eee;" class="fa fa-circle"></i>
+                        {% else %}
+                            <i style="color:#377BB5;" class="fa fa-circle"></i>
+                        {% endif %}
+                    </div>
+                    </a>
+                </div>
+
+              {% endfor %}
+          </div>
+      {% else %}
+      <div class="no-notifications">
+        <h3 class="mb-3 text-center">No notifications yet.</h3>
+        <p style="text-align:center;">This is where your notifications will appear once you have them.</p>
+        <i class="no-content-icon fal fa-bell"></i>
+        <a class="btn btn-primary add-cohort-button" href="{% url 'roadmaps' %}"> Go to your Roadmaps</a>
+      </div>
+      {% endif %}
+  </div>
+
+</div>
+{% endblock %}

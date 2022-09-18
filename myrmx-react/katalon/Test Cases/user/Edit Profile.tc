@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>User edits their profile</description>
+   <name>Edit Profile</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>897b4db8-45dd-47f8-b9af-318489a7bd5d</testCaseGuid>
+</TestCaseEntity>

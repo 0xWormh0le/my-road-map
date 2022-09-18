@@ -1,0 +1,45 @@
+@import '../../../../styles/mixins';
+
+.notifications-components-default-page-notifications-list {
+  .no-notifications {
+    @extend .mrm-mt-3;
+    text-align: center;
+
+    .fa-bell {
+      display: block;
+      color: $primary;
+      margin-left: auto;
+      margin-right: auto;
+      @extend .mrm-mb-1_5;
+    }
+  }
+
+  .notification-row {
+    cursor: pointer;
+    position: relative;
+    font-size: $font-size-small;
+    @extend .mrm-py-1;
+
+    p {
+      margin-bottom: 0;
+      line-height: 16px;
+    }
+
+    .unread-marker {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $color-unread-blue;
+      @extend .mrm-mr-0_25;
+      display: inline-block;
+      position: absolute;
+      top: 36px;
+      left: -11px;
+    }
+  }
+
+  hr {
+    height: 1px;
+    margin: 0 -1.5rem;
+  }
+}

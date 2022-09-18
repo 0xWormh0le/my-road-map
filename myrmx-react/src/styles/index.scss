@@ -1,0 +1,15 @@
+// index is the entry for all styles.
+@import './colors.scss';
+@import './global';
+@import './theme.scss';
+@import './custom.scss';
+@import './icon.scss';
+@import './framework.scss';
+@import '../features/home/style';
+@import '../features/common/style';
+@import '../features/user/style';
+@import '../features/dashboard/style';
+@import '../features/roadmap/style';
+@import '../features/messages/style';
+@import '../features/notifications/style';
+@import '../features/manage/style';

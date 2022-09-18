@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Clicking Terms of Service in User profile opens external page</description>
+   <name>click_terms</name>
+   <tag>User</tag>
+   <comment></comment>
+   <testCaseGuid>3d209657-a584-4fc2-aeb9-e145e9dc9e48</testCaseGuid>
+</TestCaseEntity>

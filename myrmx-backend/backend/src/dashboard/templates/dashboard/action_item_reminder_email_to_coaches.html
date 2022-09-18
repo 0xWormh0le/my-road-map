@@ -1,0 +1,38 @@
+{% extends 'registration/email_base_html.html' %}
+{% load humanize %}
+
+{% block body %}
+    <table style="font-family: 'Open Sans'; font-size: 20px;">
+        <tbody>
+            <tr width="100%">
+                <td style="color:#1D2327;">Hi, {{ user.first_name|title }}.</td>
+                <td>We would like to remind you of an Action Item that is due today for someone you coach.</td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <tbody>
+                <tr width="100%">
+                    <td>
+                      <p style="color: #77787D; font-size: 16px; max-width: 500px;">{{user_synonym}}: {{ users_name|title }}</p>
+                    </td>
+                </tr>
+                <tr width="100%">
+                    <td>
+                      <p style="color: #77787D; font-size: 16px; max-width: 500px;">Action Item Name: {{ item_description }}</p>
+                    </td>
+                </tr>
+                <tr width="100%">
+                    <td>
+                      <p style="color: #77787D; font-size: 16px; max-width: 500px;">Competency: {{ item_competency }}</p>
+                    </td>
+                </tr>
+                <tr width="100%">
+                    <td>
+                      <p style="color: #77787D; font-size: 16px; max-width: 500px;">Roadmap: {{ item_roadmap }}</p>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; padding-left: 30px; padding-right: 30px; text-align: center; text-decoration: none; font-weight: 500;" href="https://app.myroadmap.io/users/{{user_id}}/competency/{{competency_id}}">View Progress</a>
+{% endblock %}

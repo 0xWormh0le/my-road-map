@@ -1,0 +1,359 @@
+{% extends "dashboard/base.html" %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% if roadmaps %}
+            {% breadcrumb "My Roadmaps" "" %}
+        {% else %}
+        {% endif %}
+        {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+    {% endblock %}
+{% endblock %}
+
+{% block body %}
+
+<div class="current-roadmaps-wrapper mb-2">
+{% if roadmaps %}
+    {% for roadmap in roadmaps %}
+        {% if not roadmap.hidden_from_users %}
+            <div class="current-roadmap-container d-flex {% if not request_user_company_has_dark_ui %}current-roadmap-container-light-ui{% endif %}" onclick="location.href = '{% url 'roadmap' roadmap.id %}'">
+                {% if roadmap.icon %}
+                    <div class="roadmap-icon-img">
+                        <img src="{{ roadmap.get_roadmap_icon_url }}">
+                    </div>
+                {% else %}
+                    <div class="roadmap-icon-placeholder">
+                        <i class="fal fa-map icon-placeholder"></i>
+                    </div>
+                {% endif %}
+                <div class="flex-grow-1">
+                    <div class="roadmap-card clearfix">
+                        <h1 class="title {% if not roadmap.description %}mb-3{% endif %}">{{ roadmap.title }}</h1>
+
+                        <p class="description">{{ roadmap.description }}</p>
+                        {% if request.user.company.user_can_asssign_roadmaps %}
+                            <i class="icon-btn-dark fal fa-times close" onclick="removeUserRoadmap('{% url 'roadmap_remove' roadmap.id %}', event)"></i>
+                        {% endif %}
+                        <div class="progress-info mb-2 mt-2">
+                            {% if roadmap.stats.total_progress > 0 %}
+                                <div class="progress-container">
+                                    <div class="progress">
+                                        <div style="width: {{ roadmap.stats.total_progress }}%" role="progressbar" class="progress-bar"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="progress-stats mb-1">
+                                <div class="action-items float-right d-inline-block">
+                                    {% if roadmap.stats.total_progress > 0 %}
+                                        {% if roadmap.stats.total_action_items > 0 %}
+                                            <span class="progress-label"><i class="fal fa-check-circle"></i> {{ roadmap.stats.total_action_items_complete }}/{{ roadmap.stats.total_action_items }}</span>
+                                        {% endif %}
+                                        {% if roadmap.stats.total_questions > 0 %}
+                                            <span class="progress-label"><i class="fal fa-question"></i> {{ roadmap.stats.total_questions_answered }}/{{ roadmap.stats.total_questions }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                {% if roadmap.stats.total_progress > 0 %}
+                                    <div class="overall_progress d-inline-block">
+                                        <span class="progress-label">{{ roadmap.stats.total_progress|floatformat:"0" }}% Complete</span>
+                                    </div>
+                                {% else %}
+                                    <div class="overall_progress d-inline-block">
+                                        <span class="progress-label start-roadmap">Start Roadmap <i class="far fa-arrow-right"></i></span>
+                                    </div>
+                                {% endif %}
+                                {% if request.user.company.users_can_assign_specific_coaches_for_specific_roadmaps %}
+                                    <div class="assigned_coaches mt-2">
+                                        <p class="d-inline-block m-0 mr-1">Coaches for this Roadmap:
+                                            <span id="assigned_coach_list">
+                                            {% for assigned_roadmap in assigned_roadmaps %}
+                                                {% if assigned_roadmap.roadmap == roadmap %}
+                                                    <div class="account-initials"><span>{{ assigned_roadmap.coach_initials }}</span></div>
+                                                {% endif %}
+                                                {% empty %}
+                                                    none
+                                            {% endfor %}
+                                            </span>
+                                        <a class="btn btn-5" id="getAssignedCoaches" onclick="location.href = '{% url 'user_edit_assigned_coaches' roadmap.id %}'; event.stopPropagation();">Edit Assigned Coaches</a>
+                                        </p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- <span class="btn btn-primary open" onclick="location.href = '{% url 'roadmap' roadmap.id %}'">{% if roadmap.stats.total_progress == 0 %} Begin {% else %} Resume {% endif %}</span> -->
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    <!-- <div class="row">
+        <div class="my-coaches-card col-12 col-md-3">
+          <h1>My Coaches</h1>
+          {% for coach in user.coach.all %}
+          <div class="my-coach">
+            <img class="profile-image" src="{{ coach.get_photo_url }}" alt="photo of {{ coach.get_full_name }}">
+            <a href="{% url "profile_detail" coach.id %}">{{ coach }}</a>
+          </div>
+          {% empty %}
+              <li>You don't have a coach. Contact your admin to get a coach.</li>
+          {% endfor %}
+        </div>
+
+        <div class="dashboard-roadmap-container col-12 col-md-9">
+            <div class="content-card">
+                <div class="column-headers row mx-0">
+                    <div class="col-6">Roadmap</div>
+                    <div style="text-align: center;" class="col-3">Progress</div>
+                    <div style="text-align: center;" class="col-3">Action Items</div>
+                </div>
+                {% for roadmap in roadmaps %}
+
+                <div class="roadmap-cards row card-row py-2 align-items-center card-row hover-shadow"
+                    data-roadmap="{{ roadmap.id }}"
+                    onclick="location.href = '{% url 'roadmap' roadmap.id %}'">
+                    <div class="col-6 dashboard-roadmap-title">
+                      {{ roadmap.title }}
+                    </div>
+                    <div class="col-3">
+                      <div style="text-align: center;" class="count">{{ roadmap.stats.total_progress|floatformat:"0" }}%</div>
+                      <div class="progress-container">
+                          <div class="progress">
+                              <div style="width: {{ roadmap.stats.total_progress }}%" role="progressbar" class="progress-bar"></div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div style="text-align: center;" class="count">{{ roadmap.stats.total_action_items_complete }}/{{ roadmap.stats.total_action_items }}</div>
+                    </div>
+                    {% if request.user.is_student and not request.user.is_coach and request.user.company.only_coach_asssigns_roadmaps %}
+                    {% else %}
+                      <i class="fal fa-times close" onclick="removeUserRoadmap('{% url 'roadmap_remove' roadmap.id %}', event)"></i>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div> -->
+
+
+{% else %}
+
+    {% if not request.user.company.user_can_asssign_roadmaps %}
+        <div class="welcome main-content-card rounded">
+            <h3 class="mb-3" style="text-align:center">Hi {{ request.user.first_name }}, welcome to {% if request.user.company.private_labeled %}{{request.user.company}}{% else %} MyRoadmap!{% endif %}</h3>
+            <div class="mb-3" style="text-align:center">Contact your Admin or
+            {% if request.user.company.coach_synonym %}
+                {{ request.user.company.coach_synonym }}
+            {% else %}
+                Coach
+            {% endif %}
+            to start your first Roadmap.
+            </div>
+            {% if request.user.company.conversations %}
+                <!-- <i class="fal fa-hand-point-down down"></i> -->
+                <!-- <div class="down">OR</div> -->
+                <i class="fal fa-comments-alt down"></i>
+                <a class="btn btn-primary mt-3" href="{% url 'postman:inbox' %}" style="text-align:center; display: block; width:300px; margin: auto;">Go to your conversations</a>
+                {% else %}
+                <i class="fal fa-map down"></i>
+            {% endif %}
+
+        </div>
+    {% else %}
+        <div class="welcome main-content-card rounded">
+            <h3 class="mb-3" style="text-align:center">Hi {{ request.user.first_name }}, welcome to {% if request.user.company.private_labeled %}{{request.user.company}}{% else %} MyRoadmap!{% endif %}</h3>
+            <div class="mb-3" style="text-align:center">{{ request.user.company.app_welcome_message }}</div>
+            <i class="fas fa-hand-point-down down"></i>
+        </div>
+    {% endif %}
+{% endif %}
+</div>
+
+{% if request.user.companies|length > 1 %}
+    <!-- <p class="{% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %}">Looking for your other Roadmaps? Go to your <a href="{% url 'profile' %}">profile page</a> to switch which organization you are working under.</p> -->
+{% endif %}
+
+
+
+{% if not request.user.company.group_specific_roadmaps %}
+    {% if request.user.company.user_can_asssign_roadmaps %}
+        {% if roadmap_templates %}
+            {% if not roadmaps %}
+                <p class="mt-3 h1-section-header {% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %}">Roadmap Library</p>
+            {% endif %}
+            {% if roadmaps %}
+                <p class="{% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %}">
+                  <a data-toggle="collapse" href="#collapseRoadmapLibrary" role="button" aria-expanded="false" aria-controls="collapseRoadmapLibrary">
+                    Add additional Roadmaps
+                  </a>
+                </p>
+                <div class="collapse mt-2" id="collapseRoadmapLibrary">
+                    <div class="row">
+                        {% for roadmap in roadmap_templates %}
+                            {% if roadmap.is_published %}
+                                {% if not roadmap.hidden_from_users %}
+                                    <div class="col-lg-4 col-sm-6">
+                                      <div class="roadmap-library">
+                                        <div class="roadmap-cover-img">
+                                          {% if roadmap.icon  %}
+                                              <div class="roadmap-icon-img">
+                                                <img src="{{ roadmap.get_roadmap_icon_url }}">
+                                              </div>
+                                          {% else %}
+                                              <div class="roadmap-icon-placeholder">
+                                                <i class="fal fa-map icon-placeholder"></i>
+                                              </div>
+                                          {% endif %}
+                                        </div>
+                                        <div class="roadmap-card">
+                                            <div class="clearfix">
+                                                <div class="title">{{ roadmap.title }}</div>
+                                                {% if roadmap.description %}
+                                                    <div class="description">{{ roadmap.description }}</div>
+                                                {% else %}
+                                                    <hr class="description">
+                                                {% endif %}
+                                                <td class="text-right">
+                                                    <a class="btn btn-primary" href="{% url 'roadmap_add' roadmap.id %}">{% if roadmaps %}Add Roadmap{% else %}Select{% endif %}</a>
+                                                </td>
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    {% for roadmap in roadmap_templates %}
+                        {% if roadmap.is_published %}
+                            {% if not roadmap.hidden_from_users %}
+                                <div class="col-lg-4 col-sm-6">
+                                  <div class="roadmap-library">
+                                    <div class="roadmap-cover-img">
+                                      {% if roadmap.icon  %}
+                                          <div class="roadmap-icon-img">
+                                            <img src="{{ roadmap.get_roadmap_icon_url }}">
+                                          </div>
+                                      {% else %}
+                                          <div class="roadmap-icon-placeholder">
+                                            <i class="fal fa-map icon-placeholder"></i>
+                                          </div>
+                                      {% endif %}
+                                    </div>
+                                    <div class="roadmap-card">
+                                        <div class="clearfix">
+                                            <div class="title">{{ roadmap.title }}</div>
+                                            {% if roadmap.description %}
+                                                <div class="description">{{ roadmap.description }}</div>
+                                            {% else %}
+                                                <hr class="description">
+                                            {% endif %}
+                                            <td class="text-right">
+                                                <a class="btn btn-primary" href="{% url 'roadmap_add' roadmap.id %}">{% if roadmaps %}Add Roadmap{% else %}Select{% endif %}</a>
+                                            </td>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        {% else %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+
+
+{% if request.user.company.group_specific_roadmaps %}
+    {% if request.user.company.user_can_asssign_roadmaps %}
+        {% if roadmap_templates %}
+            <p class="mt-3 roadmaps-section-header">Available Roadmaps</p>
+            <div class="row">
+                {% for roadmap in total %}
+                    {% if roadmap.is_published %}
+                        {% if not roadmap.hidden_from_users %}
+                          <div class="col-lg-4 col-sm-6">
+                            <div class="roadmap-library">
+                              <div class="roadmap-cover-img">
+                                {% if roadmap.icon  %}
+                                    <div class="roadmap-icon-img">
+                                      <img src="{{ roadmap.get_roadmap_icon_url }}">
+                                    </div>
+                                {% else %}
+                                    <div class="roadmap-icon-placeholder">
+                                      <i class="fal fa-map icon-placeholder"></i>
+                                    </div>
+                                {% endif %}
+                              </div>
+                              <div class="roadmap-card">
+                                  <div class="clearfix">
+                                      <div class="title">{{ roadmap.title }}</div>
+                                      {% if roadmap.description %}
+                                          <div class="description">{{ roadmap.description }}</div>
+                                      {% else %}
+                                          <hr class="description">
+                                      {% endif %}
+                                      <td class="text-right">
+                                          <a class="btn btn-primary" href="{% url 'roadmap_add' roadmap.id %}">{% if roadmaps %}Add Roadmap{% else %}Select{% endif %}</a>
+                                      </td>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+
+
+<!-- {% if not request.user.company.user_can_asssign_roadmaps and not roadmap_templates %}
+    <div class="no-roadmaps">I can not assigned Roadmaps and there are none left</div>
+{% endif %}
+
+{% if not request.user.company.user_can_asssign_roadmaps and roadmap_templates %}
+    <div class="no-roadmaps">I can not assigned Roadmaps but there are some left</div>
+{% endif %} -->
+
+
+
+
+
+
+{% include 'dashboard/invite-coach.html' %}
+{% include 'dashboard/connect-with-expert.html' %}
+
+{% endblock body %}
+
+{% block extrafooter %}
+    <script>
+        function removeUserRoadmap(url, event) {
+            event.stopPropagation();
+            Swal.fire({
+                title: "Close this Roadmap?",
+                text: 'Your progress will be saved.',
+                showCancelButton: true,
+                confirmButtonText: 'Remove',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    location.href = url;
+                }
+            }).catch(Swal.noop);
+        }
+        var strings = $("#assigned_coach_list").html().match(/[A-Z]{2}/g).join(", ");
+        $("#assigned_coach_list").html(strings);
+    </script>
+{% endblock %}

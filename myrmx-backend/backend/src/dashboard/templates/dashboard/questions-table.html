@@ -1,0 +1,86 @@
+{% load my %}
+
+<div id="questions-list">
+    <div class="table-header d-none d-lg-block bg-white">
+        <div class="row px-3">
+            <div class="d-flex col-12 col-lg-8 justify-content-between">
+                <div class="q-question column-label"></div>
+            </div>
+            <div class="col-12 col-lg-4 second-row mt-2 mt-lg-0">
+                <div class="row">
+
+                    <div class="col column-label"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for item in questions %}
+        <div id="q-{{item.id}}" class="outer {% if editing or not item.parent and item.student and not is_all_q %} can-sort {% endif %}">
+          <div class="row px-3">
+              <div class="col-12">
+                  <div class="row no-gutters">
+                      <div class="col-10">
+                          <div class="d-flex">
+                              <div class="flex-fill q-question">
+                                  {% if editing or not item.parent and item.student and not is_all_q %}<i class="fa fa-bars mr-2"></i>{% endif %}
+                                  {% firstof item.parent.question item.question|urlize %}
+                              </div>
+                              {% if student == request.user and not is_template %}
+                                  {% if item.answer %}
+                                      <div class="q-answer-edit q-answer-edit-1 q-answer-edit-btn text-nowrap" data-url="{% url 'ajax_edit_q_answer'%}" data-pk={{item.pk}}> Edit Answer</div>
+                                  {% else %}
+                                      <div class="q-answer-edit q-answer-edit-1 q-answer-edit-btn text-nowrap" data-url="{% url 'ajax_edit_q_answer'%}" data-pk={{item.pk}}>Answer</div>
+                                  {% endif %}
+                              {% endif %}
+                          </div>
+                          {% if item.answer %}
+                              <div class="mt-2 q-answer q-answer-edit q-answer-edit-2" data-url="{% url 'ajax_edit_q_answer'%}" data-pk={{item.pk}}>{{item.answer|urlize|linebreaks}}</div>
+                          {% else %}
+                              <div class="q-answer"></div>
+                          {% endif %}
+                          <textarea class="mt-2 d-none form-control"></textarea>
+                      </div>
+                      <div class="col-2">
+                          <div class="q-actions">
+                              {% if is_template %}
+                                  <i title="Edit item" class="fal fa-pencil q-edit pointer ml-3 float-right" data-href="{% url 'global_question' item.pk %}"></i>
+                                  <i title="Delete item" class="fas fa-trash q-delete pointer ml-3 float-right" data-href="{% url 'global_question' item.pk %}"></i>
+                              {% elif not item.parent %}
+                                      <i title="Delete item" class="fal fa-trash q-delete pointer ml-3 float-right" data-href="{% url 'question' item.pk %}"></i>
+                                      <i title="Edit item" class="fal fa-pencil q-edit pointer ml-3 float-right" data-href="{% url 'question' item.pk %}"></i>
+                              {% endif %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="outer help-text p-2">No questions</div>
+    {% endfor %}
+</div>
+
+
+<script>
+    $('#questions-list').sortable({
+        axis: 'y',
+        items: ".can-sort",
+        cursor: "move",
+        stop: ()=>{
+            var sortedIDs = $( "#questions-list" ).sortable( "toArray" );
+            var orderMapping = {}
+            sortedIDs.forEach((el, i)=>{
+                orderMapping[el.replace('q-','')] = i;
+            })
+            $.ajax({
+                url: '/ajax-sort-questions/',
+                type: 'POST',
+                data: {
+                    orderMapping: JSON.stringify(orderMapping),
+                    is_globals: '{{ editing }}'.toLowerCase(),
+                },
+                success: function(data) {}
+            });
+        }
+    })
+</script>

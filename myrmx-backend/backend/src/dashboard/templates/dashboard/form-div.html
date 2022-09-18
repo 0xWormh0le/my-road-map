@@ -1,0 +1,10 @@
+{% load my %}
+{% for field in form %}
+    <div class="form-group">
+        <span clas="text-danger small">{{ field.errors }}</span>
+        <label class="col-sm-3 control-label">{{ field.label_tag }}</label>
+        <div class="col-sm-4">
+           {{field|addcss:"form-control"}}
+        </div>
+    </div>
+{% endfor %}

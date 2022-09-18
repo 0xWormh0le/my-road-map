@@ -1,0 +1,16 @@
+@import '../../styles/mixins';
+
+.common-network-detector {
+  @extend .mrm-p-3;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+
+  .offline-description {
+    text-align: center;
+    color: $color-text-light;
+  }
+}

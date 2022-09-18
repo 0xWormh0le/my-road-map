@@ -1,0 +1,58 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}{{ who }}{% endblock %}
+
+{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% if cohort %}
+            {% breadcrumb "Groups" "staff_cohorts" %}
+            {% breadcrumb cohort.name "" %}
+        {% else %}
+            {% breadcrumb who "" %}
+        {% endif %}
+    {% endblock %}
+    {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+{% endblock %}
+
+{% block body %}
+ <div class="card">
+        <div class="card-body">
+            <h3 class="title">{{ who }}</h3>
+            <table class="table table-hover">
+                <thead>
+                    <th>Name</th>
+                    <th class="d-none d-md-table-cell">Email</th>
+                    {% if not request.user.company %}<th class="d-none d-md-table-cell">Company</th>{% endif %}
+                    <th class="d-none d-md-table-cell">Groups</th>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                        <tr>
+                            <td><a href="{% url 'profile_detail' object.id %}"><img class="profile-image" src="{{ object.get_photo_url }}" alt="Profile picutre for {{ object }}">{{ object }} </a></td>
+                            <td class="d-none d-md-table-cell">{{ object.email }}</td>
+                            {% if not request.user.company %}<td class="d-none d-md-table-cell">{{ object.company.name }}</td>{% endif %}
+                            <td class="d-none d-md-table-cell">{% for cohort in object.cohort.all %}{{ cohort }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">There are no {% if cohort %}members{% else %}{{ who|lower }}{% endif %} yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    $(document).ready(function(){
+         $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+{% endblock %}
+
+{% block style %}
+    tr.clickable-row{ cursor: pointer; }
+{% endblock %}

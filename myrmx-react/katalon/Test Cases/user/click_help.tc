@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Clicking on Help and Support function</description>
+   <name>click_help</name>
+   <tag>User</tag>
+   <comment></comment>
+   <testCaseGuid>e6492755-3957-4348-8b69-6f3fce2c445a</testCaseGuid>
+</TestCaseEntity>

@@ -1,0 +1,46 @@
+@import '../../../styles/mixins';
+
+.user-components-invite-coach-modal {
+  .modal-dialog {
+    border: 0;
+  }
+
+  .modal-content {
+    border: 0;
+  }
+
+  button {
+    height: inherit;
+  }
+
+  .form-group {
+    position: relative;
+
+    svg {
+      color: $color-text-light;
+      position: absolute;
+      left: get-scaled-size($scale-factor-0_5);
+      top: get-scaled-size($scale-factor-0_75);
+      font-size: get-scaled-size($scale-factor-1);
+    }
+
+    input {
+      @extend .mrm-pl-2;
+    }
+  }
+
+  &.mobile-modal {
+    .modal-dialog {
+      margin: 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .modal-content {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}

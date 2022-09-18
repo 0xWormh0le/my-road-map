@@ -1,0 +1,36 @@
+@import '../../styles/mixins';
+
+.dashboard-roadmap-library-page {
+  .card-body {
+    @extend .mrm-pl-0_75;
+    @extend .py-0;
+    @extend .pr-0;
+  }
+
+  .card-img {
+    background-color: $color-item-yellow;
+    border-radius: 10px;
+    height: 70px;
+    width: 70px;
+    color: white;
+  }
+
+  .card-title {
+    font-size: $font-size-normal;
+    font-weight: bold;
+  }
+
+  .card-subtitle {
+    color: $color-text-light;
+    font-size: $font-size-small;
+  }
+
+  .card span.small {
+    color: $color-text-light;
+  }
+
+  .assigned-label {
+    color: #727272;
+    float: right;
+  }
+}

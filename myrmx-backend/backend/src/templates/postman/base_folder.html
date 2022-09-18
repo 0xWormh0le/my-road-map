@@ -1,0 +1,126 @@
+{% extends "postman/base.html" %}
+{% load i18n postman_tags %}{% load pagination_tags %}{% load my %}
+{% comment %}
+WARNING: 'pagination_tags' is a name from the django-pagination application.
+For convenience, the design of this template is done with the use of that application.
+Django-postman will still be working, even if that application is not installed, by providing a mock
+for the template tag library.
+If the real implementation is to be used, just make sure that 'pagination' is declared before 'postman'
+in the INSTALLED_APPS setting.
+{% endcomment %}
+{% block body %}
+    {{ block.super }}
+    <div class="card postman-card">
+        <div class="card-body">
+            <div id="postman">
+                {% autopaginate pm_messages %}
+                {% if invalid_page %}
+                    <p>{% trans "Sorry, this page number is invalid." %}</p>
+                {% else %}
+                    {% if pm_messages %}
+                        <form action="{% block pm_form_action %}{% endblock %}" method="post">{% csrf_token %}
+                            {% block pm_form_buttons %}
+                                <span id="pm_buttons">
+                                    {% block pm_delete_button %}<button class="btn btn-sm btn-fill btn-info" type="submit" onclick="this.form.action='{% url 'postman:delete' %}'"><i class="far fa-trash"></i> {% trans "Delete Conversation" %}</button>{% endblock %}
+                                    <!-- {% block pm_archive_button %}<button class="btn btn-sm btn-fill btn-info" type="submit" onclick="this.form.action='{% url 'postman:archive' %}'"><i class="far fa-briefcase"></i> {% trans "Archive Items" %}</button>{% endblock %} -->
+                                    {% block pm_undelete_button %}<button class="btn btn-sm btn-fill btn-info" type="submit" onclick="this.form.action='{% url 'postman:undelete' %}'"><i class="far fa-trash"></i> {% trans "Undelete" %}</button>{% endblock %}
+                                </span>
+                            {% endblock %}
+                            <table id="messages-table" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th id="checkbox-column"><input type="checkbox" id="select_all_existent"></th>
+                                        {% block pm_sender_header %}<th>Sender</th>{% endblock %}
+                                        {% block pm_recipient_header %}<th>Recipient</th>{% endblock %}
+                                        <th>Subject</th>
+                                        <th>Received</th>
+                                    </tr>
+                                </thead>
+                                <tbody>{% for message in pm_messages %}
+                                    <tr class="clickable-row" data-href="{% if by_conversation and message.thread_id %}{% url 'postman:view_conversation' message.thread_id %}{% else %}{% url 'postman:view' message.pk %}{% endif %}">
+                                        <td><input type="checkbox" {% if by_conversation and message.thread_id %}name="tpks" value="{{ message.thread_id }}"{% else %}name="pks" value="{{ message.pk }}"{% endif %} /></td>
+                                        {% block pm_sender_cell %}
+                                            <td>
+                                                {{ message.obfuscated_sender|or_me:user|remove_brackets_from_me }}{% if message.count %} ({{ message.count }}){% endif %}
+                                            </td>
+                                        {% endblock %}
+                                        {% block pm_recipient_cell %}<td>{{ message.obfuscated_recipient|or_me:user|remove_brackets_from_me }}{% if message.count %} ({{ message.count }}){% endif %}</td>{% endblock %}
+                                        <td {% if message.is_new %}class="message-new"{% endif %}>
+                                            {% block pm_subject %}
+                                                {% include "postman/inc_subject_ex.html" %}
+                                            {% endblock %}
+                                        </td>
+                                        <td>{{ message.sent_at|date:"M d, Y,  h:i A" }}</td>
+                                    </tr>{% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
+                        {% paginate %}
+                    {% else %}
+
+                    {% endif %}
+                {% endif %}
+                {% block pm_footer_info %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    $(document).ready(function() {
+
+
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+
+    $(".clickable-row input").click(function(e) {
+        e.stopPropagation();
+    });
+
+
+    $('#select_all_existent').click(function(event) {
+      if(this.checked) {
+          // Iterate each checkbox
+          $('tr :checkbox').each(function() {
+              this.checked = true;
+          });
+      }
+      else {
+        $('tr :checkbox').each(function() {
+              this.checked = false;
+          });
+      }
+    });
+
+} );
+{% endblock %}
+
+{% block style %}
+    #messages-table a{
+        color:inherit;
+    }
+    #messages-table strong a{
+        font-weight:700!important;
+    }
+
+    #messages-table .message-new{
+        font-weight:700;
+    }
+
+    @media only screen and (max-width: 576px) {
+      .postman-card {
+        margin-left: -15px;
+        margin-right: -15px;
+      }
+    }
+    #messages-table .message-new small{
+        font-weight:400;
+    }
+    .toolbar{
+        float:left;
+    }
+    #checkbox-column.sorting_asc:after{background:none;display:none!important;}
+
+{% endblock %}

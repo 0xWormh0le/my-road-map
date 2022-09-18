@@ -1,0 +1,16 @@
+{% extends 'signup_base.html' %}
+
+{% block page_header %}{% endblock page_header %}
+
+{% block title %}Accept Invitation{% endblock %}
+{% block form-title %}Accept Invitation{% endblock form-title %}
+
+{% block content %}
+    <p>
+        Would you like to accept the invitation to be a coach to
+        {{ user.get_full_name }}{% if coach.company.id != 1 %} at {{ user.company.name }}{% endif %}?
+    </p>
+    <p>
+        <a href="{{ accept_invitation_link }}" class="btn btn-primary">Accept invitation</a>
+    </p>
+{% endblock %}

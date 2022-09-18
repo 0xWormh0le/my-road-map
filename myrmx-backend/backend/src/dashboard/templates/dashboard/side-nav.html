@@ -1,0 +1,114 @@
+<div id="side-nav">
+    <i class="fal fa-times pointer close-icon" id="close" onclick="toggleSideNav()"></i>
+    <ul class="main-nav">
+        <li class="mobile-menu-profile">
+            <a href="{% url "profile" %}">
+                <!-- {% if request.user.is_authenticated %}<img src="{{ request.user.get_photo_url }}" class="profile-image" alt="{{ request.user.get_username }} profile picture">{% endif %} -->
+                {% if request.user.is_authenticated %}<div class="profile-image"  style="{% if request.user.photo %} background-image: url('{{ request.user.get_photo_url }}') {% endif %}" aria-label="{{ request.user.get_full_name }} profile picture"><span>{% if not request.user.photo %}{{ request.user.first_name|slice:"1"|title }}{{ request.user.last_name|slice:"1"|title }}{% endif %}</span></div>{% endif %}
+            </a>
+            <div>{{ request.user }}</div>
+        </li>
+
+        {% if request.user.is_admin or request.user.is_coach or request.user.is_student %}
+            {% for tab in nav_tabs %}
+                <li>
+                    <a href="{{tab.url}}">
+                        {% if tab.icon %}
+                            <i class="fal fa-{{tab.icon}} fa-fw" aria-hidden="true"></i>
+                        {% endif %}
+                        <span class="menu-btn-txt">{{ tab.name }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        {% endif %}
+
+        <hr>
+
+        <li>
+            <a href="{% url 'profile' %}">
+                <i class="fal fa-user fa-fw" aria-hidden="true"></i>
+                <span class="menu-btn-txt">Profile</span>
+            </a>
+        </li>
+
+        {% if request.user.is_approved %}
+            <li>
+                <a href="{% url 'my_action_items' %}">
+                    <i class="fal fa-calendar-check fa-fw" aria-hidden="true"></i>
+                    <span class="menu-btn-txt">Action Items</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if not request.user.is_admin %}
+            <li>
+                <a href="{% url 'notifications:notifications_all' %}" class="position-relative">
+                    <i class="fal fa-bell fa-fw" aria-hidden="true"></i>
+                    <span id="notification_badge_mobile"></span>
+                    <span class="menu-btn-txt">Notifications</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if request.user.company.conversations %}
+            <li>
+                <a href="{% url 'postman:inbox' %}" class="position-relative">
+                    <i class="fal fa-comments-alt" aria-hidden="true"></i>
+                    <span class="menu-btn-txt">Conversations</span>
+                    {% if postman_unread_count %}
+                    <div style="position: relative; display: inline;">
+                      <span class="badge email-nav-badge-mobile">{{ postman_unread_count }}</span>
+                    </div>
+                    {% endif %}
+                </a>
+            </li>
+        {% endif %}
+
+
+
+        {% if request.user.company_id == 87 %}
+        <li>
+            <a href="https://www.parentguidance.org/faq-app/" target="_blank">
+                <i class="fal fa-question-circle fa-fw" aria-hidden="true"></i>
+                <span class="menu-btn-txt">FAQ</span>
+            </a>
+        </li>
+        {% else %}
+        <li>
+            <a href="https://www.myroadmap.io/#/support" target="_blank">
+                <i class="fal fa-question-circle fa-fw" aria-hidden="true"></i>
+                <span class="menu-btn-txt">Help</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% comment %} <li class="directories">
+            <a href="#">
+                <i class="fal fa-address-book fa-fw" aria-hidden="true"></i>
+                <span class="menu-btn-txt">Directories</span>
+            </a>
+            <a class="directory-option" href="{% url "users" %}">Users</a>
+            <a class="directory-option" href="{% url "coaches" %}">Coaches</a>
+        </li> {% endcomment %}
+
+        {% comment %}
+        {% if not request.user.is_admin %}
+            <li>
+                <a href="{% url "users" %}">
+                    <i class="fal fa-users fa-fw" aria-hidden="true"></i>
+                    <span class="menu-btn-txt">Accounts</span>
+                </a>
+            </li>
+        {% endif %}
+        {% endcomment %}
+
+        <li>
+            <a href="{% url "logout" %}">
+                <i class="fal fa-sign-out fa-fw" aria-hidden="true"></i>
+                <span class="menu-btn-txt">Log Out</span>
+            </a>
+        </li>
+
+    </ul>
+</div>
+<div id="close-wrapper"></div>

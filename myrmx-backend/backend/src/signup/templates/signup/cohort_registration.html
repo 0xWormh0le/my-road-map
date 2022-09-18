@@ -1,0 +1,40 @@
+{% extends 'signup_base.html' %}
+
+{% block title %}Sign up{% endblock %}
+{% block page_header %}{% endblock page_header %}
+
+{% block form-title %}
+    {{ cohort.company.name }} Sign up
+    <p class="mb-0">for {{ cohort.name }}</p>
+{% endblock form-title %}
+
+{% block submit-text %}Sign up{% endblock submit-text %}
+
+{% block links %}
+
+<p class="terms">By creating an account you agree to our
+  <a target="_blank"
+    href="
+    {% if cohort.company.terms_and_conditions %}
+      {{ cohort.company.terms_and_conditions }}
+    {% else %}
+      https://www.myroadmap.io/#/terms-of-service
+    {% endif %}
+    "
+    >Terms & Conditions
+  </a> and
+  <a target="_blank"
+    href="
+    {% if cohort.company.privacy_policy %}
+      {{ cohort.company.privacy_policy }}
+    {% else %}
+      https://www.myroadmap.io/#/privacy-statement
+    {% endif %}
+    "
+    >Privacy Policy
+  </a>
+</p>
+
+<a href="{% url 'index' %}">Already have an account? Log in </a><br>
+
+{% endblock links %}

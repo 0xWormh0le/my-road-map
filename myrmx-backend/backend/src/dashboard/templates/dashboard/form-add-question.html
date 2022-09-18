@@ -1,0 +1,33 @@
+<form method="post" id="add-question-form" autocomplete="off">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h4 class="modal-title">Add New {% if is_global %}Global{% endif %} Question</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+        {% include "dashboard/form-table-vertical.html" %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary q-save" id="add-new-question-save"
+            data-url="{% url 'ajax_question_add' %}{% if is_global %}?g=1{% endif %}">Save</button>
+    </div>
+</form>
+
+<script>
+$("#add-new-question-save").click(function(e){
+    e.preventDefault();
+    $.ajax({
+        url: $(this).data('url'),
+        type: 'POST',
+        data: $('#add-question-form').serialize(),
+        success: function (data) {
+            loadQuestions();
+            $('.modal').modal('hide');
+        },
+        error: function (data) {
+            $('.modal-content-q').html(data.responseText);
+        }
+    });
+});
+</script>

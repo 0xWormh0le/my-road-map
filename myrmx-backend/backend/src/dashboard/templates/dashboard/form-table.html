@@ -1,0 +1,8 @@
+{% load my %}
+{% for field in form %}
+    <td>
+        <div class="form-group {% if field.errors %}has-error{% endif %}">
+            {{field|addcss:"form-control"}}
+        </div>
+    </td>
+{% endfor %}

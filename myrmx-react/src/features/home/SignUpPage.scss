@@ -1,0 +1,37 @@
+@import '../../styles/mixins';
+
+.home-sign-up-page {
+  min-height: 100vh;
+
+  .common-header {
+    background-color: #ECF4FA;
+  }
+
+  .form-group {
+    .svg-inline--fa {
+      position: absolute;
+      @extend .mrm-mt-0_5;
+      @extend .mrm-ml-0_5;
+      color: $primary;
+    }
+  }
+
+  .form-control {
+    @extend .mrm-pl-2_5;
+  }
+
+  .legal-info {
+    color: $color-text-light;
+    font-size: $font-size-small;
+    .legal-link {
+      color: $color-text-light;
+      &:hover {
+        color: $color-text-light;
+      }
+    }
+  }
+
+  .desktop-form-container {
+    @extend .mrm-mt-6;
+  }
+}

@@ -1,0 +1,35 @@
+{% extends 'registration/email_base_html.html' %}
+{% load humanize %}
+
+{% block extended_css %}
+<style>
+    .profile-image {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+</style>
+{% endblock extended_css %}
+
+{% block body %}
+    <table style="font-family: 'Open Sans'; font-size: 20px;">
+        <tbody>
+            <tr width="100%">
+                <td style="color: #1d2328; font-size:20px;" >Hi!</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="color: #77787D; font-size: 16px; padding-bottom: 20px; max-width: 400px;">{{ user.get_full_name }} ({{ user.email }}) has invited you to be their coach.</p>
+    <!-- <table>
+        <tbody>
+            <tr width="100%">
+                <td width="33px"><img class="profile-image" src="{{ user.get_photo_url }}" alt="photo of {{ user.get_full_name }}"></td>
+                <td>{{ user.get_full_name }}</td>
+            </tr>
+        </tbody>
+    </table> -->
+    <a style="background: #4968e8!important; border-radius: 26px; color: white; display: block; padding-top: 15px; padding-bottom: 15px; padding-left: 30px; padding-right: 30px; text-align: center; text-decoration: none; font-weight: 500;" href="{{ primary_link }}">Accept Invitation</a>
+{% endblock %}
+
+{% block email_reason %}{% endblock email_reason %}

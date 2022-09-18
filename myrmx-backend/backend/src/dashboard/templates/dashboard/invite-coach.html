@@ -1,0 +1,28 @@
+<div class="modal fade" id="inviteCoachModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Invite a coach via email
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'coaches_invite' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input id="id_coach_email" name="coach_email" type="email" placeholder="mycoach@example.com" class="form-control" required>
+                    </div>
+                    {% if user.company.users_can_assign_specific_coaches_for_specific_roadmaps %}
+                    <div class="form-group">
+                        <p>Assign coach to Roadmap:</p>
+                        {% for roadmap in user.roadmaps.all %}
+                        <label><input type="checkbox" style="display: inline-block;margin-right: 5px;" name="roadmaps" value="{{roadmap.id}}">{{roadmap.title}}</label><br>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary">Send invite</button>
+                    <button type="button" class="btn-2" data-dismiss="modal">Cancel</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

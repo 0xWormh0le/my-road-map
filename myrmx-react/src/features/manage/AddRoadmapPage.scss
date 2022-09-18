@@ -1,0 +1,18 @@
+@import '../../styles/mixins';
+
+.manage-add-roadmap-page {
+  .common-header {
+    button {
+      background-color: transparent;
+      box-shadow: none;
+      
+      &:hover {
+        opacity: .7;
+      }
+    }
+
+    .btn-save {
+      color: $primary;
+    }
+  }
+}

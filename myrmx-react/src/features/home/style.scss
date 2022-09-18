@@ -1,0 +1,33 @@
+@import '../../styles/mixins';
+@import './App';
+@import './WelcomePage';
+@import './LogInPage';
+@import './SignUpPage';
+@import './ForgotPasswordPage';
+@import './ResetPasswordPage';
+@import './UnsubscribePage';
+@import './AcceptCoachInvitePage';
+
+.entry {
+  @extend .mrm-p-2;
+}
+
+p.grey {
+  color: $color-text-light;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 1.9rem;
+  line-height: 41px;
+}
+
+.desktop-form-container {
+  @extend .mrm-box-shadow;
+  @extend .mrm-px-2;
+  @extend .mrm-py-0_5;
+  background: white;
+  border-radius: get-scaled-size($scale-factor-0_5);
+  min-width: get-scaled-size($scale-factor-24);
+  border-color: $color-item-gray;
+}

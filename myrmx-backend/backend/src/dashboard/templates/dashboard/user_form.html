@@ -1,0 +1,338 @@
+{% extends "dashboard/base.html" %}
+{% load staticfiles %}
+{% load my %}
+
+{% block title %}{{ user }}{% endblock %}
+
+{% comment %}{% block breadcrumbs_space %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% block breadcrumbs %}
+        {% breadcrumb "My Profile" "" %}
+        {% render_breadcrumbs "dashboard/breadcrumbs.html" %}
+    {% endblock %}
+{% endblock %}{% endcomment %}
+
+{% block body %}
+
+<a class="back-btn mb-3" onclick="profileBack(event);" href="#"><i class="far fa-arrow-left"></i></a>
+<!-- <a class="back-btn mb-3" onclick="goBack()"><i class="far fa-arrow-left"></i></a> -->
+<!-- doesn't work with ajax -->
+<!-- <a class="back-btn mb-3" href="{{request.META.HTTP_REFERER|escape}}"><i class="far fa-arrow-left"></i></a> -->
+
+    {% if not user.company %}
+        <div class="alert alert-danger">
+            <p class="{% if request_user_company_has_dark_ui %}text-light{% else %}text-dark{% endif %}">You are not registered with any organizations powered by MyRoadmap. Please contact your administrator.</p>
+        </div>
+    {% endif %}
+    <div class="card p-3 profile-containter">
+        <h4 class='mb-3'>Profile</h4>
+        <div class="row">
+            <div class="col-sm-4">
+              <div class="profile-image-1" data-backdrop="static" data-target="#addNewProfilePictureModal" data-toggle="modal" style="{% if user.photo %} background-image: url('{{ user.get_photo_url }}') {% endif %}" aria-label="{{ user.get_full_name }} profile picture"><span>{% if not user.photo %}{{ user.first_name|slice:"1"|title }}{{ user.last_name|slice:"1"|title }}{% endif %}</span></div>
+
+              <p class="btn-2 change-photo-btn" href="#" id="addNewProfilePicture" data-backdrop="static" data-target="#addNewProfilePictureModal" data-toggle="modal">{% if user.photo %}Change{% else %}Upload{% endif %} Photo</p>
+              <!-- {% if user.photo %}<p class="btn-5 change-photo-btn" data-target-url="{% url 'ajax_profile_pic_delete' %}">Delete Photo</p>{% endif %} -->
+              <a class="btn-2 change-photo-btn mt-2" href="{% url 'change_password' %}">Change Password</a>
+
+              <div class="user-profile-org">
+                  <p><b>Organization:</b> {{ request.user.company.name }}</p>
+                  {% if request.user.cohort.all %}
+                      <p><b>My Group:</b> {{ request.user.cohort.all|join:', ' }}</p>
+                  {% endif %}
+                  <p><b>Account Type:</b>{% if user.company %} {{ user.group_names|join:', '|change_coach_name:user.company.coach_synonym|change_user_name:user.company.user_synonym }} {% else %} {{ user.group_names|join:', ' }} {% endif %}</p>
+                  {% if request.user.companies|length > 1 %}
+                      <p><b>Change Active Organization:</b></p>
+                      {% for company in request.user.companies %}
+                          <div class="btn-2 mb-2 company {% if company.name == request.user.company.name %}active{% endif %}" onclick="chooseCompany({{company.id}})">{{company.name}}</div>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+
+            </div>
+            <div class="col-sm-7 p-2">
+                <form role="form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% include 'dashboard/form-table-vertical.html' %}
+
+                    <label>
+                      {% if user.company.coach_synonym %}
+                          My {{user.company.coach_synonym}}(s)
+                        {% else %}
+                          My Coach(es)
+                        {% endif %}
+                     </label>
+                    {% if user == request.user %}
+                      {% for coach in user.coach.all %}
+                          <a class="mb-2" href="{% url 'profile_detail' coach.id %}">
+                              <div class="my-coach">
+                                  <div class="profile-image-2" style="{% if coach.photo %} background-image: url('{{ coach.get_photo_url }}') {% endif %}" aria-label="{{ coach.get_full_name }} profile picture"><span>{% if not coach.photo %}{{ coach.first_name|slice:"1"|title }}{{ coach.last_name|slice:"1"|title }}{% endif %}</span></div>
+                                  <span class="ml-1">{{ coach }}</span>
+                              </div>
+                          </a>
+                      {% empty %}
+                          {% if request.user.company.users_can_assign_coach and not request.user.company_id == 1 %}
+                              <p class="no-coach mb-2">You don't have a {{ user.company.coach_synonym }}.</p>
+                          {% endif %}
+                          {% if not request.user.company.users_can_assign_coach and not request.user.company_id == 1 %}
+                              <p class="no-coach mb-2">You don't have a {{ user.company.coach_synonym }}. Contact your Admin in order to recieve access to one.</p>
+                          {% endif %}
+                          {% if request.user.company_id == 1 %}
+                              <p class="no-coach mb-2">You don't have a {{ user.company.coach_synonym }}.</p>
+                          {% endif %}
+                      {% endfor %}
+                      {% if request.user.company_id == 1 %}
+                          <a class="btn-2" href="#" data-target="#inviteCoachModal" data-toggle="modal">Invite a Coach</a>
+                          <br>
+                      {% endif %}
+                      {% if request.user.company.users_can_assign_coach and not request.user.company_id == 1 %}
+                        <a class="btn btn-2" href="{% url 'edit_coach' user.id %}">Edit Assigned {{ user.company.coach_synonym }}</a>
+                      {% endif %}
+                    {% endif %}
+
+                    {% if user.is_coach %}
+                        <br><label>My {{user.company.user_synonym}}(s)</label>
+                        {% for student in user.get_students %}
+                            <a class="mb-2" href="{% url 'profile_detail' student.id %}">
+                                <div class="my-coach">
+                                    <div class="profile-image-2" style="{% if student.photo %} background-image: url('{{ student.get_photo_url }}') {% endif %}" aria-label="{{ student.get_full_name }} profile picture"><span>{% if not student.photo %}{{ student.first_name|slice:"1"|title }}{{ student.last_name|slice:"1"|title }}{% endif %}</span></div>
+                                    <span class="ml-1">{{ student }}</span>
+                                </div>
+                            </a>
+                        {% empty %}
+                            <p class="no-coach">You are not assigned any {{ request.user.company.user_synonym }}s.<p>
+                        {% endfor %}
+                    {% endif %}
+                    <button type="submit" style="margin-top: 25px;" class="btn btn-primary">Save changes</button>
+                </form>
+                {% if request.user.company.users_can_erase_their_account %}
+                  {% if user == request.user %}
+                    <form method="POST" action="{% url 'delete_account' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete" value="true">
+                        <span class="btn-2" style="position: absolute; right: 10px; bottom: 8px;" onclick="deleteYourAccount(this)"> Delete My Account</span>
+                    </form>
+                  {% endif %}
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+
+
+    {% include 'dashboard/invite-coach.html' %}
+
+    <div class="modal fade" id="addNewProfilePictureModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Change Profile Picture</h4>
+                    <button type="button" class="close closeAddProfilePicture" data-dismiss="modal">&times;</button>
+                    <!-- <button type="button" class="btn btn-secondary closeAddProfilePicture" data-dismiss="modal">Close</button> -->
+                </div>
+                <div class="modal-body">
+                    <div id="addNewProfilePictureModalBody">
+                          <label for="file-src" class="btn btn-primary mb-0 choosePhoto">Choose Photo</label>
+                              <input type="file" id="file-src" onchange="handleFileSelect()" accept="image/*" style="display: none;">
+                          <!-- <button type="button" class="btn btn-secondary" id="cropperReset">Reset</button> -->
+                          <button type="button" class="btn btn-primary addNewProfilePictureSave" data-target-url="{% url 'ajax_profile_pic' %}">Save</button>
+                        <div id="imageLoading" class="hidden">
+                            <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <img class="mt-2" id="target-img"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-2 closeAddProfilePicture" data-dismiss="modal">Cancel</button>
+                    <!-- <button type="button" class="btn btn-secondary" id="cropperReset">Reset</button> -->
+                    <button type="button" class="btn btn-primary footer-save addNewProfilePictureSave" data-target-url="{% url 'ajax_profile_pic' %}">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrafooter %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.1/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.1/cropper.min.css">
+    <style>
+        img#target-img {
+            max-width: 100%;
+        }
+        #upload-pic{
+            padding-bottom:10px;
+        }
+        @media only screen and (max-width: 600px) {
+          .modal-footer {
+            display:none;
+          }
+        }
+    </style>
+    <script>
+        function goBack() {
+          window.history.back();
+        }
+        function profileBack(e) {
+            e.preventDefault();
+            if (document.referrer == location.href) history.go(-2);
+            else history.go(-1);
+        }
+        $('.addNewProfilePictureSave').hide();
+        $('.footer-save').hide();
+        var cropper;
+        var loadingIndicator = $('#imageLoading');
+        var saveClicked = false;
+        function handleFileSelect() {
+            $('.addNewProfilePictureSave').show();
+            $(".choosePhoto").html("Choose a different photo");
+            $(".choosePhoto").removeClass("btn-primary");
+            $(".choosePhoto").addClass("btn-2");
+            $('.footer-save').show();
+            var file = document.getElementById('file-src').files[0];
+            if (file) {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                $('#target-img').hide();
+                loadingIndicator.removeClass('hidden');
+                loadingIndicator.show();
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var data = event.target.result; // the 'data url' of the image
+                    var image = document.getElementById('target-img');
+                    $('#target-img').attr('src', data);
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        rotatable: true,
+                        zoomable: true,
+                        zoomOnWheel: false,
+                        zoomOnTouch: true,
+                        background: false,
+                        center: false,
+                        guides: false,
+                        minContainerHeight: 200,
+                        viewMode: 2
+                    });
+                    cropper.setDragMode('move');
+                    loadingIndicator.hide();
+                    $('#target-img').show();
+                };
+                // this loads the file as a data url calling the function above once done
+                reader.readAsDataURL(file);
+            }
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        $(document).ready(function() {
+            $('#addNewProfilePictureModal').appendTo('body');
+
+            $('.addNewProfilePictureSave').click(function() {
+                if (!saveClicked) {
+                    saveClicked = true;
+                    $(".addNewProfilePictureSave").prop('disabled', true);
+                    var where = $(this).data('target-url');
+                    cropper.getCroppedCanvas({width: 400, height: 400}).toBlob(function (blob) {
+                        var formData = new FormData();
+                        formData.append('croppedImage', blob);
+                        $.ajax({
+                            url: where,
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            beforeSend: function (xhr, settings) {
+                                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                }
+                                loadingIndicator.show();
+                            },
+                            success: function (data) {
+                                $('#upload-pic').attr('src', data.url);
+                                notifyUser('success', 'Your profile picture has been updated.');
+                                $('#addNewProfilePictureModal').modal('hide');
+                                loadingIndicator.hide();
+                                location.reload();
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    title: "Upload Error",
+                                    text: 'There has been an error with your photo upload. Please try again, or contact your administrator.',
+                                    showCancelButton: false,
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#F74400',
+                                }).then((result) => {
+                                    location.reload();
+                                }).catch(Swal.noop);
+                            }
+                        });
+                    });
+                }
+            });
+
+            $('#cropperReset').click(function() {
+                if(cropper){
+                    cropper.reset();
+                }
+            });
+
+            $('.closeAddProfilePicture').click(function() {
+                $('#addNewProfilePictureModal').modal('hide');
+                location.reload();
+            });
+
+            $('#addNewProfilePictureModal').on('hidden.bs.modal', function () {
+                if(cropper){
+                    $("#target-img").hide();
+                    cropper.destroy();
+                }
+            })
+        });
+        function deactivateAccount(el) {
+            event.stopPropagation();
+            Swal.fire({
+                title: "Deactivate this account?",
+                text: 'This account will no longer have access to Roadmaps.',
+                showCancelButton: true,
+                confirmButtonText: 'Deactivate',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    el.closest('form').submit()
+                }
+            }).catch(Swal.noop);
+        }
+        function deleteYourAccount(el) {
+            event.stopPropagation();
+            Swal.fire({
+                title: "Delete your account?",
+                text: 'This will erase all data associated with you. This action can not be undone.',
+                showCancelButton: true,
+                confirmButtonText: 'Permanantly Delete My Account',
+                confirmButtonColor: '#F74400',
+            }).then((result) => {
+                if (result.value) {
+                    el.closest('form').submit()
+                }
+            }).catch(Swal.noop);
+        }
+
+    </script>
+{% endblock %}
+
+{% block js %}
+
+function chooseCompany(companyId, element) {
+    $.ajax({
+        url: urls.ajax_choose_active_company,
+        type: 'POST',
+        data: {company: companyId},
+        success: function (result) {
+            console.log(result);
+            location.reload();
+        }
+    });
+}
+
+{% endblock js %}

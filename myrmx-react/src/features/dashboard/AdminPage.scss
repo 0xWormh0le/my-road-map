@@ -1,0 +1,244 @@
+@import '../../styles/mixins';
+
+.dashboard-admin-page {
+  .common-search-bar {
+    @extend .mrm-mr-1;
+    flex-grow: 1;
+
+    .search {
+      height: 40px;
+      background: $color-input-dark-blue;
+      padding-left: 35px;
+      -webkit-appearance: none;
+      border: none;
+    }
+  }
+
+  .sort {
+    background: $color-input-dark-blue;
+    box-shadow: none;
+
+    &.sort-desktop {
+      font-size: $font-size-normal;
+      font-weight: normal;
+
+      span, svg {
+        @extend .mrm-ml-0_25;
+        color: $color-text-normal;
+      }
+
+      span {
+        font-weight: bold;
+      }
+
+      svg {
+        vertical-align: bottom;
+      }
+    }
+  }
+
+  .no-data {
+    font-size: $font-size-smaller;
+    text-align: center;
+    font-style: italic;
+    width: 100%;
+  }
+
+  button:not(.btn-menu-item) {
+    @extend .text-lighter;
+    font-size: $font-size-smaller;
+    height: inherit;
+
+    svg {
+      @extend .mrm-mr-0_5;
+    }
+  }
+
+  &.sort-menu {
+    .modal-dialog {
+      margin: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      position: absolute;
+      max-width: none;
+    }
+
+    form {
+      @extend .mrm-pb-1;
+    }
+
+    .modal-content {
+      border: none;
+      border-top-left-radius: 1em;
+      border-top-right-radius: 1em;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .form-check-input {
+      width: 20px;
+      height: 20px;
+      margin-top: .1rem;
+      border: 1px solid #727272;
+      border-radius: 50%;
+      -webkit-appearance: none;
+      &:focus {
+        outline: none;
+      }
+      &:checked {
+        border: none;
+        &:before {
+          content: '\25C9';
+          color: $color-blue;
+          font-size: 22px;
+          position: relative;
+          top: -7px;
+          left: -1px;
+        }
+      }
+    }
+    .cancel {
+      color: $color-text-light;
+    }
+    .form-check {
+      &:not(:last-child) {
+        border-bottom: 1px solid #ddd;
+      }
+    }
+  }
+
+  .student-card {
+    @extend .mrm-mb-1;
+
+    &.toggle-show-roadmaps {
+      cursor: pointer;
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .more-btn-desktop {
+      position: absolute;
+      right: .7em;
+      top: .7em;
+    }
+
+    .name {
+      line-height: 1;
+    }
+
+    &-roadmap-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .student-dot {
+      position: absolute;
+      left: 4px;
+      top: 1.7em;
+    }
+
+    .student-card-roadmap-link {
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .last-login {
+      @extend .mrm-mt-1;
+      font-size: $font-size-smaller;
+      text-align: right;
+      margin-bottom: 0;
+    }
+
+    .dropdown {
+      position: absolute;
+      right: .7em;
+      top: .7em;
+    }
+  }
+
+  .form-check {
+    @extend .mrm-px-2;
+    text-align: left;
+    padding-left: 40px;
+    &:hover {
+      cursor: pointer;
+    }
+
+    label {
+      width: 100%;
+      margin-left: 1rem;
+      color: $color-text-normal;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .admin-page-header-wrapper {
+    .form-check {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  .mobile-page-container {
+    @extend .mrm-px-1;
+    @extend .mrm-pb-1;
+  }
+
+  .desktop-page-container {
+    .content-wrapper {
+      @extend .mrm-mt-3;
+      padding-left: 0;
+      padding-right: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+
+      & > div {
+        flex-basis: 49.2%;
+      }
+    }
+  }
+}
+
+// TODO: Extract into a common feature component
+.item-count {
+  @extend .mrm-mr-0_5;
+  @extend .mrm-mt-0_5;
+  @extend .mrm-py-0_25;
+  @extend .mrm-px-0_5;
+
+  display: inline-flex;
+  line-height: 1;
+  font-size: $font-size-smaller;
+  font-weight: bold;
+  border-radius: 6px;
+  height: 23px;
+  vertical-align: top;
+
+  svg {
+    @extend .mrm-mr-0_25;
+  }
+
+  img {
+    @extend .mrm-mr-0_25;
+    height: 14px;
+  }
+
+  &.red-count {
+    background-color: lighten($color-assessment-red, 35%);
+    color: $color-assessment-red;
+  }
+
+  &.gray-count {
+    background-color: $color-background-light-gray;
+    color: $color-dark-text-lighter;
+  }
+}

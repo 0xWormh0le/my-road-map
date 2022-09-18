@@ -1,0 +1,33 @@
+{% extends 'welcome-screen-base.html' %}
+{% load staticfiles my %}
+
+{% block body %}
+<div class="mt-sm-5 p-3 p-sm-4 welcome-login">
+    {% block content %}
+
+        {% if private_company.logo %}
+            <img class="welcome-company-brand-logo mb-3" src="{{ private_company.logo.url }}" alt="{{ private_company.name }}">
+        {% else %}
+            <!-- <img class="welcome-company-mrm-logo mb-3" src="{% static 'dashboard/img/myroadmap-white-green.svg' %}"> -->
+        {% endif %}
+
+        {% company_has_dark_ui private_company as dark_ui %}
+
+        <h2 class="text-center mb-3 {% if dark_ui %}text-light{% else %}text-dark{% endif %}">
+            Welcome to
+            {% if private_company %}
+                {{private_company.name}}
+            {% else %}
+                MyRoadmap
+            {% endif %}
+        </h2>
+
+        {% block copy %}{% endblock copy %}
+            <a class="btn btn-primary mb-3" href="{% url 'email_signup' %}">Sign up</a>
+            <a class="btn {% if dark_ui %}btn-outline-light{% else %}btn-outline-dark{% endif %}" href="{% url 'login' %}">Log in</a>
+        {% endblock content %}
+</div>
+{% endblock %}
+{% block extrajs %}
+<script src="{% static 'dashboard/js/notify.js' %}"></script>
+{% endblock extrajs %}
